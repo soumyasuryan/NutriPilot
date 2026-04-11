@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus } from 'lucide-react';
+import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock, ChevronRight } from 'lucide-react';
 
 // --- Reusable SVG Circular Progress Ring ---
 const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, label, subLabel }) => {
@@ -226,6 +226,114 @@ export default function Dashboard() {
             </div>
           </motion.div>
 
+        </motion.div>
+
+        {/* --- Tab 2: The Log Zone --- */}
+        <motion.div
+           initial="hidden"
+           whileInView="visible"
+           viewport={{ once: true, margin: "-50px" }}
+           variants={staggerContainer}
+           className="mt-16"
+        >
+           <div className="flex items-center gap-2 mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900 tracking-tight">Food Log & Library</h2>
+           </div>
+
+           <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)]">
+              {/* Quick Add Search Bar */}
+              <motion.div variants={fadeInUp} className="relative mb-10">
+                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Search className="w-5 h-5 text-gray-400" />
+                 </div>
+                 <input 
+                    type="text" 
+                    className="w-full bg-[#f8fafc] border border-gray-100 text-gray-900 text-[15px] rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-[#057A55]/20 focus:border-[#057A55] outline-none transition-all placeholder:text-gray-400" 
+                    placeholder="Search meals, ingredients, or describe what you ate (e.g., '2 Roti and Dal')..." 
+                 />
+                 <button className="absolute inset-y-2 right-2 bg-[#057A55] hover:bg-[#046C4E] text-white px-5 rounded-xl font-medium text-sm transition-colors shadow-sm">
+                    Analyze & Add
+                 </button>
+              </motion.div>
+
+              {/* Favorites / Recent Section */}
+              <motion.div variants={fadeInUp}>
+                 <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-[15px] font-semibold text-gray-800 flex items-center gap-2">
+                       <Clock className="w-4 h-4 text-gray-400" /> Recently Logged
+                    </h3>
+                    <button className="text-[13px] font-medium text-[#057A55] hover:underline">View All</button>
+                 </div>
+
+                 {/* List of Previous Meals */}
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Meal Item 1 */}
+                    <div className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-[#FCFCFD] hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all group cursor-pointer">
+                       <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500">
+                             <Wheat className="w-5 h-5" />
+                          </div>
+                          <div>
+                             <h4 className="text-[15px] font-semibold text-gray-900">2 Roti, Dal, Rice</h4>
+                             <p className="text-[13px] text-gray-500 mt-0.5">450 kcal • 14g Protein</p>
+                          </div>
+                       </div>
+                       <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors flex-shrink-0">
+                          <Plus className="w-4 h-4" />
+                       </button>
+                    </div>
+
+                    {/* Meal Item 2 */}
+                    <div className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-[#FCFCFD] hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all group cursor-pointer">
+                       <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
+                             <Droplet className="w-5 h-5" />
+                          </div>
+                          <div>
+                             <h4 className="text-[15px] font-semibold text-gray-900">Oats with Milk & Banana</h4>
+                             <p className="text-[13px] text-gray-500 mt-0.5">320 kcal • 12g Protein</p>
+                          </div>
+                       </div>
+                       <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors flex-shrink-0">
+                          <Plus className="w-4 h-4" />
+                       </button>
+                    </div>
+
+                    {/* Meal Item 3 */}
+                    <div className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-[#FCFCFD] hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all group cursor-pointer">
+                       <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500">
+                             <Flame className="w-5 h-5" />
+                          </div>
+                          <div>
+                             <h4 className="text-[15px] font-semibold text-gray-900">Chicken Breast & Salad</h4>
+                             <p className="text-[13px] text-gray-500 mt-0.5">280 kcal • 45g Protein</p>
+                          </div>
+                       </div>
+                       <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors flex-shrink-0">
+                          <Plus className="w-4 h-4" />
+                       </button>
+                    </div>
+                    
+                    {/* Meal Item 4 */}
+                    <div className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-[#FCFCFD] hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all group cursor-pointer">
+                       <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500">
+                             <Info className="w-5 h-5" />
+                          </div>
+                          <div>
+                             <h4 className="text-[15px] font-semibold text-gray-900">Paneer Tikka (6 pieces)</h4>
+                             <p className="text-[13px] text-gray-500 mt-0.5">380 kcal • 22g Protein</p>
+                          </div>
+                       </div>
+                       <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors flex-shrink-0">
+                          <Plus className="w-4 h-4" />
+                       </button>
+                    </div>
+
+                 </div>
+              </motion.div>
+           </div>
         </motion.div>
       </main>
     </div>
