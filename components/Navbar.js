@@ -1,6 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Sparkles } from 'lucide-react';
 
 const Navbar = () => {
   const router = useRouter();
