@@ -1,48 +1,42 @@
-const express = require('express');
-const router = express.Router();
-const supabase = require('../config/supabase');
-// We will create this AI helper next
-const { getNutritionFromAI } = require('../services/groqService'); 
+// const db = require('../config/db');
+const express = require('express'); // 1. Import Express
+const router = express.Router();    // 2. Initialize the Router
+const db = require('../config/db'); // Your database connection
+const { getNutritionFromAI } = require('../services/groqService');
 
-// POST: Log a meal
 router.post('/log', async (req, res) => {
   const { userId, foodName } = req.body;
 
   try {
-    // 1. Search if this food is already in this user's personal library
-    let { data: foodItem } = await supabase
-      .from('food_library')
-      .select('*')
-      .eq('food_name', foodName)
-      .eq('user_id', userId)
-      .single();
+    // 1. Check Library using raw SQL
+    const checkLibrary = await db.query(
+      'SELECT * FROM food_library WHERE food_name = $1 AND user_id = $2',
+      [foodName, userId]
+    );
 
-    // 2. If not found, get it from Groq AI
+    let foodItem = checkLibrary.rows[0];
+
+    // 2. If not found, hit Groq
     if (!foodItem) {
-      console.log(`Fetching new data from Groq for: ${foodName}`);
       const nutrition = await getNutritionFromAI(foodName);
       
-      const { data, error } = await supabase
-        .from('food_library')
-        .insert([{ ...nutrition, user_id: userId }])
-        .select()
-        .single();
-        
-      if (error) throw error;
-      foodItem = data;
+      const insertFood = await db.query(
+        'INSERT INTO food_library (user_id, food_name, calories, protein, carbs, fats) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [userId, foodName, nutrition.calories, nutrition.protein, nutrition.carbs, nutrition.fats]
+      );
+      foodItem = insertFood.rows[0];
     }
 
-    // 3. Log the meal entry for the day
-    const { error: logError } = await supabase
-      .from('meal_logs')
-      .insert([{ user_id: userId, food_id: foodItem.id }]);
-
-    if (logError) throw logError;
+    // 3. Log the meal
+    await db.query(
+      'INSERT INTO meal_logs (user_id, food_id) VALUES ($1, $2)',
+      [userId, foodItem.id]
+    );
 
     res.json({ success: true, food: foodItem });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: "Database connection error" });
   }
 });
-
 module.exports = router;
