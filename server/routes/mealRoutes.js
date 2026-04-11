@@ -92,7 +92,7 @@ router.get('/today/:userId', async (req, res) => {
   }
 });
 
-const { getDailyInsightFromAI } = require('../services/groqService');
+const { getDailyInsightFromAI, getKitchenMeasurementFromAI } = require('../services/groqService');
 
 // 5. GENERATE DAILY COACHING INSIGHT
 router.post('/insight', async (req, res) => {
@@ -144,6 +144,19 @@ router.post('/insight', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to generate daily insight" });
+  }
+});
+
+// 6. KITCHEN CONVERTER ROUTE
+router.post('/converter', async (req, res) => {
+  const { query } = req.body;
+  if (!query) return res.status(400).json({ error: "No query provided." });
+  try {
+    const measurement = await getKitchenMeasurementFromAI(query);
+    res.json({ success: true, measurement });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to convert measurement." });
   }
 });
 

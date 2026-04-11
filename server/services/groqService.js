@@ -23,7 +23,8 @@ const getNutritionFromAI = async (foodQuery) => {
               "carbs": number,
               "fats": number,
               "bioavailability": "string (e.g., 'High: Complete protein')",
-              "suggestion": "string (e.g., 'Next time, add chia seeds for omega-3s!')"
+              "suggestion": "string (e.g., 'Next time, add chia seeds for omega-3s!')",
+              "household_measurement": "string (e.g., 'about 7-8 tablespoons' or '1 medium bowl' or '2 standard pieces')"
             }
             Use standard portion sizes if not specified.`
           },
@@ -99,4 +100,87 @@ const getDailyInsightFromAI = async (consumedFoods, exactMath) => {
   }
 };
 
-module.exports = { getNutritionFromAI, getDailyInsightFromAI };
+const getKitchenMeasurementFromAI = async (query) => {
+  try {
+    const response = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        model: "llama-3.1-8b-instant",
+        messages: [
+          {
+            role: "system",
+            content: `You are a culinary expert. Convert the user's gram/ml input into common household measurements (e.g. tablespoons, bowls, cups, pieces).
+            Give a direct 1-sentence answer without filler text.
+            Return ONLY a pure JSON object.
+            Format:
+            {
+              "measurement": "string (e.g., '100g of soya chunks is roughly 1.5 standard cups or 6-8 tablespoons.')"
+            }`
+          },
+          {
+            role: "user",
+            content: `Convert this: ${query}`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.1
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    return JSON.parse(response.data.choices[0].message.content).measurement;
+  } catch (error) {
+    console.error("Groq API Error:", error.response?.data || error.message);
+    throw new Error("Failed to generate measurement conversion.");
+  }
+};
+
+const getJudgeSwapFromAI = async (foodsList) => {
+  try {
+    const response = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        model: "llama-3.1-8b-instant",
+        messages: [
+          {
+            role: "system",
+            content: `You are 'The Judge', an intense, highly-effective sports nutritionist. 
+            The user will provide a list of all foods they ate over the past 7 days.
+            Your job is to identify the single most 'unnecessary' calorie-dense item (highest sugar/fat/empty calories) from their list.
+            Provide a strict, 1-to-1 swap for a healthier item. DO NOT BE POLITE. Be strict and direct.
+            Return ONLY a pure JSON object.
+            Format:
+            {
+              "offender": "The bad food string (e.g., 'Evening Samosa')",
+              "swap_text": "string (e.g., 'Replacing that evening Samosa with Roasted Chana will put you back in a deficit.')"
+            }`
+          },
+          {
+            role: "user",
+            content: `Here are all the foods I logged this week: ${foodsList.join(', ')}`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.3
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    return JSON.parse(response.data.choices[0].message.content);
+  } catch (error) {
+    console.error("Groq API Error:", error.response?.data || error.message);
+    throw new Error("Failed to generate judge swap.");
+  }
+};
+
+module.exports = { getNutritionFromAI, getDailyInsightFromAI, getKitchenMeasurementFromAI, getJudgeSwapFromAI };

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock, ChevronRight } from 'lucide-react';
+import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock, ChevronRight, Scale } from 'lucide-react';
 
 // --- Reusable SVG Circular Progress Ring ---
 const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, label, subLabel }) => {
@@ -498,6 +498,14 @@ export default function Dashboard() {
                  </button>
               </motion.div>
 
+              {/* Kitchen Converter Link */}
+              <motion.div variants={fadeInUp} className="flex justify-end -mt-3 mb-6 relative z-10 w-full pr-2">
+                <a href="/converter" className="text-[13px] font-medium text-[#057A55] hover:text-[#046C4E] hover:underline flex items-center gap-1 transition-colors">
+                  <Scale className="w-4 h-4"/>
+                  Don't have a weighing scale? No worries, click here!
+                </a>
+              </motion.div>
+
               {/* AI Details Review Prompt (Populates when analyzed) */}
               {analyzedMeal && (
                 <motion.div 
@@ -523,13 +531,17 @@ export default function Dashboard() {
                      </button>
                   </div>
 
-                  <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
                      <div className="bg-white p-4 rounded-xl border border-emerald-100/50">
-                       <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1">Protein Bioavailability</p>
+                       <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Info className="w-3.5 h-3.5"/> Est. Measurement</p>
+                       <p className="text-sm text-gray-700">{analyzedMeal.household_measurement || "1 standard portion"}</p>
+                     </div>
+                     <div className="bg-white p-4 rounded-xl border border-emerald-100/50">
+                       <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Droplet className="w-3.5 h-3.5"/> Bioavailability</p>
                        <p className="text-sm text-gray-700">{analyzedMeal.bioavailability || "Standard metric."}</p>
                      </div>
                      <div className="bg-white p-4 rounded-xl border border-emerald-100/50">
-                       <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1">AI Suggestion</p>
+                       <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Sparkles className="w-3.5 h-3.5"/> AI Suggestion</p>
                        <p className="text-sm text-gray-700">{analyzedMeal.suggestion || "Looks good!"}</p>
                      </div>
                   </div>
