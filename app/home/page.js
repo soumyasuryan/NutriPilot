@@ -134,7 +134,7 @@ export default function Dashboard() {
              </motion.p>
           </div>
           <motion.div variants={fadeInUp}>
-            <button className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
+            <button className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm cursor-pointer">
               <Plus className="w-4 h-4" />
               Log a Meal
             </button>
@@ -235,7 +235,7 @@ export default function Dashboard() {
             </div>
             
             <div className="mt-8 z-10 relative">
-              <button className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-medium py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2">
+              <button className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-medium py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2 cursor-pointer">
                 <Sparkles className="w-4 h-4"/>
                 Auto-Fix Dinner
               </button>
@@ -264,10 +264,10 @@ export default function Dashboard() {
                  </div>
                  <input 
                     type="text" 
-                    className="w-full bg-[#f8fafc] border border-gray-100 text-gray-900 text-[15px] rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-[#057A55]/20 focus:border-[#057A55] outline-none transition-all placeholder:text-gray-400" 
+                    className="w-full bg-[#f8fafc] border border-gray-100 text-gray-900 text-[15px] rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-[#057A55]/20 focus:border-[#057A55] outline-none transition-all placeholder:text-gray-400 cursor-text" 
                     placeholder="Search meals, ingredients, or describe what you ate (e.g., '2 Roti and Dal')..." 
                  />
-                 <button className="absolute inset-y-2 right-2 bg-[#057A55] hover:bg-[#046C4E] text-white px-5 rounded-xl font-medium text-sm transition-colors shadow-sm">
+                 <button className="absolute inset-y-2 right-2 bg-[#057A55] hover:bg-[#046C4E] text-white px-5 rounded-xl font-medium text-sm transition-colors shadow-sm cursor-pointer">
                     Analyze & Add
                  </button>
               </motion.div>
@@ -278,7 +278,7 @@ export default function Dashboard() {
                     <h3 className="text-[15px] font-semibold text-gray-800 flex items-center gap-2">
                        <Clock className="w-4 h-4 text-gray-400" /> Recently Logged
                     </h3>
-                    <button className="text-[13px] font-medium text-[#057A55] hover:underline">View All</button>
+                    <button className="text-[13px] font-medium text-[#057A55] hover:underline cursor-pointer">View All</button>
                  </div>
 
                  {/* List of Previous Meals */}
@@ -294,7 +294,7 @@ export default function Dashboard() {
                              <p className="text-[13px] text-gray-500 mt-0.5">450 kcal • 14g Protein</p>
                           </div>
                        </div>
-                       <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors flex-shrink-0">
+                       <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors flex-shrink-0 cursor-pointer">
                           <Plus className="w-4 h-4" />
                        </button>
                     </div>
@@ -310,7 +310,7 @@ export default function Dashboard() {
                              <p className="text-[13px] text-gray-500 mt-0.5">320 kcal • 12g Protein</p>
                           </div>
                        </div>
-                       <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors flex-shrink-0">
+                       <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors flex-shrink-0 cursor-pointer">
                           <Plus className="w-4 h-4" />
                        </button>
                     </div>
@@ -326,7 +326,7 @@ export default function Dashboard() {
                              <p className="text-[13px] text-gray-500 mt-0.5">280 kcal • 45g Protein</p>
                           </div>
                        </div>
-                       <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors flex-shrink-0">
+                       <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors flex-shrink-0 cursor-pointer">
                           <Plus className="w-4 h-4" />
                        </button>
                     </div>

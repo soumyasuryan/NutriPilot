@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
+import Image from 'next/image';
 
 const Navbar = () => {
   const router = useRouter();
@@ -44,16 +45,72 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-[10px] bg-[#057A55] flex items-center justify-center shadow-sm transition-transform duration-300 group-hover:scale-105">
-              <Sparkles className="w-[18px] h-[18px] text-white" />
+            <div className="w-9 h-9 rounded-[10px] flex bg-green-700 brightness-90  items-center justify-center shadow-sm transition-transform duration-300 group-hover:scale-105">
+              <Image src="/logo.png" alt="Logo" width={32} height={32} />
             </div>
             <span className="text-[19px] font-semibold tracking-tight text-gray-900">NutriPilot</span>
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/home" className="text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200">Home</Link>
-            <Link href="/#features" className="text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200">Features</Link>
-            <Link href="/#how-it-works" className="text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200">How it Works</Link>
+            <Link href="/home" className="relative group/link text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2">
+              Home
+              <span className="absolute left-0 bottom-1 w-0 h-[2px] bg-[#16a34a] transition-all duration-300 group-hover/link:w-full rounded-full"></span>
+            </Link>
+            
+            {/* Features Dropdown */}
+            <div className="relative group flex items-center h-full">
+              <button className="relative flex items-center gap-1 text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2 cursor-pointer">
+                Features
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70 group-hover:rotate-180 transition-transform duration-300">
+                  <path d="m6 9 6 6 6-6"/>
+                </svg>
+                <span className="absolute left-0 bottom-1 w-0 h-[2px] bg-[#16a34a] transition-all duration-300 group-hover:w-full rounded-full"></span>
+              </button>
+
+              {/* Dropdown Panel */}
+              <div className="absolute top-full pt-2 left-1/2 -translate-x-1/2 mt-0 w-64 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
+                <div className="bg-white/80 backdrop-blur-xl border border-gray-200/60 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.08)] rounded-2xl p-2 flex flex-col gap-1">
+                  
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      user ? router.push('/features/the-lab') : router.push('/login');
+                    }}
+                    className="flex items-start gap-3 w-full text-left p-3 hover:bg-gray-50/80 rounded-xl transition-colors group/item cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover/item:scale-105 transition-transform">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 3h15"/><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3"/><path d="M6 14h12"/></svg>
+                    </div>
+                    <div>
+                      <div className="text-[14px] font-bold text-gray-900">The Lab</div>
+                      <div className="text-[12px] font-medium text-gray-500 mt-0.5">Goal & Strategy Setting</div>
+                    </div>
+                  </button>
+
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      user ? router.push('/features/profile') : router.push('/login');
+                    }}
+                    className="flex items-start gap-3 w-full text-left p-3 hover:bg-gray-50/80 rounded-xl transition-colors group/item cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 group-hover/item:scale-105 transition-transform">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div>
+                      <div className="text-[14px] font-bold text-gray-900">Profile & Progress</div>
+                      <div className="text-[12px] font-medium text-gray-500 mt-0.5">Historical Charts & Lib</div>
+                    </div>
+                  </button>
+
+                </div>
+              </div>
+            </div>
+
+            <Link href="/#how-it-works" className="relative group/link text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2">
+              How it Works
+              <span className="absolute left-0 bottom-1 w-0 h-[2px] bg-[#16a34a] transition-all duration-300 group-hover/link:w-full rounded-full"></span>
+            </Link>
           </div>
           <div className="hidden md:flex items-center gap-3">
             {user ? (
@@ -78,7 +135,7 @@ const Navbar = () => {
             )}
           </div>
           
-          <button className="md:hidden w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
+          <button className="md:hidden w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-gray-700">
               <line x1="4" x2="20" y1="12" y2="12"></line>
               <line x1="4" x2="20" y1="6" y2="6"></line>
