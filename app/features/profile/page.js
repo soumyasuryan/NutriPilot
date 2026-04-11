@@ -167,8 +167,8 @@ export default function ProfileProgress() {
                     <div 
                       className={`w-full max-w-[2.5rem] rounded-t-lg opacity-90 group-hover:opacity-100 transition-all duration-500 ease-out cursor-pointer relative ${
                         isOverTarget 
-                          ? "bg-gradient-to-t from-red-100/40 to-red-400 group-hover:to-red-500" 
-                          : "bg-gradient-to-t from-emerald-100/40 to-emerald-400 group-hover:to-emerald-500"
+                          ? "bg-linear-to-t from-red-100/40 to-red-400 group-hover:to-red-500" 
+                          : "bg-linear-to-t from-emerald-100/40 to-emerald-400 group-hover:to-emerald-500"
                       }`}
                       style={{ height: `${(val / maxY) * 100}%` }}
                     >

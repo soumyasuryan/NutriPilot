@@ -68,7 +68,7 @@ const Navbar = () => {
 
               {/* Dropdown Panel */}
               <div className="absolute top-full pt-2 left-1/2 -translate-x-1/2 mt-0 w-64 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
-                <div className="bg-white/80 backdrop-blur-xl border border-gray-200/60 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.08)] rounded-2xl p-2 flex flex-col gap-1">
+                <div className="bg-white/95 backdrop-blur-2xl border border-gray-200/80 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.15)] rounded-2xl p-2 flex flex-col gap-1">
 
                   <button
                     onClick={(e) => {
@@ -117,7 +117,7 @@ const Navbar = () => {
                 
                 {/* Profile Chip Trigger */}
                 <div className="flex items-center gap-2 bg-gray-50/80 border border-gray-100 rounded-full py-1.5 px-3 group-hover:bg-gray-100 transition-colors cursor-pointer shadow-sm">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#16a34a] to-[#046C4E] flex items-center justify-center text-white text-[12px] font-bold">
+                  <div className="w-6 h-6 rounded-full bg-linear-to-br from-[#16a34a] to-[#046C4E] flex items-center justify-center text-white text-[12px] font-bold">
                     {(user.full_name || user.name || 'U')[0].toUpperCase()}
                   </div>
                   <span className="text-[14px] font-medium text-[#292524]">{user.full_name || user.name || 'User'}</span>
@@ -132,7 +132,7 @@ const Navbar = () => {
                     
                     {/* User Mini Header */}
                     <div className="px-3 py-3 border-b border-gray-100/80 mb-1 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#16a34a] to-[#046C4E] flex items-center justify-center text-white text-[16px] font-bold flex-shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-[#16a34a] to-[#046C4E] flex items-center justify-center text-white text-[16px] font-bold shrink-0">
                         {(user.full_name || user.name || 'U')[0].toUpperCase()}
                       </div>
                       <div className="overflow-hidden">
@@ -173,7 +173,7 @@ const Navbar = () => {
                   <button className="px-5 py-2 text-[15px] font-medium text-[#292524] hover:text-[#16a34a] transition-colors duration-200 cursor-pointer">Login</button>
                 </a>
                 <a href="/signup">
-                  <button className="px-5 py-2.5 bg-gradient-to-r from-[#16a34a] to-[#22c55e] text-white rounded-xl shadow-lg shadow-[#22c55e]/30 text-[15px] font-medium transition-all duration-300 cursor-pointer">Sign Up</button>
+                  <button className="px-5 py-2.5 bg-linear-to-r from-[#16a34a] to-[#22c55e] text-white rounded-xl shadow-lg shadow-[#22c55e]/30 text-[15px] font-medium transition-all duration-300 cursor-pointer">Sign Up</button>
                 </a>
               </>
             )}

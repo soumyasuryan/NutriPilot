@@ -393,7 +393,7 @@ export default function Dashboard() {
             variants={fadeInUp} 
             className={`rounded-3xl p-8 relative overflow-hidden flex flex-col justify-between transition-all duration-700 ${
               todayTotals.meal_count >= 3 
-                ? "bg-gradient-to-br from-[#064E3B] to-[#042F2E] shadow-[0_12px_40px_-10px_rgba(4,47,46,0.3)]" 
+                ? "bg-linear-to-br from-[#064E3B] to-[#042F2E] shadow-[0_12px_40px_-10px_rgba(4,47,46,0.3)]" 
                 : "bg-gray-50 border border-gray-200"
             }`}
           >

@@ -108,7 +108,7 @@ export default function AccountPage() {
           variants={fadeInUp}
           className="mb-10 text-center"
         >
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#16a34a] to-[#046C4E] flex items-center justify-center text-white text-[32px] font-bold mx-auto mb-4 shadow-lg shadow-green-600/20 ring-4 ring-green-50">
+          <div className="w-24 h-24 rounded-full bg-linear-to-br from-[#16a34a] to-[#046C4E] flex items-center justify-center text-white text-[32px] font-bold mx-auto mb-4 shadow-lg shadow-green-600/20 ring-4 ring-green-50">
             {(user?.full_name || user?.name || 'U')[0].toUpperCase()}
           </div>
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-2">My Profile</h1>
