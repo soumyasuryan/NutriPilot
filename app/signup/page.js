@@ -14,9 +14,12 @@ export default function Signup() {
     name: '',
     email: '',
     password: '',
+    age: '',
+    gender: '',
     height: '',
     weight: '',
     goal: '', 
+    activity: '',
     waist: ''
   });
 
@@ -69,9 +72,12 @@ export default function Signup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: userId,
+          age: finalData.age,
+          gender: finalData.gender,
           height: finalData.height,
           weight: finalData.weight,
           goal: finalData.goal,
+          activity: finalData.activity,
           waist: finalData.waist || null
         })
       });
@@ -89,8 +95,8 @@ export default function Signup() {
 
   const handleBioSubmit = (e) => {
     e.preventDefault();
-    if (!formData.height || !formData.weight) {
-      setError('Please fill out both fields');
+    if (!formData.height || !formData.weight || !formData.age || !formData.gender || !formData.activity) {
+      setError('Please fill out all fields');
       return;
     }
     setError('');
@@ -212,6 +218,33 @@ export default function Signup() {
           {/* STEP 1: Basic Bio */}
           {step === 1 && (
             <form onSubmit={handleBioSubmit} className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Age</label>
+                  <input type="number" name="age" className="block w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all" placeholder="22" value={formData.age} onChange={handleChange} required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Gender</label>
+                  <select name="gender" className="block w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all" value={formData.gender} onChange={handleChange} required>
+                    <option value="" disabled>Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Activity Level</label>
+                <select name="activity" className="block w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all" value={formData.activity} onChange={handleChange} required>
+                  <option value="" disabled>Select Activity Level</option>
+                  <option value="No activity">No activity</option>
+                  <option value="Very little exercise">Very little exercise</option>
+                  <option value="Moderate exercise">Moderate exercise</option>
+                  <option value="Intensive exercise">Intensive exercise</option>
+                </select>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Height (cm)</label>
                 <input type="number" name="height" className="block w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all" placeholder="175" value={formData.height} onChange={handleChange} required />

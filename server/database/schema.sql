@@ -1,3 +1,8 @@
+DROP TABLE IF EXISTS meal_logs CASCADE;
+DROP TABLE IF EXISTS food_library CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE users (
@@ -10,10 +15,17 @@ CREATE TABLE users (
 
 CREATE TABLE profiles (
     id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    age NUMERIC,
+    gender TEXT,
     height NUMERIC,
     weight NUMERIC,
     fitness_goal TEXT,
+    activity_level TEXT,
     waist_cm NUMERIC,
+    target_calories NUMERIC,
+    target_protein NUMERIC,
+    target_carbs NUMERIC,
+    target_fats NUMERIC,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
