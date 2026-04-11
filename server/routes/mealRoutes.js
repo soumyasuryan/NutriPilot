@@ -1,14 +1,25 @@
-// const db = require('../config/db');
-const express = require('express'); // 1. Import Express
-const router = express.Router();    // 2. Initialize the Router
-const db = require('../config/db'); // Your database connection
+const express = require('express');
+const router = express.Router();
+const db = require('../config/db');
 const { getNutritionFromAI } = require('../services/groqService');
 
-router.post('/log', async (req, res) => {
-  const { userId, foodName } = req.body;
-
+// 1. ANALYZE (Hit Groq and return payload without saving)
+router.post('/analyze', async (req, res) => {
+  const { foodQuery } = req.body;
   try {
-    // 1. Check Library using raw SQL
+    const nutrition = await getNutritionFromAI(foodQuery);
+    res.json({ success: true, data: nutrition });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to analyze food." });
+  }
+});
+
+// 2. LOG (Save previously analyzed or chosen food to the DB)
+router.post('/log', async (req, res) => {
+  const { userId, foodName, calories, protein, carbs, fats } = req.body;
+  try {
+    // Check if exact food already exists in user's library
     const checkLibrary = await db.query(
       'SELECT * FROM food_library WHERE food_name = $1 AND user_id = $2',
       [foodName, userId]
@@ -16,18 +27,16 @@ router.post('/log', async (req, res) => {
 
     let foodItem = checkLibrary.rows[0];
 
-    // 2. If not found, hit Groq
+    // If it doesn't exist, insert into food_library
     if (!foodItem) {
-      const nutrition = await getNutritionFromAI(foodName);
-      
       const insertFood = await db.query(
         'INSERT INTO food_library (user_id, food_name, calories, protein, carbs, fats) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [userId, foodName, nutrition.calories, nutrition.protein, nutrition.carbs, nutrition.fats]
+        [userId, foodName, calories || 0, protein || 0, carbs || 0, fats || 0]
       );
       foodItem = insertFood.rows[0];
     }
 
-    // 3. Log the meal
+    // Insert the actual meal log (timestamp generated automatically)
     await db.query(
       'INSERT INTO meal_logs (user_id, food_id) VALUES ($1, $2)',
       [userId, foodItem.id]
@@ -36,7 +45,92 @@ router.post('/log', async (req, res) => {
     res.json({ success: true, food: foodItem });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Database connection error" });
+    res.status(500).json({ error: "Database error logging meal" });
   }
 });
+
+// 3. RECENT MEALS (Last 4 unique meals)
+router.get('/recent/:userId', async (req, res) => {
+  try {
+    const { rows } = await db.query(`
+      SELECT DISTINCT ON (f.food_name) f.id, f.food_name, f.calories, f.protein, f.carbs, f.fats, m.logged_at
+      FROM meal_logs m
+      JOIN food_library f ON m.food_id = f.id
+      WHERE m.user_id = $1
+      ORDER BY f.food_name, m.logged_at DESC
+      LIMIT 4;
+    `, [req.params.userId]);
+    // Sort by most recently logged
+    rows.sort((a, b) => new Date(b.logged_at) - new Date(a.logged_at));
+    res.json({ success: true, data: rows.slice(0, 4) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch recent meals" });
+  }
+});
+
+// 4. TODAY'S TOTALS
+router.get('/today/:userId', async (req, res) => {
+  try {
+    // Group all entries from midnight today
+    const { rows } = await db.query(`
+      SELECT 
+        COUNT(m.id) as meal_count,
+        COALESCE(SUM(f.calories), 0) as total_calories,
+        COALESCE(SUM(f.protein), 0) as total_protein,
+        COALESCE(SUM(f.carbs), 0) as total_carbs,
+        COALESCE(SUM(f.fats), 0) as total_fats
+      FROM meal_logs m
+      JOIN food_library f ON m.food_id = f.id
+      WHERE m.user_id = $1 AND m.logged_at >= CURRENT_DATE
+    `, [req.params.userId]);
+
+    res.json({ success: true, data: rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch daily totals" });
+  }
+});
+
+const { getDailyInsightFromAI } = require('../services/groqService');
+
+// 5. GENERATE DAILY COACHING INSIGHT
+router.post('/insight', async (req, res) => {
+  const { userId } = req.body;
+  try {
+    // A. Get User Targets
+    const profileRes = await db.query('SELECT target_calories, target_protein, target_carbs, target_fats FROM profiles WHERE id = $1', [userId]);
+    const profile = profileRes.rows[0];
+    if (!profile) return res.status(404).json({ error: "Profile not found" });
+
+    // B. Get Today's Consumed
+    const todayRes = await db.query(`
+      SELECT 
+        array_agg(f.food_name) as eaten_foods,
+        COALESCE(SUM(f.calories), 0) as total_calories,
+        COALESCE(SUM(f.protein), 0) as total_protein,
+        COALESCE(SUM(f.carbs), 0) as total_carbs,
+        COALESCE(SUM(f.fats), 0) as total_fats
+      FROM meal_logs m
+      JOIN food_library f ON m.food_id = f.id
+      WHERE m.user_id = $1 AND m.logged_at >= CURRENT_DATE
+    `, [userId]);
+    
+    const consumed = todayRes.rows[0];
+    if (!consumed.eaten_foods) consumed.eaten_foods = [];
+
+    // C. Call AI
+    const insightText = await getDailyInsightFromAI(
+      consumed.eaten_foods,
+      { calories: profile.target_calories, protein: profile.target_protein, carbs: profile.target_carbs, fats: profile.target_fats },
+      consumed
+    );
+
+    res.json({ success: true, insight: insightText });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to generate daily insight" });
+  }
+});
+
 module.exports = router;
