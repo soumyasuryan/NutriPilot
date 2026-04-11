@@ -106,7 +106,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            <Link href="/#how-it-works" className="relative group/link text-lg font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2">
+            <Link href="/howitworks" className="relative group/link text-lg font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2">
               How it Works
               <span className="absolute left-0 bottom-1 w-0 h-[2px] bg-[#16a34a] transition-all duration-300 group-hover/link:w-full rounded-full"></span>
             </Link>
