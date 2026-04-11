@@ -26,7 +26,10 @@ const getNutritionFromAI = async (foodQuery) => {
               "suggestion": "string (e.g., 'Next time, add chia seeds for omega-3s!')",
               "household_measurement": "string (e.g., 'about 7-8 tablespoons' or '1 medium bowl' or '2 standard pieces')"
             }
-            Use standard portion sizes if not specified.`
+            CRITICAL MATHEMATICS REQUIREMENT:
+            - If the user specifies a quantity (e.g., "5 roti", "3 eggs", "250g paneer"), YOU MUST MULTIPLY all base calories and macros by that quantity!
+            - e.g., 1 Roti = ~85 kcal. If user says "5 Roti", return ~425 kcal. 
+            - DO NOT return the value for just 1 serving if they ask for multiple.`
           },
           {
             role: "user",
