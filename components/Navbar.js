@@ -44,22 +44,22 @@ const Navbar = () => {
       <div className="max-w-[1200px] mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-[10px] flex bg-green-700 brightness-90  items-center justify-center shadow-sm transition-transform duration-300 group-hover:scale-105">
-              <Image src="/logo.png" alt="Logo" width={32} height={32} />
+          <Link href={user ? "/home" : "/"} className="flex items-center gap-2.5 group cursor-pointer">
+            <div className="w-9 h-9 rounded-[10px] flex bg-white/10 items-center justify-center p-0.5 shadow-sm transition-transform duration-300 group-hover:scale-105 border border-gray-100 overflow-hidden">
+              <Image src="/logo.png" alt="Logo" width={34} height={34} className="rounded-[8px]" />
             </div>
             <span className="text-[19px] font-semibold tracking-tight text-gray-900">NutriPilot</span>
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/home" className="relative group/link text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2">
+            <Link href="/home" className="relative group/link text-[15px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2">
               Home
               <span className="absolute left-0 bottom-1 w-0 h-[2px] bg-[#16a34a] transition-all duration-300 group-hover/link:w-full rounded-full"></span>
             </Link>
             
             {/* Features Dropdown */}
             <div className="relative group flex items-center h-full">
-              <button className="relative flex items-center gap-1 text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2 cursor-pointer">
+              <button className="relative flex items-center gap-1 text-[15px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2 cursor-pointer">
                 Features
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70 group-hover:rotate-180 transition-transform duration-300">
                   <path d="m6 9 6 6 6-6"/>
@@ -107,29 +107,38 @@ const Navbar = () => {
               </div>
             </div>
 
-            <Link href="/#how-it-works" className="relative group/link text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2">
+            <Link href="/#how-it-works" className="relative group/link text-[15px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200 py-2">
               How it Works
               <span className="absolute left-0 bottom-1 w-0 h-[2px] bg-[#16a34a] transition-all duration-300 group-hover/link:w-full rounded-full"></span>
             </Link>
           </div>
           <div className="hidden md:flex items-center gap-3">
             {user ? (
-              <>
-                <span className="text-[#292524] font-medium mr-2">Hello, {user.full_name || user.name || 'User'}</span>
+              <div className="flex items-center gap-4 border-l border-gray-200/60 pl-6 ml-2">
+                
+                {/* Profile Chip */}
+                <div className="flex items-center gap-2 bg-gray-50/80 border border-gray-100 rounded-full py-1.5 px-3 hover:bg-gray-100 transition-colors cursor-pointer shadow-sm">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#16a34a] to-[#046C4E] flex items-center justify-center text-white text-[12px] font-bold">
+                    {(user.full_name || user.name || 'U')[0].toUpperCase()}
+                  </div>
+                  <span className="text-[14px] font-medium text-[#292524]">{user.full_name || user.name || 'User'}</span>
+                </div>
+
+                {/* Logout Ghost Button */}
                 <button 
                   onClick={handleLogout}
-                  className="px-5 py-2.5 text-normal text-[#ef4444] hover:text-[#dc2626] transition-colors duration-200 cursor-pointer font-medium"
+                  className="px-3.5 py-2 text-[14px] text-red-500 bg-transparent hover:bg-red-50 hover:text-red-600 rounded-xl transition-all duration-200 cursor-pointer font-medium"
                 >
                   Logout
                 </button>
-              </>
+              </div>
             ) : (
               <>
                 <a href="/login">
-                  <button className="px-5 py-2.5 text-normal text-[#292524] hover:text-[#16a34a] transition-colors duration-200 cursor-pointer">Login</button>
+                  <button className="px-5 py-2 text-[15px] font-medium text-[#292524] hover:text-[#16a34a] transition-colors duration-200 cursor-pointer">Login</button>
                 </a>
                 <a href="/signup">
-                  <button className="px-5 py-2 bg-gradient-to-r from-[#16a34a] to-[#22c55e] text-white rounded-xl shadow-lg shadow-[#22c55e]/30 text-normal font-medium transition-all duration-300 cursor-pointer">Sign Up</button>
+                  <button className="px-5 py-2.5 bg-gradient-to-r from-[#16a34a] to-[#22c55e] text-white rounded-xl shadow-lg shadow-[#22c55e]/30 text-[15px] font-medium transition-all duration-300 cursor-pointer">Sign Up</button>
                 </a>
               </>
             )}

@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Sparkles, TrendingUp, Wallet, ArrowRight, Activity, Clock } from 'lucide-react';
 
@@ -22,6 +23,15 @@ const staggerContainer = {
 };
 
 export default function HomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      router.push('/home');
+    }
+  }, [router]);
+
   return (
     <div className="relative min-h-screen bg-[#FCFCFD] text-gray-900 selection:bg-[#057A55]/10 selection:text-[#057A55] overflow-hidden pt-24 font-sans">
       
