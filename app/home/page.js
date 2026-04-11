@@ -97,14 +97,77 @@ const staggerContainer = {
 export default function Dashboard() {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  const getCalorieStatus = () => {
+    if (!profile || !profile.weight || !profile.height || !profile.age || !profile.gender || !profile.target_calories) return null;
+    
+    const weight = parseFloat(profile.weight);
+    const height = parseFloat(profile.height);
+    const age = Math.max(1, parseFloat(profile.age));
+    const isMale = profile.gender === 'Male';
+    
+    // Mifflin-St Jeor Equation
+    let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+    bmr = isMale ? bmr + 5 : bmr - 161;
+    
+    let multiplier = 1.2;
+    switch (profile.activity_level) {
+      case 'No activity': multiplier = 1.2; break;
+      case 'Very little exercise': multiplier = 1.375; break;
+      case 'Moderate exercise': multiplier = 1.55; break;
+      case 'Intensive exercise': multiplier = 1.725; break;
+      default: multiplier = 1.2; break;
+    }
+    
+    const tdee = Math.round(bmr * multiplier);
+    const target = parseFloat(profile.target_calories);
+    const percent = Math.round((target / tdee) * 100);
+    const diff = target - tdee;
+
+    let type = "MAINTENANCE";
+    let bgBase = "bg-[#F8FAFC]";
+    let borderColor = "border-gray-100";
+    let iconClass = "text-emerald-500 bg-white border border-gray-100 shadow-sm";
+    let percentColor = "text-emerald-600";
+    
+    if (diff <= -50) {
+      type = "CALORIE DEFICIT";
+      bgBase = "bg-blue-50/50";
+      borderColor = "border-blue-100/50";
+      iconClass = "text-blue-500 bg-white border border-blue-100 shadow-[0_2px_10px_rgb(59,130,246,0.08)]";
+      percentColor = "text-blue-600";
+    } else if (diff >= 50) {
+      type = "CALORIE SURPLUS";
+      bgBase = "bg-orange-50/50";
+      borderColor = "border-orange-100/50";
+      iconClass = "text-orange-500 bg-white border border-orange-100 shadow-[0_2px_10px_rgb(249,115,22,0.08)]";
+      percentColor = "text-orange-600";
+    }
+
+    return { tdee, percent, type, bgBase, borderColor, iconClass, percentColor };
+  };
+
+  const calStatus = getCalorieStatus();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    if (!token || !user) {
+    const userStr = localStorage.getItem('user');
+    if (!token || !userStr) {
       router.push('/');
     } else {
       setIsAuthorized(true);
+      try {
+        const user = JSON.parse(userStr);
+        fetch(`http://localhost:5000/api/users/${user.id}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(data => setProfile(data))
+        .catch(err => console.error("Error fetching profile", err));
+      } catch (err) {
+        console.error("Invalid user JSON");
+      }
     }
   }, [router]);
 
@@ -161,15 +224,37 @@ export default function Dashboard() {
             
             <div className="mt-8 mb-2">
               <CircularProgress 
-                value={1450} 
-                max={2200} 
+                value={0} // Placeholder for actual eaten calories
+                max={profile?.target_calories || 2200} 
                 color="#057A55" 
                 size={220} 
                 strokeWidth={16} 
                 label="kcal remaining"
-                subLabel="Total Limit: 2200"
+                subLabel={`Total Limit: ${profile?.target_calories || 2200}`}
               />
             </div>
+
+            {/* Clean AI Target Box */}
+            {calStatus && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className={`mt-7 w-full flex items-center justify-between px-5 py-4 rounded-2xl border ${calStatus.borderColor} ${calStatus.bgBase} transition-all hover:bg-white`}
+              >
+                <div className="flex items-center gap-3.5">
+                  <div className={`p-2.5 rounded-[12px] ${calStatus.iconClass}`}>
+                    <TrendingUp className="w-4 h-4 stroke-[2.5]" />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <h3 className="text-[10px] font-bold text-gray-500 tracking-[0.1em] mb-1">{calStatus.type}</h3>
+                    <p className="text-[13px] text-gray-600 font-medium leading-none">
+                      <span className={`font-bold ${calStatus.percentColor}`}>{calStatus.percent}%</span> of {calStatus.tdee} kcal
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Card 2: Macros Split */}
@@ -188,8 +273,8 @@ export default function Dashboard() {
                 <MacroBar 
                   label="Protein" 
                   icon={Wheat} 
-                  current={60} 
-                  target={80} 
+                  current={0} // Placeholder for eaten
+                  target={profile?.target_protein || 80} 
                   unit="g"
                   colorClass="bg-[#2563EB]" // Blue
                   bgClass="bg-blue-50"
@@ -197,8 +282,8 @@ export default function Dashboard() {
                 <MacroBar 
                   label="Carbs" 
                   icon={TrendingUp} 
-                  current={180} 
-                  target={220} 
+                  current={0} // Placeholder for eaten
+                  target={profile?.target_carbs || 220} 
                   unit="g"
                   colorClass="bg-[#D97706]" // Amber/Orange
                   bgClass="bg-amber-50"
@@ -206,8 +291,8 @@ export default function Dashboard() {
                 <MacroBar 
                   label="Fats" 
                   icon={Droplet} 
-                  current={45} 
-                  target={65} 
+                  current={0} // Placeholder for eaten
+                  target={profile?.target_fats || 65} 
                   unit="g"
                   colorClass="bg-[#057A55]" // Emerald
                   bgClass="bg-emerald-50"
