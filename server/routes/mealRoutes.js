@@ -92,6 +92,23 @@ router.get('/today/:userId', async (req, res) => {
   }
 });
 
+// 4.5. TODAY'S MEALS
+router.get('/today-meals/:userId', async (req, res) => {
+  try {
+    const { rows } = await db.query(`
+      SELECT m.id as log_id, f.food_name, f.calories, f.protein, f.carbs, f.fats, m.logged_at
+      FROM meal_logs m
+      JOIN food_library f ON m.food_id = f.id
+      WHERE m.user_id = $1 AND m.logged_at >= CURRENT_DATE
+      ORDER BY m.logged_at DESC
+    `, [req.params.userId]);
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch today's meals" });
+  }
+});
+
 const { getDailyInsightFromAI, getKitchenMeasurementFromAI } = require('../services/groqService');
 
 // 5. GENERATE DAILY COACHING INSIGHT

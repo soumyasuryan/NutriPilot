@@ -102,6 +102,8 @@ export default function Dashboard() {
   const [profile, setProfile] = useState(null);
   const [todayTotals, setTodayTotals] = useState({ meal_count: 0, total_calories: 0, total_protein: 0, total_carbs: 0, total_fats: 0 });
   const [recentMeals, setRecentMeals] = useState([]);
+  const [todayMeals, setTodayMeals] = useState([]);
+  const [showTodayMeals, setShowTodayMeals] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzedMeal, setAnalyzedMeal] = useState(null);
@@ -130,14 +132,17 @@ export default function Dashboard() {
 
   const fetchMealData = async (user, token) => {
     try {
-      const [todayRes, recentRes] = await Promise.all([
+      const [todayRes, recentRes, todayMealsRes] = await Promise.all([
         fetch(`http://localhost:5000/api/meals/today/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch(`http://localhost:5000/api/meals/recent/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
+        fetch(`http://localhost:5000/api/meals/recent/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch(`http://localhost:5000/api/meals/today-meals/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
       ]);
       const todayData = await todayRes.json();
       const recentData = await recentRes.json();
+      const todayMealsData = await todayMealsRes.json();
       if (todayData.success) setTodayTotals(todayData.data);
       if (recentData.success) setRecentMeals(recentData.data);
+      if (todayMealsData.success) setTodayMeals(todayMealsData.data);
     } catch (err) {
       console.error("Error fetching meal data", err);
     }
@@ -547,6 +552,44 @@ export default function Dashboard() {
                   </div>
                 </motion.div>
               )}
+
+              {/* Today's Meals Section */}
+              <motion.div variants={fadeInUp} className={`mb-8 ${analyzedMeal ? "opacity-50 pointer-events-none" : ""}`}>
+                 <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-[15px] font-semibold text-gray-800 flex items-center gap-2">
+                       <TrendingUp className="w-4 h-4 text-gray-400" /> Today's Meals
+                    </h3>
+                    <button 
+                       onClick={() => setShowTodayMeals(!showTodayMeals)}
+                       className="bg-[#057A55] hover:bg-[#046C4E] text-white px-4 py-2 rounded-xl font-medium text-sm transition-colors shadow-sm"
+                    >
+                       {showTodayMeals ? "Hide Today's Meals" : "View Today's Meals"}
+                    </button>
+                 </div>
+                 {showTodayMeals && (
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {todayMeals.length > 0 ? todayMeals.map((meal, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-[#FCFCFD] transition-all">
+                           <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500">
+                                 <Flame className="w-5 h-5" />
+                              </div>
+                              <div>
+                                 <h4 className="text-[15px] font-semibold text-gray-900">{meal.food_name}</h4>
+                                 <p className="text-[13px] text-gray-500 mt-0.5">
+                                   {meal.calories} kcal • {meal.protein}g Protein • {meal.carbs}g Carbs • {meal.fats}g Fats
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                      )) : (
+                        <div className="col-span-2 py-8 text-center text-gray-400 text-sm font-medium border-2 border-dashed border-gray-100 rounded-2xl">
+                          No meals logged today yet. Start logging!
+                        </div>
+                      )}
+                   </div>
+                 )}
+              </motion.div>
 
               {/* Favorites / Recent Section */}
               <motion.div variants={fadeInUp} className={analyzedMeal ? "opacity-50 pointer-events-none" : ""}>
