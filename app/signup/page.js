@@ -128,7 +128,7 @@ export default function Signup() {
     <div className="min-h-screen bg-gradient-to-br from-[#f0fdf4] via-white to-[#f0fdf4] font-sans antialiased text-[#292524]">
       <Navbar />
       
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4">
+      <div className="flex flex-col items-center justify-center min-h-screen pt-28 pb-12 px-4">
         
         <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 w-full max-w-[440px] border border-gray-100 relative z-10 transition-all duration-300">
           <div className="flex flex-col items-center mb-6">

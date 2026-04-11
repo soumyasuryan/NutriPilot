@@ -23,7 +23,7 @@ const staggerContainer = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#FCFCFD] text-gray-900 selection:bg-[#057A55]/10 selection:text-[#057A55] overflow-hidden pt-24 font-sans">
+    <div className="relative min-h-screen bg-[#FCFCFD] text-gray-900 selection:bg-[#057A55]/10 selection:text-[#057A55] overflow-hidden pt-24 font-sans">
       
       {/* Refined Ambient Background Gradient */}
       <div className="absolute top-0 right-0 w-[45vw] h-[45vw] bg-linear-to-b from-[#E6F4EA] to-transparent rounded-full blur-[100px] pointer-events-none -z-10 opacity-70 translate-x-1/4 -translate-y-1/4" />
