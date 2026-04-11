@@ -42,7 +42,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0fdf4] via-white to-[#f0fdf4] font-sans antialiased text-[#292524]">
+    <div className="min-h-screen bg-linear-to-br from-[#f0fdf4] via-white to-[#f0fdf4] font-sans antialiased text-[#292524]">
       <Navbar />
       
       <div className="flex flex-col items-center justify-center min-h-screen pt-28 pb-12 px-4">

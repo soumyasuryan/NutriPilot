@@ -45,7 +45,7 @@ export default function HowItWorks() {
             <span className="text-[13px] font-bold text-emerald-700 tracking-wide uppercase">Platform Overview</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight leading-tight mb-6">
-            How <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-400">NutriPilot</span> Works
+            How <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 to-emerald-400">NutriPilot</span> Works
           </h1>
           <p className="text-lg text-gray-500 font-medium leading-relaxed">
             Stop guessing your calories. Experience a seamless, AI-driven journey that transforms exactly what you eat into actionable intelligence. Here is your flight manual.
@@ -55,7 +55,7 @@ export default function HowItWorks() {
         {/* Journey Timeline */}
         <div className="relative">
           {/* Vertical Connecting Line (Hidden on Mobile) */}
-          <div className="hidden md:block absolute left-1/2 top-10 bottom-10 w-[2px] bg-gradient-to-b from-emerald-100 via-gray-200 to-transparent -translate-x-1/2 z-0"></div>
+          <div className="hidden md:block absolute left-1/2 top-10 bottom-10 w-[2px] bg-linear-to-b from-emerald-100 via-gray-200 to-transparent -translate-x-1/2 z-0"></div>
 
           {/* STEP 1: The Lab */}
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp} className="flex flex-col md:flex-row items-center gap-8 md:gap-16 mb-20 relative z-10">
@@ -168,7 +168,7 @@ export default function HowItWorks() {
               </div>
 
               {/* Visual Card */}
-              <div className="bg-gradient-to-br from-[#064E3B] to-[#042F2E] p-8 rounded-3xl shadow-lg relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+              <div className="bg-linear-to-br from-[#064E3B] to-[#042F2E] p-8 rounded-3xl shadow-lg relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500 rounded-full blur-[50px] opacity-20 -translate-y-1/2 translate-x-1/3"></div>
                 <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-3 py-1 mb-4 border border-white/10">
                   <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
@@ -240,7 +240,7 @@ export default function HowItWorks() {
           className="text-center mt-20"
         >
           <Link href={isLoggedIn ? "/home" : "/signup"}>
-             <button className="bg-gradient-to-r from-[#16a34a] to-[#046C4E] hover:from-[#15803d] hover:to-[#064e3b] text-white px-8 py-4 rounded-2xl text-[16px] font-bold tracking-wide shadow-xl shadow-green-600/20 hover:shadow-green-600/40 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto cursor-pointer">
+             <button className="bg-linear-to-r from-[#16a34a] to-[#046C4E] hover:from-[#15803d] hover:to-[#064e3b] text-white px-8 py-4 rounded-2xl text-[16px] font-bold tracking-wide shadow-xl shadow-green-600/20 hover:shadow-green-600/40 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto cursor-pointer">
                {isLoggedIn ? "Go to Dashboard" : "Begin Your Journey"} <ChevronRight className="w-5 h-5"/>
              </button>
           </Link>
