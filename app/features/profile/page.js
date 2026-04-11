@@ -47,7 +47,7 @@ export default function ProfileProgress() {
       .catch(err => console.error("Error fetching profile", err));
 
       // Fetch chart data from API
-      fetch(`http://localhost:5000/api/meals/chart/${storedUser.id}`, {
+      fetch(`http://localhost:5000/api/meals/weekly/${storedUser.id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
@@ -65,10 +65,17 @@ export default function ProfileProgress() {
   if (!isAuthorized) return null;
 
   // Chart Logic Data
-  const defaultDays = [{ day_name: '-', total_calories: 0 }];
-  const displayData = chartData.length > 0 ? chartData : defaultDays;
-  const weeklyData = displayData.map(d => Number(d.total_calories) || 0);
-  const dayLabels = displayData.map(d => (d.day_name || '-').charAt(0));
+  const weeklyData = chartData.length === 7 ? chartData : [0, 0, 0, 0, 0, 0, 0];
+  
+  const dayLabels = [];
+  const today = new Date();
+  const daysMap = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    dayLabels.push(daysMap[d.getDay()]);
+  }
+
   const targetCals = profile?.target_calories || 2200;
   
   // Math operations
@@ -144,7 +151,7 @@ export default function ProfileProgress() {
              </div>
              
              {/* Dynamic Mathematical Visual Chart */}
-             <div className="flex-1 flex items-end gap-3 justify-between pb-4 border-b border-gray-200 relative mt-4">
+             <div className="flex-1 flex items-end gap-3 justify-between pb-4 border-b border-gray-200 relative mt-4 h-[320px]">
                {/* Fixed Grid lines (Background) */}
                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
                  {[1, 2, 3, 4].map(i => <div key={i} className="w-full border-t border-gray-50/80"></div>)}
@@ -165,12 +172,12 @@ export default function ProfileProgress() {
                  <div key={idx} className="w-full relative flex justify-center group h-full items-end z-0">
                     {/* The Fill Bar */}
                     <div 
-                      className={`w-full max-w-[2.5rem] rounded-t-lg opacity-90 group-hover:opacity-100 transition-all duration-500 ease-out cursor-pointer relative ${
+                      className={`w-full max-w-[4rem] rounded-t-lg opacity-90 group-hover:opacity-100 transition-all duration-500 ease-out cursor-pointer relative ${
                         isOverTarget 
-                          ? "bg-linear-to-t from-red-100/40 to-red-400 group-hover:to-red-500" 
-                          : "bg-linear-to-t from-emerald-100/40 to-emerald-400 group-hover:to-emerald-500"
+                          ? "bg-red-400 bg-linear-to-t from-red-100/40 to-red-400 group-hover:to-red-500" 
+                          : "bg-emerald-400 bg-linear-to-t from-emerald-100/40 to-emerald-400 group-hover:to-emerald-500"
                       }`}
-                      style={{ height: `${(val / maxY) * 100}%` }}
+                      style={{ height: `${Math.max(4, Math.round((val / maxY) * 280))}px` }}
                     >
                       {/* Hover Bubble Tracker */}
                       <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-700 shadow-xl text-white text-[12px] font-bold py-1 px-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20">
