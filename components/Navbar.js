@@ -16,7 +16,7 @@ const Navbar = () => {
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200">Home</Link>
+            <Link href="/home" className="text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200">Home</Link>
             <Link href="/#features" className="text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200">Features</Link>
             <Link href="/#how-it-works" className="text-[14px] font-medium text-gray-500 hover:text-gray-900 transition-colors duration-200">How it Works</Link>
           </div>
