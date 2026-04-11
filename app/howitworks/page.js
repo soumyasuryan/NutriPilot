@@ -188,9 +188,9 @@ export default function HowItWorks() {
                 <div className="inline-flex items-center gap-2 text-purple-500 font-bold uppercase tracking-widest text-sm mb-3">
                   Step 04
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">Profile & Precision Tracking</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">Weekly Balance Intelligence</h2>
                 <p className="text-gray-500 leading-relaxed font-medium">
-                  Watch your discipline pay off. Access your <strong>Profile & Progress</strong> dashboard anytime to view historical charts of your weight scaling against your fat percentage. Build a personal food library of your most common safe meals.
+                  Watch your discipline pay off. Access your <strong>Profile & Progress</strong> dashboard to see exactly how your past week's meals stacked up against your baseline. Our AI synthesizes your 7-day average to warn you about severe deficits or unchecked surpluses.
                 </p>
               </div>
             </div>
@@ -204,19 +204,23 @@ export default function HowItWorks() {
               {/* Mobile Text */}
               <div className="md:hidden mb-6 text-left">
                 <div className="inline-flex items-center gap-2 text-purple-500 font-bold uppercase tracking-widest text-sm mb-2">Step 04</div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Precision Progress Tracking</h2>
-                <p className="text-gray-500 leading-relaxed font-medium">Watch your discipline pay off with historical data charts mapping your biometrics over time.</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Weekly Balance Intelligence</h2>
+                <p className="text-gray-500 leading-relaxed font-medium">See how your past week's meals stack up against your baseline, with AI analyzing your 7-day average for course correction.</p>
               </div>
 
                {/* Visual Card */}
-              <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group hover:shadow-[0_8px_30px_rgb(168,85,247,0.1)] transition-all duration-300">
-                <div className="flex items-end gap-2 h-24 mb-2">
-                  <div className="w-1/6 bg-purple-100 rounded-t-lg h-[40%] group-hover:h-[45%] transition-all duration-500"></div>
-                  <div className="w-1/6 bg-purple-200 rounded-t-lg h-[60%] group-hover:h-[55%] transition-all duration-500"></div>
-                  <div className="w-1/6 bg-purple-300 rounded-t-lg h-[50%] group-hover:h-[65%] transition-all duration-500"></div>
-                  <div className="w-1/6 bg-purple-400 rounded-t-lg h-[80%] group-hover:h-[75%] transition-all duration-500"></div>
-                  <div className="w-1/6 bg-purple-500 rounded-t-lg h-[70%] group-hover:h-[85%] transition-all duration-500"></div>
-                  <div className="w-1/6 bg-purple-600 rounded-t-lg h-[100%] transition-all duration-500"></div>
+              <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group hover:shadow-[0_8px_30px_rgb(168,85,247,0.1)] transition-all duration-300 relative">
+                
+                {/* Simulated Target Baseline */}
+                <div className="absolute left-6 right-6 top-[45%] border-t-2 border-dashed border-gray-300 z-10 transition-all duration-500 group-hover:-translate-y-2"></div>
+
+                <div className="flex items-end gap-2 h-24 mb-2 z-0 relative">
+                  <div className="w-1/6 bg-emerald-400 rounded-t-lg h-[40%] group-hover:h-[50%] transition-all duration-500"></div>
+                  <div className="w-1/6 bg-emerald-400 rounded-t-lg h-[45%] group-hover:h-[40%] transition-all duration-500"></div>
+                  <div className="w-1/6 bg-emerald-400 rounded-t-lg h-[40%] group-hover:h-[45%] transition-all duration-500"></div>
+                  <div className="w-1/6 bg-amber-400 rounded-t-lg h-[70%] group-hover:h-[75%] transition-all duration-500"></div>
+                  <div className="w-1/6 bg-amber-400 rounded-t-lg h-[65%] group-hover:h-[60%] transition-all duration-500"></div>
+                  <div className="w-1/6 bg-emerald-400 rounded-t-lg h-[35%] group-hover:h-[45%] transition-all duration-500"></div>
                 </div>
                 <div className="flex justify-between text-[10px] uppercase font-bold text-gray-400 tracking-wider pt-2 border-t border-gray-100">
                    <span>Mon</span><span>Wed</span><span>Fri</span><span>Sun</span>
