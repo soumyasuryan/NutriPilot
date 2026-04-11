@@ -119,11 +119,25 @@ router.post('/insight', async (req, res) => {
     const consumed = todayRes.rows[0];
     if (!consumed.eaten_foods) consumed.eaten_foods = [];
 
-    // C. Call AI
+    // C. Pre-calculate exact deficits to prevent AI math hallucinations (LLMs are bad at math)
+    const getDeficitStr = (consumedAmount, targetAmount) => {
+      const diff = targetAmount - consumedAmount;
+      if (diff > 0) return `SHORT by ${diff.toFixed(1)}`;
+      if (diff < 0) return `OVER by ${Math.abs(diff).toFixed(1)}`;
+      return `exactly ON TARGET`;
+    };
+
+    const exactMath = {
+      calories: getDeficitStr(consumed.total_calories, profile.target_calories),
+      protein: getDeficitStr(consumed.total_protein, profile.target_protein),
+      carbs: getDeficitStr(consumed.total_carbs, profile.target_carbs),
+      fats: getDeficitStr(consumed.total_fats, profile.target_fats)
+    };
+
+    // D. Call AI
     const insightText = await getDailyInsightFromAI(
       consumed.eaten_foods,
-      { calories: profile.target_calories, protein: profile.target_protein, carbs: profile.target_carbs, fats: profile.target_fats },
-      consumed
+      exactMath
     );
 
     res.json({ success: true, insight: insightText });

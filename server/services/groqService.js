@@ -51,7 +51,7 @@ const getNutritionFromAI = async (foodQuery) => {
   }
 };
 
-const getDailyInsightFromAI = async (consumedFoods, limits, consumed) => {
+const getDailyInsightFromAI = async (consumedFoods, exactMath) => {
   try {
     const response = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
@@ -60,20 +60,25 @@ const getDailyInsightFromAI = async (consumedFoods, limits, consumed) => {
         messages: [
           {
             role: "system",
-            content: `You are a strict, top-tier sports nutritionist. The user's goal is to hit their macros.
-            You will be provided with what they ate today, their total target limits, and what they currently consumed.
-            Return a pure JSON object containing a SINGLE sentence coaching tip to help them hit their remaining target. 
+            content: `You are a strict, top-tier sports nutritionist.
+            You will be provided with EXACT calculated deficit/surplus math. DO NOT do any calculations yourself.
+            Trust the math provided in the prompt.
+            Return a pure JSON object containing a SINGLE sentence coaching tip factoring in what they ate today and their current deficit. 
             Format:
             {
-              "insight": "string (e.g. 'You are 35g short on protein today, try adding a 150g grilled chicken breast to your dinner.')"
+              "insight": "string"
             }`
           },
           {
             role: "user",
             content: `Foods Eaten Today: ${consumedFoods.join(', ') || 'Nothing yet'}.
-            Total Targets: ${limits.calories} kcal, ${limits.protein}g protein, ${limits.carbs}g carbs, ${limits.fats}g fats.
-            Consumed So Far: ${consumed.total_calories} kcal, ${consumed.total_protein}g protein, ${consumed.total_carbs}g carbs, ${consumed.total_fats}g fats.
-            `
+            Current Status:
+            Calories: ${exactMath.calories}
+            Protein: ${exactMath.protein}
+            Carbs: ${exactMath.carbs}
+            Fats: ${exactMath.fats}
+            
+            Give me one sentence of advice on what to eat (or avoid) next to fix my macros.`
           }
         ],
         response_format: { type: "json_object" },
