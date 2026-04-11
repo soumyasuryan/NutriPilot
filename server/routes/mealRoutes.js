@@ -202,4 +202,45 @@ router.get('/library/:userId', async (req, res) => {
   }
 });
 
+// 6. LAST 7 DAYS CALORIC HISTORY
+router.get('/weekly/:userId', async (req, res) => {
+  try {
+    const { rows } = await db.query(`
+      SELECT 
+        DATE(m.logged_at) as date,
+        COALESCE(SUM(f.calories), 0) as total_calories
+      FROM meal_logs m
+      JOIN food_library f ON m.food_id = f.id
+      WHERE m.user_id = $1 
+      AND m.logged_at >= (CURRENT_DATE - INTERVAL '6 days')
+      GROUP BY DATE(m.logged_at)
+      ORDER BY date ASC
+    `, [req.params.userId]);
+
+    const weeklyData = [];
+    const today = new Date();
+    today.setHours(12, 0, 0, 0); // Normalize today to prevent timezone shift issues
+
+    // Generate the last 7 dates mapping ensuring exact slots
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateString = d.toISOString().split('T')[0];
+      
+      const found = rows.find(r => {
+        const rowDate = new Date(r.date);
+        rowDate.setHours(12, 0, 0, 0); // Normalize row date
+        return rowDate.toISOString().split('T')[0] === dateString;
+      });
+      
+      weeklyData.push(found ? Number(found.total_calories) : 0);
+    }
+
+    res.json({ success: true, data: weeklyData });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch weekly history" });
+  }
+});
+
 module.exports = router;
