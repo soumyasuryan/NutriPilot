@@ -160,4 +160,46 @@ router.post('/converter', async (req, res) => {
   }
 });
 
+// 7. CHART DATA (Last 7 Days Calorie Aggregation)
+router.get('/chart/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { rows } = await db.query(`
+      SELECT 
+        TO_CHAR(DATE_TRUNC('day', m.logged_at), 'Dy') as day_name,
+        DATE_TRUNC('day', m.logged_at) as full_date,
+        COALESCE(SUM(f.calories), 0) as total_calories
+      FROM meal_logs m
+      JOIN food_library f ON m.food_id = f.id
+      WHERE m.user_id = $1 AND m.logged_at >= CURRENT_DATE - INTERVAL '6 days'
+      GROUP BY DATE_TRUNC('day', m.logged_at)
+      ORDER BY DATE_TRUNC('day', m.logged_at) ASC
+    `, [userId]);
+
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch chart data" });
+  }
+});
+
+// 8. PERSONAL FOOD LIBRARY
+router.get('/library/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    // Get unique items from the user's food library
+    const { rows } = await db.query(`
+      SELECT DISTINCT ON (food_name) *
+      FROM food_library 
+      WHERE user_id = $1
+      ORDER BY food_name ASC
+    `, [userId]);
+
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch food library" });
+  }
+});
+
 module.exports = router;

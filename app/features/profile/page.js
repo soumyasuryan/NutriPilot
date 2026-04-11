@@ -23,6 +23,7 @@ export default function ProfileProgress() {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [profile, setProfile] = useState(null);
   const [user, setUser] = useState(null);
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -44,6 +45,18 @@ export default function ProfileProgress() {
       .then(res => res.json())
       .then(data => setProfile(data))
       .catch(err => console.error("Error fetching profile", err));
+
+      // Fetch chart data from API
+      fetch(`http://localhost:5000/api/meals/chart/${storedUser.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success && res.data) {
+           setChartData(res.data);
+        }
+      })
+      .catch(err => console.error("Error fetching chart data", err));
     } catch (err) {
       console.error("Invalid user JSON");
     }
@@ -52,12 +65,15 @@ export default function ProfileProgress() {
   if (!isAuthorized) return null;
 
   // Chart Logic Data
-  const weeklyData = [1850, 2400, 1950, 2100, 2800, 1700, 2050];
+  const defaultDays = [{ day_name: '-', total_calories: 0 }];
+  const displayData = chartData.length > 0 ? chartData : defaultDays;
+  const weeklyData = displayData.map(d => Number(d.total_calories) || 0);
+  const dayLabels = displayData.map(d => (d.day_name || '-').charAt(0));
   const targetCals = profile?.target_calories || 2200;
   
   // Math operations
   const maxY = Math.max(...weeklyData, targetCals) + 300;
-  const averageIntake = Math.round(weeklyData.reduce((a,b)=>a+b, 0) / weeklyData.length);
+  const averageIntake = weeklyData.length > 0 ? Math.round(weeklyData.reduce((a,b)=>a+b, 0) / weeklyData.length) : 0;
   const diff = averageIntake - targetCals;
   const isSurplus = diff > 0;
   const statusStr = isSurplus ? `${diff} kcal Surplus` : `${Math.abs(diff)} kcal Deficit`;
@@ -110,7 +126,7 @@ export default function ProfileProgress() {
         </motion.div>
 
         {/* Charts & Stats Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div className="max-w-3xl mx-auto mb-12">
           
           {/* Chart 1 - Weekly Caloric Balance */}
           <motion.div 
@@ -168,7 +184,7 @@ export default function ProfileProgress() {
 
              {/* X-axis Labels */}
              <div className="flex justify-between items-center mt-3 text-[11px] font-bold text-gray-400 px-3 uppercase tracking-wider">
-               <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+               {dayLabels.map((lbl, idx) => <span key={idx}>{lbl}</span>)}
              </div>
 
              {/* Synthetic Insight Panel */}
@@ -182,51 +198,6 @@ export default function ProfileProgress() {
                 <div className="text-sm text-gray-600 font-medium leading-relaxed flex items-start gap-2">
                    {diff > 300 || diff < -400 ? <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" /> : <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />}
                    {suggestion}
-                </div>
-             </div>
-          </motion.div>
-
-          {/* Chart 2 - Fat Percentage */}
-          <motion.div 
-            initial="hidden" animate="visible" variants={fadeInUp}
-            className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] flex flex-col min-h-[340px]"
-          >
-             <div className="flex items-center justify-between mb-6">
-               <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                 <TrendingUp className="w-5 h-5 text-purple-500" />
-                 Est. Body Fat %
-               </h2>
-               <select className="bg-gray-50 border border-gray-100 text-sm rounded-lg px-3 py-1.5 text-gray-600 outline-none focus:ring-2 focus:ring-purple-500/20">
-                 <option>Last 3 Months</option>
-                 <option>Last 6 Months</option>
-               </select>
-             </div>
-
-             {/* Chart Line Dummy Visual */}
-             <div className="flex-1 w-full bg-gray-50/50 rounded-2xl border border-gray-50 flex items-center justify-center p-6 relative overflow-hidden">
-                <svg className="w-full h-full" viewBox="0 0 400 100" preserveAspectRatio="none">
-                  {/* Grid */}
-                  <line x1="0" y1="25" x2="400" y2="25" stroke="#f3f4f6" strokeWidth="1"/>
-                  <line x1="0" y1="50" x2="400" y2="50" stroke="#f3f4f6" strokeWidth="1"/>
-                  <line x1="0" y1="75" x2="400" y2="75" stroke="#f3f4f6" strokeWidth="1"/>
-                  {/* Line Graph */}
-                  <path 
-                    d="M 0 80 Q 50 70 100 60 T 200 45 T 300 30 T 400 25" 
-                    fill="none" 
-                    stroke="#a855f7" 
-                    strokeWidth="3" 
-                    strokeLinecap="round"
-                    className="drop-shadow-sm"
-                  />
-                  {/* Data Points */}
-                  <circle cx="0" cy="80" r="4" fill="#a855f7" stroke="white" strokeWidth="2"/>
-                  <circle cx="100" cy="60" r="4" fill="#a855f7" stroke="white" strokeWidth="2"/>
-                  <circle cx="200" cy="45" r="4" fill="#a855f7" stroke="white" strokeWidth="2"/>
-                  <circle cx="300" cy="30" r="4" fill="#a855f7" stroke="white" strokeWidth="2"/>
-                  <circle cx="400" cy="25" r="4" fill="#a855f7" stroke="white" strokeWidth="2"/>
-                </svg>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium z-10 bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm border border-gray-100">
-                  Trend: Downward
                 </div>
              </div>
           </motion.div>
