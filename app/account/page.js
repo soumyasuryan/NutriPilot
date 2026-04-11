@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Mail, User, Shield, Info, Droplet, ActivitySquare, Wheat, TrendingUp, Calendar } from 'lucide-react';
+import { Mail, User, Shield, Info, Droplet, ActivitySquare, Wheat, TrendingUp, Calendar, Loader2 } from 'lucide-react';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -19,6 +19,12 @@ export default function AccountPage() {
   const [profile, setProfile] = useState(null);
   const [user, setUser] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    height: '', weight: '', waist_cm: '', fitness_goal: 'Cut', activity_level: 'Light'
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateMsg, setUpdateMsg] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -38,12 +44,56 @@ export default function AccountPage() {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
-      .then(data => setProfile(data))
+      .then(data => {
+        setProfile(data);
+        setFormData({
+          height: data.height || '',
+          weight: data.weight || '',
+          waist_cm: data.waist_cm || '',
+          fitness_goal: data.fitness_goal || 'Cut',
+          activity_level: data.activity_level || 'Light',
+        });
+      })
       .catch(err => console.error("Error fetching profile", err));
     } catch (err) {
       console.error("Invalid user JSON");
     }
   }, [router]);
+
+  const handleUpdateGoals = async (e) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    setUpdateMsg('');
+    const token = localStorage.getItem('token');
+    
+    try {
+      const res = await fetch('http://localhost:5000/api/users/update', {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          age: profile?.age || 25,
+          gender: profile?.gender || 'male',
+          ...formData
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUpdateMsg("Targets Recalibrated Successfully!");
+        setProfile(data.data); // Update displayed macros
+        setTimeout(() => setUpdateMsg(''), 3000);
+      } else {
+        setUpdateMsg("Failed to update targets.");
+      }
+    } catch (err) {
+      console.error(err);
+      setUpdateMsg("Failed to update targets.");
+    }
+    setIsUpdating(false);
+  };
 
   if (!isAuthorized) return <div className="min-h-screen bg-[#FCFCFD] flex items-center justify-center text-gray-500">Loading...</div>;
 
@@ -108,36 +158,64 @@ export default function AccountPage() {
             </div>
           </motion.div>
 
-          {/* Section 2: Health Biometrics */}
+          {/* Section 2: Health Biometrics Form */}
           <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)]">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <ActivitySquare className="w-5 h-5 text-blue-500" /> Health Biometrics
+                <ActivitySquare className="w-5 h-5 text-blue-500" /> Health Biometrics & Goals
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-blue-50/50 border border-blue-100/50 rounded-2xl p-4">
-                <p className="text-[12px] font-bold text-blue-600 uppercase tracking-wide mb-1">Age</p>
-                <p className="text-[18px] font-semibold text-gray-900">{profile?.age || "-"}</p>
+            <form onSubmit={handleUpdateGoals} className="space-y-5">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-blue-50/50 border border-blue-100/50 rounded-2xl p-4">
+                  <p className="text-[12px] font-bold text-blue-600 uppercase tracking-wide mb-1">Age</p>
+                  <p className="text-[18px] font-semibold text-gray-900">{profile?.age || "-"}</p>
+                </div>
+                <div className="bg-indigo-50/50 border border-indigo-100/50 rounded-2xl p-4">
+                  <p className="text-[12px] font-bold text-indigo-600 uppercase tracking-wide mb-1">Gender</p>
+                  <p className="text-[18px] font-semibold text-gray-900 capitalize">{profile?.gender || "-"}</p>
+                </div>
+                <div>
+                  <label className="text-[12px] font-bold text-emerald-600 uppercase tracking-wide mb-1 block">Height (cm)</label>
+                  <input type="number" value={formData.height} onChange={e => setFormData({...formData, height: e.target.value})} className="w-full bg-emerald-50/50 border border-emerald-100/50 rounded-2xl p-3.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none text-gray-900 font-semibold text-[16px]"/>
+                </div>
+                <div>
+                  <label className="text-[12px] font-bold text-orange-600 uppercase tracking-wide mb-1 block">Weight (kg)</label>
+                  <input type="number" value={formData.weight} onChange={e => setFormData({...formData, weight: e.target.value})} className="w-full bg-orange-50/50 border border-orange-100/50 rounded-2xl p-3.5 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none text-gray-900 font-semibold text-[16px]"/>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                <div>
+                  <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Waist (cm)</label>
+                  <input type="number" value={formData.waist_cm} onChange={e => setFormData({...formData, waist_cm: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]"/>
+                </div>
+                <div>
+                  <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Direction</label>
+                  <select value={formData.fitness_goal} onChange={e => setFormData({...formData, fitness_goal: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]">
+                    <option value="Cut">Cut (Lose Fat)</option>
+                    <option value="Bulk">Bulk (Gain Mass)</option>
+                    <option value="Maintain">Maintain</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Activity</label>
+                  <select value={formData.activity_level} onChange={e => setFormData({...formData, activity_level: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]">
+                    <option value="Light">Light</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Heavy">Heavy</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="bg-indigo-50/50 border border-indigo-100/50 rounded-2xl p-4">
-                <p className="text-[12px] font-bold text-indigo-600 uppercase tracking-wide mb-1">Gender</p>
-                <p className="text-[18px] font-semibold text-gray-900 capitalize">{profile?.gender || "-"}</p>
+              <div className="flex flex-col sm:flex-row items-center gap-4 mt-6">
+                <button type="submit" disabled={isUpdating} className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                  {isUpdating ? <Loader2 className="w-4 h-4 animate-spin"/> : "Save & Recalibrate Macros"}
+                </button>
+                {updateMsg && <span className={`text-sm font-medium ${updateMsg.includes('Failed') ? 'text-red-500' : 'text-emerald-600'}`}>{updateMsg}</span>}
               </div>
-
-              <div className="bg-emerald-50/50 border border-emerald-100/50 rounded-2xl p-4">
-                <p className="text-[12px] font-bold text-emerald-600 uppercase tracking-wide mb-1">Height</p>
-                <p className="text-[18px] font-semibold text-gray-900">{profile?.height || "-"}<span className="text-sm font-medium text-gray-500 ml-1">cm</span></p>
-              </div>
-
-              <div className="bg-orange-50/50 border border-orange-100/50 rounded-2xl p-4">
-                <p className="text-[12px] font-bold text-orange-600 uppercase tracking-wide mb-1">Weight</p>
-                <p className="text-[18px] font-semibold text-gray-900">{profile?.weight || "-"}<span className="text-sm font-medium text-gray-500 ml-1">kg</span></p>
-              </div>
-            </div>
-            <div className="mt-5 text-sm text-gray-500 font-medium">To update these base metrics and overall goals, re-visit <span className="text-emerald-600 hover:underline cursor-pointer italic" onClick={()=>router.push('/features/the-lab')}>The Lab.</span></div>
+            </form>
           </motion.div>
 
           {/* Section 3: Nutritional Blueprint */}
