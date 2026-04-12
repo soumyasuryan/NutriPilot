@@ -4,8 +4,6 @@
 
 NutriPilot is a premium, AI-powered nutritional intelligence platform specifically engineered for students and young professionals. Unlike standard calorie trackers, NutriPilot doesn't just record data—it audits your dietary history, identifies bottlenecks, and suggests realistic, budget-friendly swaps.
 
-![Landing Page Mockup](https://raw.githubusercontent.com/tanmay-joshi-official/NutriPilot/main/public/demo-screenshot.png) *(Note: Replace with actual screenshot relative path if available)*
-
 ## ✨ Key Features
 
 ### 🧠 AI-Powered "Natural Language" Logging
