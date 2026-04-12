@@ -32,6 +32,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/meals', require('./routes/mealRoutes'));
 app.use('/api/strategy', require('./routes/strategyRoutes'));
+app.use('/api/budget', require('./routes/budgetRoutes'));
 
 // Placeholder Route
 app.get('/', (req, res) => {

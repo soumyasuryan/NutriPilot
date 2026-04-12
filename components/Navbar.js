@@ -102,6 +102,22 @@ const Navbar = () => {
                     </div>
                   </button>
 
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      user ? router.push('/budget') : router.push('/login');
+                    }}
+                    className="flex items-start gap-3 w-full text-left p-3 hover:bg-gray-50/80 rounded-xl transition-colors group/item cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover/item:scale-105 transition-transform">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                    </div>
+                    <div>
+                      <div className="text-[14px] font-bold text-gray-900">Budget Optimizer</div>
+                      <div className="text-[12px] font-medium text-gray-500 mt-0.5">Cheaper Macro Alternatives</div>
+                    </div>
+                  </button>
+
                 </div>
               </div>
             </div>

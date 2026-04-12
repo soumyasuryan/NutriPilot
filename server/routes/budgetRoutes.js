@@ -1,0 +1,34 @@
+const express = require('express');
+const router = express.Router();
+const { getBudgetAlternativeFromAI } = require('../services/budgetService');
+const { getNutritionFromAI } = require('../services/groqService');
+
+// POST /api/budget/optimize
+// Body: { foodName: string } OR { foodName: string, macros: { calories, protein, carbs, fats } }
+router.post('/optimize', async (req, res) => {
+  const { foodName, macros } = req.body;
+  if (!foodName) return res.status(400).json({ error: "foodName is required." });
+
+  try {
+    let resolvedMacros = macros;
+
+    // If macros not provided, auto-resolve them with the nutrition AI
+    if (!resolvedMacros) {
+      const nutritionData = await getNutritionFromAI(foodName);
+      resolvedMacros = {
+        calories: nutritionData.calories || 0,
+        protein: nutritionData.protein || 0,
+        carbs: nutritionData.carbs || 0,
+        fats: nutritionData.fats || 0,
+      };
+    }
+
+    const result = await getBudgetAlternativeFromAI(foodName, resolvedMacros);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    console.error("Budget Optimizer Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;
