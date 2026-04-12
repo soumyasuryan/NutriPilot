@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock, ChevronRight, Scale, CheckCircle2 } from 'lucide-react';
+import Toast from '@/components/Toast';
 
 // --- Reusable SVG Circular Progress Ring ---
 const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, label, subLabel }) => {
@@ -109,7 +110,12 @@ export default function Dashboard() {
   const [analyzedMeal, setAnalyzedMeal] = useState(null);
   const [dailyInsight, setDailyInsight] = useState(null);
   const [isGeneratingInsight, setIsGeneratingInsight] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', sub: '', type: 'success' });
+
+  const showToast = (message, sub, type = 'success', duration = 3000) => {
+    setToast({ show: true, message, sub, type });
+    setTimeout(() => setToast(t => ({ ...t, show: false })), duration);
+  };
   const [queryError, setQueryError] = useState('');
 
   const scrollToLog = () => logSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -168,9 +174,14 @@ export default function Dashboard() {
         body: JSON.stringify({ foodQuery: searchQuery })
       });
       const data = await res.json();
-      if (data.success) setAnalyzedMeal(data.data);
+      if (data.success) {
+        setAnalyzedMeal(data.data);
+      } else {
+        showToast("Analysis Failed", "Could not identify nutrient data for this query.", "error");
+      }
     } catch (err) {
       console.error(err);
+      showToast("System Error", "Analysis engine is currently unreachable.", "error");
     }
     setIsAnalyzing(false);
   };
@@ -194,10 +205,10 @@ export default function Dashboard() {
       setAnalyzedMeal(null);
       setSearchQuery('');
       fetchMealData(user, token);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      showToast("Meal Logged!", "Your daily totals have been updated.", "success");
     } catch (err) {
       console.error(err);
+      showToast("Logging Failed", "Could not save meal to your history.", "error");
     }
   };
 
@@ -669,20 +680,7 @@ export default function Dashboard() {
         </motion.div>
       </main>
 
-      {/* Success Toast */}
-      <div
-        className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-gray-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl shadow-black/20 border border-white/10 transition-all duration-500 ${
-          showToast ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'
-        }`}
-      >
-        <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-        </div>
-        <div>
-          <p className="text-[13px] font-semibold leading-tight">Meal added successfully!</p>
-          <p className="text-[11px] text-gray-400 font-medium mt-0.5">Your daily totals have been updated.</p>
-        </div>
-      </div>
+       <Toast show={toast.show} message={toast.message} sub={toast.sub} type={toast.type} />
     </div>
   );
 }

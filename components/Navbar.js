@@ -35,6 +35,7 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.setItem('logoutToast', 'true');
     setUser(null);
     router.push('/');
   };

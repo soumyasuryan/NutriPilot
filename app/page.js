@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Sparkles, TrendingUp, Wallet, ArrowRight, Activity, Clock } from 'lucide-react';
+import Toast from '@/components/Toast';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -24,16 +25,31 @@ const staggerContainer = {
 
 export default function HomePage() {
   const router = useRouter();
+  const [toast, setToast] = useState({ show: false, message: '', sub: '', type: 'success' });
+
+  const showToast = (message, sub, type = 'success', duration = 3000) => {
+    setToast({ show: true, message, sub, type });
+    setTimeout(() => setToast(t => ({ ...t, show: false })), duration);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       router.push('/home');
+      return;
+    }
+
+    // Check for logout toast
+    const shouldShowLogout = localStorage.getItem('logoutToast');
+    if (shouldShowLogout === 'true') {
+      showToast("Logged out successfully", "Your session has ended securely. See you soon!", "success");
+      localStorage.removeItem('logoutToast');
     }
   }, [router]);
 
   return (
-    <div className="relative min-h-screen bg-[#FCFCFD] text-gray-900 selection:bg-[#057A55]/10 selection:text-[#057A55] overflow-hidden pt-24 font-sans">
+    <>
+      <div className="relative min-h-screen bg-[#FCFCFD] text-gray-900 selection:bg-[#057A55]/10 selection:text-[#057A55] overflow-hidden pt-24 font-sans">
       
       {/* Refined Ambient Background Gradient */}
       <div className="absolute top-0 right-0 w-[45vw] h-[45vw] bg-linear-to-b from-[#E6F4EA] to-transparent rounded-full blur-[100px] pointer-events-none -z-10 opacity-70 translate-x-1/4 -translate-y-1/4" />
@@ -302,5 +318,7 @@ export default function HomePage() {
       </section>
 
     </div>
-  )
+    <Toast show={toast.show} message={toast.message} sub={toast.sub} type={toast.type} />
+    </>
+  );
 }
