@@ -282,9 +282,17 @@ export default function Dashboard() {
           className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10"
         >
           <div>
-             <motion.h1 variants={fadeInUp} className="text-3xl font-semibold text-gray-900 tracking-tight">
-               Today's Overview
-             </motion.h1>
+             <motion.div variants={fadeInUp} className="flex items-center gap-3">
+               <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">
+                 Today's Overview
+               </h1>
+               {todayTotals.streak > 0 && (
+                 <div className="flex items-center gap-1.5 bg-orange-50 border border-orange-100 px-3 py-1.5 rounded-full text-orange-600 shadow-sm shadow-orange-500/10 mb-1">
+                   <Flame className="w-4 h-4 fill-current" />
+                   <span className="font-bold text-[13px] tracking-wide">{todayTotals.streak} Day Streak</span>
+                 </div>
+               )}
+             </motion.div>
              <motion.p variants={fadeInUp} className="text-gray-500 font-medium mt-1.5 text-[15px]">
                Here is your daily fuel status and insights.
              </motion.p>

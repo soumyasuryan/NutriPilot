@@ -85,7 +85,51 @@ router.get('/today/:userId', async (req, res) => {
       WHERE m.user_id = $1 AND m.logged_at >= CURRENT_DATE
     `, [req.params.userId]);
 
-    res.json({ success: true, data: rows[0] });
+    // -- STREAK CALCULATION LOGIC --
+    const { rows: streakRows } = await db.query(`
+      SELECT DISTINCT TO_CHAR(logged_at, 'YYYY-MM-DD') as log_date
+      FROM meal_logs
+      WHERE user_id = $1
+      ORDER BY log_date DESC
+    `, [req.params.userId]);
+
+    const { rows: todayRows } = await db.query("SELECT TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD') as today");
+    const todayStr = todayRows[0].today;
+
+    let streak = 0;
+    let currentCheck = new Date(todayStr + "T00:00:00Z").getTime();
+    let isFirst = true;
+
+    for (const row of streakRows) {
+        let rowDate = new Date(row.log_date + "T00:00:00Z").getTime();
+        
+        if (isFirst) {
+            if (rowDate === currentCheck) { 
+                streak++;
+                currentCheck -= 86400000;
+            } else if (rowDate === currentCheck - 86400000) { 
+                // User missed today, but hit yesterday. Streak still valid but starts from yesterday.
+                streak++;
+                currentCheck -= 2 * 86400000; 
+            } else {
+                // Gap of more than 1 day from today.
+                break; 
+            }
+            isFirst = false;
+        } else {
+            if (rowDate === currentCheck) {
+                streak++;
+                currentCheck -= 86400000; 
+            } else {
+                break;
+            }
+        }
+    }
+
+    const payload = rows[0];
+    payload.streak = streak;
+
+    res.json({ success: true, data: payload });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch daily totals" });
