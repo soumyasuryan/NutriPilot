@@ -62,9 +62,5 @@ No kitchen scale? No problem. The Scale Converter uses AI logic to map gram weig
    node server.js
    ```
 
-## 🎯 The "Pitch"
+## Conclusion
 Standard fitness apps tell you what you did wrong. **NutriPilot** tells you how to fix it for ₹20. By combining AI-linguistic analysis with a harsh historical audit, we turn your smartphone into a professional-grade nutrition coach that understands both your biology and your wallet.
-
----
-
-Built for the **[Your Hackathon Name]** 🏆
