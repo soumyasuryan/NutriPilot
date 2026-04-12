@@ -49,16 +49,10 @@ export default function Login() {
         
         <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 w-full max-w-[440px] border border-gray-100 relative z-10">
           <div className="flex flex-col items-center mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-[#22c55e] flex items-center justify-center mb-4 shadow-lg shadow-green-500/20">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
-                <path d="M20 3v4" />
-                <path d="M22 5h-4" />
-                <path d="M4 17v2" />
-                <path d="M5 18H3" />
-              </svg>
+            <div className="flex items-center mb-3">
+              <span className="text-3xl font-bold tracking-tight text-gray-900">Nutri</span>
+              <span className="text-3xl font-bold tracking-tight text-[#16a34a]">Pilot</span>
             </div>
-            <h1 className="text-2xl font-bold mb-1">NutriPilot</h1>
             <h2 className="text-[28px] font-bold mt-4 mb-2">Welcome back</h2>
             <p className="text-gray-500 text-sm">Sign in to continue your journey</p>
           </div>

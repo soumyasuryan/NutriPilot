@@ -31,11 +31,9 @@ const Footer = () => {
           
           {/* Brand & Description */}
           <div className="col-span-1 md:col-span-4 lg:col-span-4">
-            <Link href="/" className="flex items-center gap-2.5 group w-fit mb-6">
-              <div className="w-9 h-9 rounded-[10px] flex bg-[#16a34a] items-center justify-center shadow-sm transition-transform duration-300 group-hover:scale-105">
-                <Image src="/logo.png" alt="Logo" width={32} height={32} />
-              </div>
-              <span className="text-[20px] font-bold tracking-tight text-white">NutriPilot</span>
+            <Link href="/" className="flex items-center gap-1 group w-fit mb-6 mt-2">
+              <span className="text-[26px] font-bold tracking-tight text-white transition-opacity group-hover:opacity-90">Nutri</span>
+              <span className="text-[26px] font-bold tracking-tight text-[#16a34a] transition-opacity group-hover:opacity-90">Pilot</span>
             </Link>
             <p className="text-[14px] text-stone-400 leading-relaxed max-w-[260px]">
               AI-powered nutrition coach helping students eat better and save money
