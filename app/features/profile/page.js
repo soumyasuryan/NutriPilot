@@ -176,7 +176,7 @@ export default function ProfileProgress() {
                  {/* Mathematical Target Baseline Line */}
                  <div 
                    className="absolute left-0 right-0 border-t-2 border-dashed border-gray-400 z-10 transition-all duration-700"
-                   style={{ bottom: `calc(${(targetCals / maxY) * 100}% + 16px)` }}
+                   style={{ bottom: `calc(${(targetCals / maxY) * 304}px + 16px)` }}
                  >
                     <span className="absolute -top-7 left-0 text-[11px] font-bold text-gray-600 bg-white/90 backdrop-blur-sm border border-gray-200 px-1.5 py-0.5 rounded shadow-sm">Target: {targetCals} kcal</span>
                  </div>
@@ -194,7 +194,7 @@ export default function ProfileProgress() {
                             ? "bg-red-400 bg-linear-to-t from-red-100/40 to-red-400 group-hover:to-red-500" 
                             : "bg-emerald-400 bg-linear-to-t from-emerald-100/40 to-emerald-400 group-hover:to-emerald-500"
                         }`}
-                        style={{ height: `${Math.max(4, Math.round((val / maxY) * 280))}px` }}
+                        style={{ height: `${Math.max(4, Math.round((val / maxY) * 304))}px` }}
                       >
                         {/* Hover Bubble Tracker */}
                         <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-700 shadow-xl text-white text-[12px] font-bold py-1 px-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20">
