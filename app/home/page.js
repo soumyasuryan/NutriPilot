@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock, ChevronRight, Scale } from 'lucide-react';
+import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock, ChevronRight, Scale, CheckCircle2 } from 'lucide-react';
 
 // --- Reusable SVG Circular Progress Ring ---
 const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, label, subLabel }) => {
@@ -109,6 +109,8 @@ export default function Dashboard() {
   const [analyzedMeal, setAnalyzedMeal] = useState(null);
   const [dailyInsight, setDailyInsight] = useState(null);
   const [isGeneratingInsight, setIsGeneratingInsight] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [queryError, setQueryError] = useState('');
 
   const scrollToLog = () => logSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
 
@@ -150,6 +152,14 @@ export default function Dashboard() {
 
   const handleAnalyze = async () => {
     if (!searchQuery) return;
+
+    // Quantity validation — must contain a number OR a size/unit word
+    const quantityPattern = /\d|\b(small|medium|large|half|quarter|piece|pieces|bowl|bowls|cup|cups|plate|plates|glass|glasses|roti|rotis|slice|slices|scoop|scoops|handful|katori|serving|servings|tbsp|tsp|tablespoon|teaspoon|gram|grams|gm|g|ml|litre|liter|kg|dozen|pair)\b/i;
+    if (!quantityPattern.test(searchQuery)) {
+      setQueryError('Please include a quantity — e.g. "2 roti", "100g paneer", or "1 bowl dal"');
+      return;
+    }
+    setQueryError('');
     setIsAnalyzing(true);
     try {
       const res = await fetch('http://localhost:5000/api/meals/analyze', {
@@ -184,6 +194,8 @@ export default function Dashboard() {
       setAnalyzedMeal(null);
       setSearchQuery('');
       fetchMealData(user, token);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     } catch (err) {
       console.error(err);
     }
@@ -507,7 +519,7 @@ export default function Dashboard() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full bg-[#f8fafc] border border-gray-100 text-gray-900 text-[15px] rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-[#057A55]/20 focus:border-[#057A55] outline-none transition-all placeholder:text-gray-400" 
-                    placeholder="Search meals, ingredients, or describe what you ate (e.g., '2 Roti and Dal')..." 
+                    placeholder="e.g. 2 roti and dal, 100g paneer, 1 bowl rice..." 
                  />
                  <button 
                     onClick={handleAnalyze} 
@@ -525,6 +537,18 @@ export default function Dashboard() {
                   Don't have a weighing scale? No worries, click here!
                 </a>
               </motion.div>
+
+              {/* Quantity hint */}
+              {queryError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4 flex items-start gap-2 text-red-600 bg-red-50 border border-red-100 px-4 py-2.5 rounded-xl"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                  <p className="text-[13px] font-medium">{queryError}</p>
+                </motion.div>
+              )}
 
               {/* AI Details Review Prompt (Populates when analyzed) */}
               {analyzedMeal && (
@@ -644,6 +668,21 @@ export default function Dashboard() {
            </div>
         </motion.div>
       </main>
+
+      {/* Success Toast */}
+      <div
+        className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-gray-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl shadow-black/20 border border-white/10 transition-all duration-500 ${
+          showToast ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'
+        }`}
+      >
+        <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+        </div>
+        <div>
+          <p className="text-[13px] font-semibold leading-tight">Meal added successfully!</p>
+          <p className="text-[11px] text-gray-400 font-medium mt-0.5">Your daily totals have been updated.</p>
+        </div>
+      </div>
     </div>
   );
 }

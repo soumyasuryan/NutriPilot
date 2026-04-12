@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { TrendingUp, Activity, BookOpen, User, Plus, Search, MoreHorizontal, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Activity, User, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -167,13 +167,14 @@ export default function ProfileProgress() {
                
                {/* Vertical Days Bars */}
                {weeklyData.map((val, idx) => {
-                 const isOverTarget = val > targetCals;
+                 const deviation = val - targetCals;
+                 const isBadDeviation = Math.abs(deviation) > 300;
                  return (
                  <div key={idx} className="w-full relative flex justify-center group h-full items-end z-0">
                     {/* The Fill Bar */}
                     <div 
                       className={`w-full max-w-[4rem] rounded-t-lg opacity-90 group-hover:opacity-100 transition-all duration-500 ease-out cursor-pointer relative ${
-                        isOverTarget 
+                        isBadDeviation
                           ? "bg-red-400 bg-linear-to-t from-red-100/40 to-red-400 group-hover:to-red-500" 
                           : "bg-emerald-400 bg-linear-to-t from-emerald-100/40 to-emerald-400 group-hover:to-emerald-500"
                       }`}
@@ -194,16 +195,43 @@ export default function ProfileProgress() {
                {dayLabels.map((lbl, idx) => <span key={idx}>{lbl}</span>)}
              </div>
 
+             {/* Per-day deviation row */}
+             <div className="flex justify-between items-center mt-2 px-3">
+               {weeklyData.map((val, idx) => {
+                 const deviation = val - targetCals;
+                 const isBad = Math.abs(deviation) > 300;
+                 const label = val === 0 ? '–' : (deviation >= 0 ? `+${deviation}` : `${deviation}`);
+                 return (
+                   <span key={idx} className={`text-[10px] font-bold tracking-tight ${
+                     val === 0 ? 'text-gray-300' : isBad ? 'text-red-500' : 'text-emerald-500'
+                   }`}>
+                     {label}
+                   </span>
+                 );
+               })}
+             </div>
+
              {/* Synthetic Insight Panel */}
              <div className="mt-8 bg-gray-50 border border-gray-100 rounded-2xl p-5">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-3">
                    <span className="text-[12px] font-bold text-gray-500 tracking-wide uppercase">7-Day Avg</span>
-                   <span className={`text-sm font-bold flex items-center gap-1 ${isSurplus ? 'text-red-500' : 'text-emerald-500'}`}>
+                   <span className={`text-sm font-bold flex items-center gap-1 ${Math.abs(diff) > 300 ? 'text-red-500' : 'text-emerald-500'}`}>
                       {statusStr}
                    </span>
                 </div>
+                {/* Deviation colour key */}
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
+                    <span className="text-[11px] text-gray-500 font-medium">Within ±300 kcal of target</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>
+                    <span className="text-[11px] text-gray-500 font-medium">&gt;300 kcal deviation</span>
+                  </div>
+                </div>
                 <div className="text-sm text-gray-600 font-medium leading-relaxed flex items-start gap-2">
-                   {diff > 300 || diff < -400 ? <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" /> : <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />}
+                   {Math.abs(diff) > 300 ? <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" /> : <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />}
                    {suggestion}
                 </div>
              </div>
@@ -211,74 +239,7 @@ export default function ProfileProgress() {
         
         </div>
 
-        {/* Personal Food Library */}
-        <motion.div 
-          initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer}
-          className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)]"
-        >
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-indigo-500" />
-              Personal Food Library
-            </h2>
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              <div className="relative flex-1 md:w-64">
-                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input 
-                  type="text" 
-                  placeholder="Search custom foods..." 
-                  className="w-full bg-gray-50 border border-gray-100 text-sm rounded-xl pl-9 pr-4 py-2.5 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder:text-gray-400 cursor-text"
-                />
-              </div>
-              <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 shadow-sm shadow-indigo-500/20 cursor-pointer">
-                <Plus className="w-4 h-4" /> Add Custom
-              </button>
-            </div>
-          </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-gray-100 text-[13px] font-semibold text-gray-500 uppercase tracking-wider">
-                  <th className="pb-3 pl-2">Item Name</th>
-                  <th className="pb-3 px-4">Serving Size</th>
-                  <th className="pb-3 px-4">Calories</th>
-                  <th className="pb-3 px-4 hidden sm:table-cell">Macros (P/C/F)</th>
-                  <th className="pb-3 pr-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group">
-                  <td className="py-4 pl-2 font-medium text-gray-900">Maa's Special Dal</td>
-                  <td className="py-4 px-4 text-gray-500 text-sm">1 Medium Katori (150g)</td>
-                  <td className="py-4 px-4 font-semibold text-gray-900 text-sm">180 kcal</td>
-                  <td className="py-4 px-4 text-gray-500 text-sm hidden sm:table-cell">
-                    <span className="text-blue-600 font-medium">12g</span> / <span className="text-amber-600 font-medium">20g</span> / <span className="text-emerald-600 font-medium">4g</span>
-                  </td>
-                  <td className="py-4 pr-2 text-right">
-                    <button className="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group">
-                  <td className="py-4 pl-2 font-medium text-gray-900">Office Canteen Sandwich</td>
-                  <td className="py-4 px-4 text-gray-500 text-sm">1 piece</td>
-                  <td className="py-4 px-4 font-semibold text-gray-900 text-sm">320 kcal</td>
-                  <td className="py-4 px-4 text-gray-500 text-sm hidden sm:table-cell">
-                    <span className="text-blue-600 font-medium">8g</span> / <span className="text-amber-600 font-medium">45g</span> / <span className="text-emerald-600 font-medium">10g</span>
-                  </td>
-                  <td className="py-4 pr-2 text-right">
-                    <button className="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-        </motion.div>
 
       </main>
     </div>
