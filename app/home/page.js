@@ -9,7 +9,7 @@ import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock,
 const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, label, subLabel }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  const progress = value / max;
+  const progress = Math.min(value / max, 1);
   const strokeDashoffset = circumference - progress * circumference;
 
   return (
@@ -42,7 +42,7 @@ const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, lab
       </svg>
       {/* Inner Label */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <span className="text-3xl font-bold text-gray-900 tracking-tight">{max - value}</span>
+        <span className="text-3xl font-bold text-gray-900 tracking-tight">{Math.abs(max - value)}</span>
         <span className="text-sm font-medium text-gray-500 mt-1">{label}</span>
         {subLabel && <span className="text-[11px] text-gray-400 font-medium">{subLabel}</span>}
       </div>
@@ -316,15 +316,22 @@ export default function Dashboard() {
             </div>
             
             <div className="mt-8 mb-2">
-              <CircularProgress 
-                value={Number(todayTotals.total_calories || 0)} 
-                max={profile?.target_calories || 2200} 
-                color="#057A55" 
-                size={220} 
-                strokeWidth={16} 
-                label="kcal remaining"
-                subLabel={`Total Limit: ${profile?.target_calories || 2200}`}
-              />
+              {(() => {
+                const consumed = Number(todayTotals.total_calories || 0);
+                const target = profile?.target_calories || 2200;
+                const isOver = consumed > target;
+                return (
+                  <CircularProgress 
+                    value={consumed} 
+                    max={target} 
+                    color={isOver ? "#EF4444" : "#057A55"} 
+                    size={220} 
+                    strokeWidth={16} 
+                    label={isOver ? "kcal over limit" : "kcal remaining"}
+                    subLabel={`Total Limit: ${target}`}
+                  />
+                );
+              })()}
             </div>
 
             {/* Clean AI Target Box */}
