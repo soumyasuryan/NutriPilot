@@ -95,14 +95,15 @@ export default function ProfileProgress() {
   
   // Math operations
   const maxY = Math.max(...weeklyData, targetCals) + 300;
-  const averageIntake = weeklyData.length > 0 ? Math.round(weeklyData.reduce((a,b)=>a+b, 0) / weeklyData.length) : 0;
+  const activeDays = weeklyData.filter(v => v > 0);
+  const averageIntake = activeDays.length > 0 ? Math.round(activeDays.reduce((a,b)=>a+b, 0) / activeDays.length) : 0;
   const diff = averageIntake - targetCals;
   const isSurplus = diff > 0;
   const statusStr = isSurplus ? `${diff} kcal Surplus` : `${Math.abs(diff)} kcal Deficit`;
 
   let suggestion = "";
   if (diff > 300) {
-     suggestion = "You are tracking significantly above baseline. To maintain progress, try swapping your high-calorie evening items or junk foods for lighter choices mapped in your food library.";
+     suggestion = "You are in a severe surplus significantly above baseline. To maintain progress, try swapping your high-calorie evening items or junk foods for lighter choices mapped in your food library.";
   } else if (diff < -400) {
      suggestion = "You are in a severe deficit which risks metabolic crash. Ensure you aren't skipping necessary meals and consider safely adding nutrient-dense whole foods.";
   } else {
