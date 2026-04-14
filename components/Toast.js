@@ -34,7 +34,7 @@ export default function Toast({ show, message, sub, type = 'success' }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 16 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 bg-gray-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl shadow-black/20 border border-white/10 min-w-[280px]"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-9999 flex items-center gap-3 bg-gray-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl shadow-black/20 border border-white/10 min-w-[280px]"
         >
           <div className={`w-7 h-7 rounded-full ${config.ring} flex items-center justify-center shrink-0`}>
             {config.icon}

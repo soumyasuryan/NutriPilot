@@ -183,11 +183,10 @@ export default function BudgetOptimizer() {
                         <button
                           key={food.name}
                           onClick={() => setSelectedFood(food)}
-                          className={`group w-full text-left p-4 rounded-2xl border transition-all duration-200 cursor-pointer ${
-                            selectedFood?.name === food.name
+                          className={`group w-full text-left p-4 rounded-2xl border transition-all duration-200 cursor-pointer ${selectedFood?.name === food.name
                               ? 'bg-emerald-50/80 border-emerald-300 shadow-sm shadow-emerald-100'
                               : 'bg-white border-gray-100 hover:border-gray-200 hover:bg-gray-50/60'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0">
@@ -201,9 +200,8 @@ export default function BudgetOptimizer() {
                                 <MacroPill icon={Droplets} label="F" value={food.fats} colorClass="bg-emerald-50 text-emerald-600" />
                               </div>
                             </div>
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
-                              selectedFood?.name === food.name ? 'bg-emerald-500 border-emerald-500' : 'border-gray-200 group-hover:border-emerald-300'
-                            }`}>
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${selectedFood?.name === food.name ? 'bg-emerald-500 border-emerald-500' : 'border-gray-200 group-hover:border-emerald-300'
+                              }`}>
                               {selectedFood?.name === food.name && <div className="w-2 h-2 rounded-full bg-white" />}
                             </div>
                           </div>
@@ -239,13 +237,13 @@ export default function BudgetOptimizer() {
                   variants={fadeInUp}
                   onClick={handleOptimize}
                   disabled={isLoading}
-                  className="mt-6 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-[#16a34a] to-[#22c55e] text-white rounded-2xl font-semibold text-[15px] shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-[#15803d] hover:to-[#16a34a] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                  className="mt-6 w-full flex items-center justify-center gap-2.5 py-4 bg-linear-to-r from-[#16a34a] to-[#22c55e] text-white rounded-2xl font-semibold text-[15px] shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-[#15803d] hover:to-[#16a34a] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {isLoading ? (
                     <>
                       <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
                       Finding Budget Alternatives...
                     </>
@@ -360,7 +358,7 @@ export default function BudgetOptimizer() {
                           {alt.savings_percent != null && (
                             <div className="shrink-0">
                               <div className="flex items-center gap-1.5 bg-emerald-500 text-white text-[12px] font-extrabold px-2.5 py-1.5 rounded-xl shadow-sm shadow-emerald-500/30">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>
                                 {alt.savings_percent}% cheaper
                               </div>
                             </div>

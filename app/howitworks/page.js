@@ -32,11 +32,11 @@ export default function HowItWorks() {
       <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-blue-50 rounded-full blur-[100px] opacity-60 translate-x-1/3 pointer-events-none"></div>
 
       <main className="max-w-[1000px] mx-auto px-6 relative z-10">
-        
+
         {/* Header Section */}
-        <motion.div 
-          initial="hidden" 
-          animate="visible" 
+        <motion.div
+          initial="hidden"
+          animate="visible"
           variants={fadeInUp}
           className="text-center mb-20 max-w-2xl mx-auto"
         >
@@ -70,10 +70,10 @@ export default function HowItWorks() {
                 </p>
               </div>
             </div>
-            
+
             {/* Center Node */}
             <div className="hidden md:flex w-14 h-14 rounded-full bg-white border-4 border-blue-100 items-center justify-center shadow-lg shadow-blue-500/10 z-10 shrink-0">
-               <Target className="w-6 h-6 text-blue-600" />
+              <Target className="w-6 h-6 text-blue-600" />
             </div>
 
             <div className="md:w-1/2 w-full">
@@ -87,8 +87,8 @@ export default function HowItWorks() {
               {/* Visual Card */}
               <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group hover:shadow-[0_8px_30px_rgb(59,130,246,0.1)] transition-all duration-300">
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                   <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100"><p className="text-xs text-gray-400 font-bold uppercase mb-1">Target Calories</p><p className="text-xl font-bold text-gray-900">2,150<span className="text-sm font-medium text-gray-400 ml-1">kcal</span></p></div>
-                   <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100"><p className="text-xs text-gray-400 font-bold uppercase mb-1">Target Protein</p><p className="text-xl font-bold text-gray-900 text-blue-600">140<span className="text-sm font-medium text-blue-400 ml-1">g</span></p></div>
+                  <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100"><p className="text-xs text-gray-400 font-bold uppercase mb-1">Target Calories</p><p className="text-xl font-bold text-gray-900">2,150<span className="text-sm font-medium text-gray-400 ml-1">kcal</span></p></div>
+                  <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100"><p className="text-xs text-gray-400 font-bold uppercase mb-1">Target Protein</p><p className="text-xl font-bold text-gray-900">140<span className="text-sm font-medium text-gray-400 ml-1">g</span></p></div>
                 </div>
                 <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                   <div className="h-full bg-blue-500 w-[60%] rounded-full group-hover:w-[75%] transition-all duration-1000 ease-out"></div>
@@ -110,10 +110,10 @@ export default function HowItWorks() {
                 </p>
               </div>
             </div>
-            
+
             {/* Center Node */}
             <div className="hidden md:flex w-14 h-14 rounded-full bg-white border-4 border-emerald-100 items-center justify-center shadow-lg shadow-emerald-500/10 z-10 shrink-0">
-               <Search className="w-6 h-6 text-emerald-600" />
+              <Search className="w-6 h-6 text-emerald-600" />
             </div>
 
             <div className="md:w-1/2 w-full">
@@ -132,9 +132,9 @@ export default function HowItWorks() {
                   <div className="w-1.5 h-5 bg-emerald-500 animate-pulse ml-[-6px]"></div>
                 </div>
                 <div className="flex gap-2">
-                   <div className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-bold shrink-0">Analyzed</div>
-                   <div className="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-xs font-medium border border-gray-100 grow text-center">310 kcal</div>
-                   <div className="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-xs font-medium border border-gray-100 grow text-center">14g P</div>
+                  <div className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-bold shrink-0">Analyzed</div>
+                  <div className="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-xs font-medium border border-gray-100 grow text-center">310 kcal</div>
+                  <div className="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-xs font-medium border border-gray-100 grow text-center">14g P</div>
                 </div>
               </div>
             </div>
@@ -153,10 +153,10 @@ export default function HowItWorks() {
                 </p>
               </div>
             </div>
-            
+
             {/* Center Node */}
             <div className="hidden md:flex w-14 h-14 rounded-full bg-white border-4 border-amber-100 items-center justify-center shadow-lg shadow-amber-500/10 z-10 shrink-0">
-               <Zap className="w-6 h-6 text-amber-500" />
+              <Zap className="w-6 h-6 text-amber-500" />
             </div>
 
             <div className="md:w-1/2 w-full">
@@ -194,10 +194,10 @@ export default function HowItWorks() {
                 </p>
               </div>
             </div>
-            
+
             {/* Center Node */}
             <div className="hidden md:flex w-14 h-14 rounded-full bg-white border-4 border-purple-100 items-center justify-center shadow-lg shadow-purple-500/10 z-10 shrink-0">
-               <TrendingUp className="w-6 h-6 text-purple-500" />
+              <TrendingUp className="w-6 h-6 text-purple-500" />
             </div>
 
             <div className="md:w-1/2 w-full">
@@ -208,9 +208,9 @@ export default function HowItWorks() {
                 <p className="text-gray-500 leading-relaxed font-medium">See how your past week's meals stack up against your baseline, with AI analyzing your 7-day average for course correction.</p>
               </div>
 
-               {/* Visual Card */}
+              {/* Visual Card */}
               <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group hover:shadow-[0_8px_30px_rgb(168,85,247,0.1)] transition-all duration-300 relative">
-                
+
                 {/* Simulated Target Baseline */}
                 <div className="absolute left-6 right-6 top-[45%] border-t-2 border-dashed border-gray-300 z-10 transition-all duration-500 group-hover:-translate-y-2"></div>
 
@@ -223,7 +223,7 @@ export default function HowItWorks() {
                   <div className="w-1/6 bg-emerald-400 rounded-t-lg h-[35%] group-hover:h-[45%] transition-all duration-500"></div>
                 </div>
                 <div className="flex justify-between text-[10px] uppercase font-bold text-gray-400 tracking-wider pt-2 border-t border-gray-100">
-                   <span>Mon</span><span>Wed</span><span>Fri</span><span>Sun</span>
+                  <span>Mon</span><span>Wed</span><span>Fri</span><span>Sun</span>
                 </div>
               </div>
             </div>
@@ -232,17 +232,17 @@ export default function HowItWorks() {
         </div>
 
         {/* CTA Section */}
-        <motion.div 
-          initial="hidden" 
-          whileInView="visible" 
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true, margin: "0px" }}
           variants={fadeInUp}
           className="text-center mt-20"
         >
           <Link href={isLoggedIn ? "/home" : "/signup"}>
-             <button className="bg-linear-to-r from-[#16a34a] to-[#046C4E] hover:from-[#15803d] hover:to-[#064e3b] text-white px-8 py-4 rounded-2xl text-[16px] font-bold tracking-wide shadow-xl shadow-green-600/20 hover:shadow-green-600/40 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto cursor-pointer">
-               {isLoggedIn ? "Go to Dashboard" : "Begin Your Journey"} <ChevronRight className="w-5 h-5"/>
-             </button>
+            <button className="bg-linear-to-r from-[#16a34a] to-[#046C4E] hover:from-[#15803d] hover:to-[#064e3b] text-white px-8 py-4 rounded-2xl text-[16px] font-bold tracking-wide shadow-xl shadow-green-600/20 hover:shadow-green-600/40 transition-all hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto cursor-pointer">
+              {isLoggedIn ? "Go to Dashboard" : "Begin Your Journey"} <ChevronRight className="w-5 h-5" />
+            </button>
           </Link>
         </motion.div>
 

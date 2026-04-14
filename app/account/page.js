@@ -20,7 +20,7 @@ export default function AccountPage() {
   const [profile, setProfile] = useState(null);
   const [user, setUser] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     height: '', weight: '', waist_cm: '', fitness_goal: 'Cut', activity_level: 'Light'
   });
@@ -38,9 +38,9 @@ export default function AccountPage() {
       router.push('/login');
       return;
     }
-    
+
     setIsAuthorized(true);
-    
+
     try {
       const storedUser = JSON.parse(localStorage.getItem('user'));
       setUser(storedUser);
@@ -49,18 +49,18 @@ export default function AccountPage() {
       fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/users/${storedUser.id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
-      .then(res => res.json())
-      .then(data => {
-        setProfile(data);
-        setFormData({
-          height: data.height || '',
-          weight: data.weight || '',
-          waist_cm: data.waist_cm || '',
-          fitness_goal: data.fitness_goal || 'Cut',
-          activity_level: data.activity_level || 'Light',
-        });
-      })
-      .catch(err => console.error("Error fetching profile", err));
+        .then(res => res.json())
+        .then(data => {
+          setProfile(data);
+          setFormData({
+            height: data.height || '',
+            weight: data.weight || '',
+            waist_cm: data.waist_cm || '',
+            fitness_goal: data.fitness_goal || 'Cut',
+            activity_level: data.activity_level || 'Light',
+          });
+        })
+        .catch(err => console.error("Error fetching profile", err));
     } catch (err) {
       console.error("Invalid user JSON");
     }
@@ -70,11 +70,11 @@ export default function AccountPage() {
     e.preventDefault();
     setIsUpdating(true);
     const token = localStorage.getItem('token');
-    
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/users/update`, {
         method: 'PUT',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
@@ -105,11 +105,11 @@ export default function AccountPage() {
     <>
       <div className="min-h-screen bg-[#FCFCFD] pt-28 pb-20 selection:bg-[#057A55]/10 selection:text-[#057A55]">
         <main className="max-w-[800px] mx-auto px-6">
-          
+
           {/* Header */}
-          <motion.div 
-            initial="hidden" 
-            animate="visible" 
+          <motion.div
+            initial="hidden"
+            animate="visible"
             variants={fadeInUp}
             className="mb-10 text-center"
           >
@@ -120,16 +120,16 @@ export default function AccountPage() {
             <p className="text-gray-500 font-medium">Review your personal information and current macro targets.</p>
           </motion.div>
 
-          <motion.div 
-            initial="hidden" 
-            animate="visible" 
+          <motion.div
+            initial="hidden"
+            animate="visible"
             variants={staggerContainer}
             className="grid gap-8"
           >
             {/* Section 1: Security & Identity */}
             <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-[40px] opacity-60 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-              
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-2xl opacity-60 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                   <Shield className="w-5 h-5 text-emerald-500" /> Identity Information
@@ -148,7 +148,7 @@ export default function AccountPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="text-[13px] font-semibold text-gray-500 ml-1 mb-1 block">Email Address</label>
                   <div className="relative">
@@ -183,22 +183,22 @@ export default function AccountPage() {
                   </div>
                   <div>
                     <label className="text-[12px] font-bold text-emerald-600 uppercase tracking-wide mb-1 block">Height (cm)</label>
-                    <input type="number" value={formData.height} onChange={e => setFormData({...formData, height: e.target.value})} className="w-full bg-emerald-50/50 border border-emerald-100/50 rounded-2xl p-3.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none text-gray-900 font-semibold text-[16px]"/>
+                    <input type="number" value={formData.height} onChange={e => setFormData({ ...formData, height: e.target.value })} className="w-full bg-emerald-50/50 border border-emerald-100/50 rounded-2xl p-3.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none text-gray-900 font-semibold text-[16px]" />
                   </div>
                   <div>
                     <label className="text-[12px] font-bold text-orange-600 uppercase tracking-wide mb-1 block">Weight (kg)</label>
-                    <input type="number" value={formData.weight} onChange={e => setFormData({...formData, weight: e.target.value})} className="w-full bg-orange-50/50 border border-orange-100/50 rounded-2xl p-3.5 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none text-gray-900 font-semibold text-[16px]"/>
+                    <input type="number" value={formData.weight} onChange={e => setFormData({ ...formData, weight: e.target.value })} className="w-full bg-orange-50/50 border border-orange-100/50 rounded-2xl p-3.5 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none text-gray-900 font-semibold text-[16px]" />
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                   <div>
                     <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Waist (cm)</label>
-                    <input type="number" value={formData.waist_cm} onChange={e => setFormData({...formData, waist_cm: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]"/>
+                    <input type="number" value={formData.waist_cm} onChange={e => setFormData({ ...formData, waist_cm: e.target.value })} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]" />
                   </div>
                   <div>
                     <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Direction</label>
-                    <select value={formData.fitness_goal} onChange={e => setFormData({...formData, fitness_goal: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]">
+                    <select value={formData.fitness_goal} onChange={e => setFormData({ ...formData, fitness_goal: e.target.value })} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]">
                       <option value="Cut">Cut (Lose Fat)</option>
                       <option value="Bulk">Bulk (Gain Mass)</option>
                       <option value="Maintain">Maintain</option>
@@ -206,7 +206,7 @@ export default function AccountPage() {
                   </div>
                   <div>
                     <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Activity</label>
-                    <select value={formData.activity_level} onChange={e => setFormData({...formData, activity_level: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]">
+                    <select value={formData.activity_level} onChange={e => setFormData({ ...formData, activity_level: e.target.value })} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]">
                       <option value="Light">Light</option>
                       <option value="Moderate">Moderate</option>
                       <option value="Heavy">Heavy</option>
@@ -216,7 +216,7 @@ export default function AccountPage() {
 
                 <div className="flex flex-col sm:flex-row items-center gap-4 mt-6">
                   <button type="submit" disabled={isUpdating} className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-                    {isUpdating ? <Loader2 className="w-4 h-4 animate-spin"/> : "Save & Recalibrate Macros"}
+                    {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save & Recalibrate Macros"}
                   </button>
                 </div>
               </form>
@@ -229,33 +229,33 @@ export default function AccountPage() {
                   <Calendar className="w-5 h-5 text-amber-500" /> Nutritional Blueprint
                 </h2>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {/* Daily Target calories */}
                 <div className="md:col-span-4 bg-gray-50 border border-gray-100 rounded-2xl p-6 flex items-center justify-between">
-                   <div>
-                      <p className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-1">Daily Calorie Target</p>
-                      <div className="text-[32px] font-bold text-gray-900 tracking-tight">{profile?.target_calories || "-"} <span className="text-lg text-gray-400 font-medium tracking-normal">kcal</span></div>
-                   </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-1">Daily Calorie Target</p>
+                    <div className="text-[32px] font-bold text-gray-900 tracking-tight">{profile?.target_calories || "-"} <span className="text-lg text-gray-400 font-medium tracking-normal">kcal</span></div>
+                  </div>
                 </div>
 
                 {/* Macro breakdown */}
                 <div className="bg-blue-50/30 border border-blue-50 rounded-2xl p-5 text-center">
-                   <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-3"><Wheat className="w-5 h-5"/></div>
-                   <p className="text-[12px] font-bold text-blue-600 uppercase tracking-wide mb-0.5">Protein</p>
-                   <p className="text-[20px] font-semibold text-gray-900">{profile?.target_protein || "-"}g</p>
+                  <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-3"><Wheat className="w-5 h-5" /></div>
+                  <p className="text-[12px] font-bold text-blue-600 uppercase tracking-wide mb-0.5">Protein</p>
+                  <p className="text-[20px] font-semibold text-gray-900">{profile?.target_protein || "-"}g</p>
                 </div>
 
                 <div className="bg-amber-50/30 border border-amber-50 rounded-2xl p-5 text-center">
-                   <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-3"><TrendingUp className="w-5 h-5"/></div>
-                   <p className="text-[12px] font-bold text-amber-600 uppercase tracking-wide mb-0.5">Carbs</p>
-                   <p className="text-[20px] font-semibold text-gray-900">{profile?.target_carbs || "-"}g</p>
+                  <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-3"><TrendingUp className="w-5 h-5" /></div>
+                  <p className="text-[12px] font-bold text-amber-600 uppercase tracking-wide mb-0.5">Carbs</p>
+                  <p className="text-[20px] font-semibold text-gray-900">{profile?.target_carbs || "-"}g</p>
                 </div>
 
                 <div className="bg-emerald-50/30 border border-emerald-50 rounded-2xl p-5 text-center md:col-span-2">
-                   <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3"><Droplet className="w-5 h-5"/></div>
-                   <p className="text-[12px] font-bold text-emerald-600 uppercase tracking-wide mb-0.5">Fats</p>
-                   <p className="text-[20px] font-semibold text-gray-900">{profile?.target_fats || "-"}g</p>
+                  <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3"><Droplet className="w-5 h-5" /></div>
+                  <p className="text-[12px] font-bold text-emerald-600 uppercase tracking-wide mb-0.5">Fats</p>
+                  <p className="text-[20px] font-semibold text-gray-900">{profile?.target_fats || "-"}g</p>
                 </div>
               </div>
             </motion.div>

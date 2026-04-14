@@ -25,7 +25,7 @@ export default function Signup() {
     gender: '',
     height: '',
     weight: '',
-    goal: '', 
+    goal: '',
     activity: '',
     waist: ''
   });
@@ -51,7 +51,7 @@ export default function Signup() {
       });
 
       const data = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(data.message || 'Registration failed');
       }
@@ -141,9 +141,9 @@ export default function Signup() {
     <>
       <div className="min-h-screen bg-linear-to-br from-[#f0fdf4] via-white to-[#f0fdf4] font-sans antialiased text-[#292524]">
         <Navbar />
-        
+
         <div className="flex flex-col items-center justify-center min-h-screen pt-28 pb-12 px-4">
-          
+
           <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 w-full max-w-[440px] border border-gray-100 relative z-10 transition-all duration-300">
             <div className="flex flex-col items-center mb-6">
               <div className="flex items-center mb-3">
@@ -165,8 +165,8 @@ export default function Signup() {
             </div>
 
             <div className="w-full bg-gray-100 rounded-full h-1.5 mb-8 overflow-hidden">
-              <div 
-                className="bg-[#22c55e] h-1.5 rounded-full transition-all duration-500 ease-out" 
+              <div
+                className="bg-[#22c55e] h-1.5 rounded-full transition-all duration-500 ease-out"
                 style={{ width: getProgressWidth() }}
               ></div>
             </div>
@@ -194,7 +194,7 @@ export default function Signup() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                      <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
                     </div>
                     <input type="email" name="email" className="block w-full pl-11 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all placeholder:text-gray-400" placeholder="rahul@example.com" value={formData.email} onChange={handleChange} required />
                   </div>
@@ -204,7 +204,7 @@ export default function Signup() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                      <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                     </div>
                     <input type="password" name="password" className="block w-full pl-11 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all placeholder:text-gray-400" placeholder="........" value={formData.password} onChange={handleChange} required minLength={6} />
                   </div>
@@ -212,7 +212,7 @@ export default function Signup() {
 
                 <button type="submit" disabled={loading} className="w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-green-500/25 flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed">
                   {loading ? 'Processing...' : 'Continue'}
-                  {!loading && <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>}
+                  {!loading && <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>}
                 </button>
               </form>
             )}
@@ -259,7 +259,7 @@ export default function Signup() {
 
                 <button type="submit" className="w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-green-500/25 flex items-center justify-center gap-2 mt-4">
                   Continue
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                 </button>
               </form>
             )}
@@ -268,13 +268,13 @@ export default function Signup() {
             {step === 2 && (
               <form onSubmit={handleGoalSubmit} className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
                 {['Cut', 'Bulk', 'Maintain'].map((g) => (
-                  <div 
+                  <div
                     key={g}
                     onClick={() => setFormData({ ...formData, goal: g })}
                     className={`p-4 border rounded-xl cursor-pointer transition-all ${formData.goal === g ? 'border-[#22c55e] bg-green-50/50 ring-1 ring-[#22c55e]' : 'border-gray-200 hover:border-[#22c55e]/50'}`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-5 h-5 rounded-full border flex flex-shrink-0 items-center justify-center ${formData.goal === g ? 'border-[#22c55e]' : 'border-gray-300'}`}>
+                      <div className={`w-5 h-5 rounded-full border flex shrink-0 items-center justify-center ${formData.goal === g ? 'border-[#22c55e]' : 'border-gray-300'}`}>
                         {formData.goal === g && <div className="w-3 h-3 rounded-full bg-[#22c55e]"></div>}
                       </div>
                       <span className="font-medium text-[#292524]">{g}</span>
@@ -284,7 +284,7 @@ export default function Signup() {
 
                 <button type="submit" disabled={loading} className="w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-green-500/25 flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed">
                   {loading ? 'Completing...' : 'Continue'}
-                  {!loading && <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>}
+                  {!loading && <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>}
                 </button>
               </form>
             )}
@@ -300,7 +300,7 @@ export default function Signup() {
 
                 <button type="submit" disabled={loading} className="w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-green-500/25 flex items-center justify-center gap-2 mt-4 disabled:opacity-70 disabled:cursor-not-allowed">
                   {loading ? 'Completing setup...' : 'Finish Setup'}
-                  {!loading && <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>}
+                  {!loading && <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>}
                 </button>
               </form>
             )}

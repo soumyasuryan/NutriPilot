@@ -91,9 +91,6 @@ export default function HomePage() {
                   Get Started Free
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </Link>
-                <Link href="/demo" className="w-full sm:w-auto bg-white text-[#374151] border border-gray-200 px-7 py-3.5 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-center shadow-sm text-[15px]">
-                  Try Demo
-                </Link>
               </motion.div>
 
               {/* Precise Stats */}
@@ -102,7 +99,7 @@ export default function HomePage() {
                   <div className="text-[28px] font-semibold text-[#111827] mb-0.5">₹850</div>
                   <div className="text-[13px] text-[#6B7280] font-medium">Avg. monthly savings</div>
                 </div>
-                <div className="w-[1px] h-10 bg-gray-200 rounded-full"></div>
+                <div className="w-px h-10 bg-gray-200 rounded-full"></div>
                 <div>
                   <div className="text-[28px] font-semibold text-[#111827] mb-0.5">2.4k+</div>
                   <div className="text-[13px] text-[#6B7280] font-medium">Students improving</div>
@@ -176,7 +173,6 @@ export default function HomePage() {
                 <div className="mb-8">
                   <div className="flex justify-between items-end mb-2">
                     <div className="text-[13px] font-medium text-gray-400">Target Analytics</div>
-                    <div className="text-[11px] font-medium text-gray-400 flex items-center gap-1.5"><Clock className="w-3 h-3" /> Updated just now</div>
                   </div>
                   <div className="h-2 w-full bg-[#F3F4F6] rounded-full overflow-hidden mt-3">
                     <motion.div

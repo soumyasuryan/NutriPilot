@@ -47,7 +47,7 @@ const Navbar = () => {
 
           <Link href={user ? "/home" : "/"} className="flex items-center gap-2.5 group cursor-pointer">
             <div>
-              <span className="text-2xl font-bold tracking-tight text-gray-900">Nutri</span><span className="text-2xl font-bold tracking-tight text-green-600">Pilot</span>
+              <span className="text-2xl font-bold tracking-tight text-gray-900">Nutri</span><span className="text-2xl font-bold tracking-tight text-[#057a55]">Pilot</span>
             </div>
           </Link>
 
@@ -190,7 +190,7 @@ const Navbar = () => {
                   <button className="px-5 py-2 text-[15px] font-medium text-[#292524] hover:text-[#16a34a] transition-colors duration-200 cursor-pointer">Login</button>
                 </a>
                 <a href="/signup">
-                  <button className="px-5 py-2.5 bg-linear-to-r from-[#16a34a] to-[#22c55e] text-white rounded-xl shadow-lg shadow-[#22c55e]/30 text-[15px] font-medium transition-all duration-300 cursor-pointer">Sign Up</button>
+                  <button className="px-5 py-2.5 bg-[#057a55] text-white rounded-xl shadow-lg shadow-[#22c55e]/30 text-[15px] font-medium transition-all duration-300 cursor-pointer">Sign Up</button>
                 </a>
               </>
             )}

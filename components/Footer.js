@@ -28,12 +28,12 @@ const Footer = () => {
     <footer className="bg-[#232121] mt-auto">
       <div className="max-w-[1200px] mx-auto px-6 pt-16 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
-          
+
           {/* Brand & Description */}
           <div className="col-span-1 md:col-span-4 lg:col-span-4">
-            <Link href="/" className="flex items-center gap-1 group w-fit mb-6 mt-2">
+            <Link href="/" className="flex items-center group w-fit mb-6 mt-2">
               <span className="text-[26px] font-bold tracking-tight text-white transition-opacity group-hover:opacity-90">Nutri</span>
-              <span className="text-[26px] font-bold tracking-tight text-[#16a34a] transition-opacity group-hover:opacity-90">Pilot</span>
+              <span className="text-[26px] font-bold tracking-tight text-[#057a55] transition-opacity group-hover:opacity-90">Pilot</span>
             </Link>
             <p className="text-[14px] text-stone-400 leading-relaxed max-w-[260px]">
               AI-powered nutrition coach helping students eat better and save money
