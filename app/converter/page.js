@@ -34,7 +34,7 @@ export default function Converter() {
         return;
       }
 
-      const res = await fetch('http://localhost:5000/api/meals/converter', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/converter`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

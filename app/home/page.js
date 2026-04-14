@@ -125,7 +125,7 @@ export default function Dashboard() {
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/api/meals/insight', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/insight`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ userId: user.id })
@@ -141,9 +141,9 @@ export default function Dashboard() {
   const fetchMealData = async (user, token) => {
     try {
       const [todayRes, recentRes, todayMealsRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/meals/today/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch(`http://localhost:5000/api/meals/recent/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch(`http://localhost:5000/api/meals/today-meals/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/today/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/recent/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/today-meals/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
       ]);
       const todayData = await todayRes.json();
       const recentData = await recentRes.json();
@@ -168,7 +168,7 @@ export default function Dashboard() {
     setQueryError('');
     setIsAnalyzing(true);
     try {
-      const res = await fetch('http://localhost:5000/api/meals/analyze', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ foodQuery: searchQuery })
@@ -190,7 +190,7 @@ export default function Dashboard() {
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       const token = localStorage.getItem('token');
-      await fetch('http://localhost:5000/api/meals/log', {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
@@ -272,7 +272,7 @@ export default function Dashboard() {
       setIsAuthorized(true);
       try {
         const user = JSON.parse(userStr);
-        fetch(`http://localhost:5000/api/users/${user.id}`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/users/${user.id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         .then(res => res.json())

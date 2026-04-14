@@ -46,7 +46,7 @@ export default function ProfileProgress() {
       setUser(storedUser);
 
       // Fetch profile data from API
-      fetch(`http://localhost:5000/api/users/${storedUser.id}`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/users/${storedUser.id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
@@ -57,7 +57,7 @@ export default function ProfileProgress() {
       });
 
       // Fetch chart data from API
-      fetch(`http://localhost:5000/api/meals/weekly/${storedUser.id}`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/weekly/${storedUser.id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())

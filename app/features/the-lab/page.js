@@ -32,7 +32,7 @@ export default function TheLab() {
     const user = JSON.parse(localStorage.getItem('user'));
     
     try {
-      const res = await fetch('http://localhost:5000/api/strategy/judge', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/strategy/judge`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id })

@@ -46,7 +46,7 @@ export default function AccountPage() {
       setUser(storedUser);
 
       // Fetch profile data from API
-      fetch(`http://localhost:5000/api/users/${storedUser.id}`, {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/users/${storedUser.id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
@@ -72,7 +72,7 @@ export default function AccountPage() {
     const token = localStorage.getItem('token');
     
     try {
-      const res = await fetch('http://localhost:5000/api/users/update', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/users/update`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

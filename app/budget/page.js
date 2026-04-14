@@ -94,7 +94,7 @@ export default function BudgetOptimizer() {
         ? { foodName: foodToOptimize, macros: { calories: macros.cals, protein: macros.protein, carbs: macros.carbs, fats: macros.fats } }
         : { foodName: foodToOptimize };
 
-      const res = await fetch('http://localhost:5000/api/budget/optimize', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/budget/optimize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(body)
