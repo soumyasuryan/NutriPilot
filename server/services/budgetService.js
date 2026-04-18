@@ -2,7 +2,7 @@ const axios = require('axios');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const getBudgetAlternativeFromAI = async (foodName, macros) => {
+const getBudgetAlternativeFromAI = async (foodName, macros, dietPreference = 'any') => {
   try {
     const response = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
@@ -40,7 +40,8 @@ Format:
             role: "user",
             content: `Premium food: ${foodName}
 Known macros per serving — Calories: ${macros.calories} kcal, Protein: ${macros.protein}g, Carbs: ${macros.carbs}g, Fats: ${macros.fats}g.
-Suggest 3 cheaper alternatives with similar macros. Focus on easily available items in India.`
+Suggest 3 cheaper alternatives with similar macros. Focus on easily available items in India.
+The user's dietary preference is: ${dietPreference}. Only suggest alternatives that match this dietary preference (veg or non-veg).`
           }
         ],
         response_format: { type: "json_object" },

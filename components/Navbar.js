@@ -71,7 +71,7 @@ const Navbar = () => {
               <div className="absolute top-full pt-2 left-1/2 -translate-x-1/2 mt-0 w-64 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
                 <div className="bg-white/95 backdrop-blur-2xl border border-gray-200/80 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.15)] rounded-2xl p-2 flex flex-col gap-1">
 
-                  <button
+<button
                     onClick={(e) => {
                       e.preventDefault();
                       user ? router.push('/features/the-lab') : router.push('/login');
@@ -82,8 +82,8 @@ const Navbar = () => {
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 3h15" /><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3" /><path d="M6 14h12" /></svg>
                     </div>
                     <div>
-                      <div className="text-[14px] font-bold text-gray-900">The Lab</div>
-                      <div className="text-[12px] font-medium text-gray-500 mt-0.5">Goal & Strategy Setting</div>
+                      <div className="text-[14px] font-bold text-gray-900">Weekly Audit</div>
+                      <div className="text-[12px] font-medium text-gray-500 mt-0.5">Weekly Meal Analysis & Recommendations</div>
                     </div>
                   </button>
 

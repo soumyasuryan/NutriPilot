@@ -23,7 +23,11 @@ router.post('/optimize', async (req, res) => {
       };
     }
 
-    const result = await getBudgetAlternativeFromAI(foodName, resolvedMacros);
+    // Get user's dietary preference from their profile
+    const userProfile = await db.query('SELECT diet_preference FROM profiles WHERE id = $1', [req.user?.id || req.user]);
+    const dietPreference = userProfile.rows[0]?.diet_preference || 'any';
+
+    const result = await getBudgetAlternativeFromAI(foodName, resolvedMacros, dietPreference);
     res.json({ success: true, data: result });
   } catch (err) {
     console.error("Budget Optimizer Error:", err.message);

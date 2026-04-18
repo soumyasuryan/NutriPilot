@@ -70,7 +70,7 @@ export default function TheLab() {
                 <Target className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold tracking-tight text-gray-900">The Lab</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-gray-900">Weekly Audit</h1>
                 <p className="text-gray-500 mt-1">Uncover dietary weaknesses and optimize your week.</p>
               </div>
             </div>
