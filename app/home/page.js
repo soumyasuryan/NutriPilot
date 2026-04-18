@@ -3,15 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock, ChevronRight, Scale, CheckCircle2, ShieldAlert, Activity } from 'lucide-react';
+import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock, ChevronRight, Scale, CheckCircle2, ShieldAlert, Activity, Loader2 } from 'lucide-react';
 import Toast from '@/components/Toast';
 
 // --- Reusable SVG Circular Progress Ring ---
 const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, label, subLabel }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  const progress = Math.min(value / max, 1);
-  const strokeDashoffset = circumference - progress * circumference;
+  // Ensure we handle case where max might be 0 to avoid NaN
+  const safeMax = max > 0 ? max : 1;
+  const progress = Math.min(value / safeMax, 1);
+  const dashLength = progress * circumference;
 
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
@@ -34,21 +36,68 @@ const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, lab
           stroke={color}
           strokeWidth={strokeWidth}
           fill="transparent"
-          strokeDasharray={circumference}
+          strokeDasharray={`${circumference} ${circumference}`}
           initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset }}
+          animate={{ strokeDashoffset: circumference - dashLength }}
           transition={{ duration: 1.5, ease: "easeOut" }}
           strokeLinecap="round"
         />
       </svg>
       {/* Inner Label */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <span className="text-3xl font-bold text-gray-900 tracking-tight">{Math.abs(max - value)}</span>
+        <span className="text-3xl font-bold text-gray-900 tracking-tight">
+          {label === 'kcal remaining' ? Math.max(0, Math.round(max - value)) : Math.round(value)}
+        </span>
         <span className="text-sm font-medium text-gray-500 mt-1">{label}</span>
         {subLabel && <span className="text-[11px] text-gray-400 font-medium">{subLabel}</span>}
       </div>
     </div>
   );
+};
+
+const getScoreAppearance = (score) => {
+  if (score < 35) {
+    return {
+      ringColor: '#DC2626',
+      badgeBg: 'bg-red-500',
+      badgeIcon: 'text-white',
+      panelTone: 'from-red-50 to-rose-50',
+      borderTone: 'border-red-100',
+      statusText: 'Needs Recovery',
+      statusColor: 'text-red-600',
+    };
+  }
+  if (score < 60) {
+    return {
+      ringColor: '#D97706',
+      badgeBg: 'bg-amber-500',
+      badgeIcon: 'text-white',
+      panelTone: 'from-amber-50 to-orange-50',
+      borderTone: 'border-amber-100',
+      statusText: 'At Risk',
+      statusColor: 'text-amber-600',
+    };
+  }
+  if (score < 80) {
+    return {
+      ringColor: '#2563EB',
+      badgeBg: 'bg-blue-500',
+      badgeIcon: 'text-white',
+      panelTone: 'from-blue-50 to-cyan-50',
+      borderTone: 'border-blue-100',
+      statusText: 'Stable',
+      statusColor: 'text-blue-600',
+    };
+  }
+  return {
+    ringColor: '#057A55',
+    badgeBg: 'bg-emerald-500',
+    badgeIcon: 'text-white',
+    panelTone: 'from-emerald-50 to-green-50',
+    borderTone: 'border-emerald-100',
+    statusText: 'Strong',
+    statusColor: 'text-emerald-600',
+  };
 };
 
 // --- Reusable Macro Linear Bar ---
@@ -121,6 +170,7 @@ export default function Dashboard() {
   const [rollingAudit, setRollingAudit] = useState(null);
   const [patterns, setPatterns] = useState(null);
   const [isLogging, setIsLogging] = useState(false);
+  const scoreAppearance = getScoreAppearance(dailyScore?.score || 0);
 
   const showToast = (message, sub, type = 'success', duration = 3000) => {
     setToast({ show: true, message, sub, type });
@@ -665,7 +715,7 @@ export default function Dashboard() {
                   <CircularProgress 
                     value={dailyScore?.score || 0} 
                     max={100} 
-                    color="#057A55" 
+                    color={scoreAppearance.ringColor} 
                     size={140} 
                     strokeWidth={12}
                     label="Score"
