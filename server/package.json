@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "build": "echo 'Build complete'",
     "db:check": "node database/check-connection.js",
     "db:schema": "node database/run-schema.js",
     "db:migrate": "node database/run-migrate.js"
