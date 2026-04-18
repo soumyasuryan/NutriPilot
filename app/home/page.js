@@ -170,6 +170,7 @@ export default function Dashboard() {
   const [rollingAudit, setRollingAudit] = useState(null);
   const [patterns, setPatterns] = useState(null);
   const [isLogging, setIsLogging] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
   const scoreAppearance = getScoreAppearance(dailyScore?.score || 0);
   const canRequestCoaching = Number(todayTotals.meal_count || 0) >= 3;
 
@@ -208,7 +209,7 @@ export default function Dashboard() {
         fetch(`${apiUrl}/api/meals/today-meals/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
         fetch(`${apiUrl}/api/meals/behavioral-status/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
       ]);
-      
+
       const todayData = await todayRes.json();
       const recentData = await recentRes.json();
       const todayMealsData = await todayMealsRes.json();
@@ -296,7 +297,7 @@ export default function Dashboard() {
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       const token = localStorage.getItem('token');
-      
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/analyze-meal`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -310,17 +311,16 @@ export default function Dashboard() {
         })
       });
       const data = await res.json();
-      
+
       if (data.success) {
         setAnalyzedMeal(null);
         setSearchQuery('');
-        
         // Populate rich behavioral data
         setDailyScore(data.daily_score);
         setFailureInsights(data.failure_insights);
         setPrediction(data.prediction);
         setCoaching(null);
-        
+
         fetchMealData(user, token);
         showToast("Meal Logged!", data.can_request_coaching ? "You can now unlock contextual coaching." : "Keep logging meals to unlock the coach after 3 meals.", "success");
       }
@@ -384,6 +384,13 @@ export default function Dashboard() {
   const calStatus = getCalorieStatus();
 
   useEffect(() => {
+    const checkMobileView = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+    checkMobileView();
+    window.addEventListener('resize', checkMobileView);
+    return () => window.removeEventListener('resize', checkMobileView);
+
     const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
     if (!token || !userStr) {
@@ -410,7 +417,279 @@ export default function Dashboard() {
   if (!isAuthorized) return null;
 
   return (
-    <div className="min-h-screen bg-[#FCFCFD] text-gray-900 pt-28 pb-20 selection:bg-[#057A55]/10 selection:text-[#057A55] relative">
+    <div className={isMobileView ? 'mobile-view' : ''}>
+      <style jsx>{`
+        .mobile-view .grid-cols-1 {
+          grid-template-columns: 1fr !important;
+        }
+        .mobile-view .lg:grid-cols-2 {
+          grid-template-columns: 1fr !important;
+        }
+        .mobile-view .xl:grid-cols-12 {
+          grid-template-columns: 1fr !important;
+        }
+        .mobile-view .text-3xl {
+          font-size: 1.5rem !important;
+        }
+        .mobile-view .text-lg {
+          font-size: 1rem !important;
+        }
+        .mobile-view .text-sm {
+          font-size: 0.875rem !important;
+        }
+        .mobile-view .text-xs {
+          font-size: 0.75rem !important;
+        }
+        .mobile-view .p-8 {
+          padding: 1rem !important;
+        }
+        .mobile-view .px-6 {
+          padding-left: 1rem !important;
+          padding-right: 1rem !important;
+        }
+        .mobile-view .py-4 {
+          padding-top: 1rem !important;
+          padding-bottom: 1rem !important;
+        }
+        .mobile-view .mb-6 {
+          margin-bottom: 1.5rem !important;
+        }
+        .mobile-view .mt-6 {
+          margin-top: 1.5rem !important;
+        }
+        .mobile-view .gap-6 {
+          gap: 1.5rem !important;
+        }
+        .mobile-view .gap-4 {
+          gap: 1rem !important;
+        }
+        .mobile-view .gap-3 {
+          gap: 0.75rem !important;
+        }
+        .mobile-view .gap-2 {
+          gap: 0.5rem !important;
+        }
+        .mobile-view .gap-1 {
+          gap: 0.25rem !important;
+        }
+        .mobile-view .w-full {
+          width: 100% !important;
+        }
+        .mobile-view .h-full {
+          height: 100% !important;
+        }
+        .mobile-view .flex-col {
+          flex-direction: column !important;
+        }
+        .mobile-view .items-center {
+          align-items: center !important;
+        }
+        .mobile-view .justify-center {
+          justify-content: center !important;
+        }
+        .mobile-view .justify-between {
+          justify-content: space-between !important;
+        }
+        .mobile-view .justify-start {
+          justify-content: flex-start !important;
+        }
+        .mobile-view .justify-end {
+          justify-content: flex-end !important;
+        }
+        .mobile-view .text-center {
+          text-align: center !important;
+        }
+        .mobile-view .text-left {
+          text-align: left !important;
+        }
+        .mobile-view .text-right {
+          text-align: right !important;
+        }
+        .mobile-view .rounded-3xl {
+          border-radius: 1rem !important;
+        }
+        .mobile-view .rounded-2xl {
+          border-radius: 0.75rem !important;
+        }
+        .mobile-view .rounded-xl {
+          border-radius: 0.5rem !important;
+        }
+        .mobile-view .rounded-lg {
+          border-radius: 0.375rem !important;
+        }
+        .mobile-view .rounded-md {
+          border-radius: 0.25rem !important;
+        }
+        .mobile-view .rounded {
+          border-radius: 0.125rem !important;
+        }
+        .mobile-view .shadow-sm {
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+        .mobile-view .shadow {
+          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+        }
+        .mobile-view .shadow-md {
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        }
+        .mobile-view .shadow-lg {
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+        }
+        .mobile-view .shadow-xl {
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        }
+        .mobile-view .shadow-2xl {
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        }
+        .mobile-view .border {
+          border-width: 1px !important;
+        }
+        .mobile-view .border-2 {
+          border-width: 2px !important;
+        }
+        .mobile-view .border-4 {
+          border-width: 4px !important;
+        }
+        .mobile-view .border-8 {
+          border-width: 8px !important;
+        }
+        .mobile-view .w-12 {
+          width: 3rem !important;
+        }
+        .mobile-view .h-12 {
+          height: 3rem !important;
+        }
+        .mobile-view .w-10 {
+          width: 2.5rem !important;
+        }
+        .mobile-view .h-10 {
+          height: 2.5rem !important;
+        }
+        .mobile-view .w-8 {
+          width: 2rem !important;
+        }
+        .mobile-view .h-8 {
+          height: 2rem !important;
+        }
+        .mobile-view .w-6 {
+          width: 1.5rem !important;
+        }
+        .mobile-view .h-6 {
+          height: 1.5rem !important;
+        }
+        .mobile-view .w-4 {
+          width: 1rem !important;
+        }
+        .mobile-view .h-4 {
+          height: 1rem !important;
+        }
+        .mobile-view .w-3 {
+          width: 0.75rem !important;
+        }
+        .mobile-view .h-3 {
+          height: 0.75rem !important;
+        }
+        .mobile-view .w-2 {
+          width: 0.5rem !important;
+        }
+        .mobile-view .h-2 {
+          height: 0.5rem !important;
+        }
+        .mobile-view .w-1 {
+          width: 0.25rem !important;
+        }
+        .mobile-view .h-1 {
+          height: 0.25rem !important;
+        }
+        .mobile-view .px-5 {
+          padding-left: 1.25rem !important;
+          padding-right: 1.25rem !important;
+        }
+        .mobile-view .py-2.5 {
+          padding-top: 0.625rem !important;
+          padding-bottom: 0.625rem !important;
+        }
+        .mobile-view .px-4 {
+          padding-left: 1rem !important;
+          padding-right: 1rem !important;
+        }
+        .mobile-view .py-2 {
+          padding-top: 0.5rem !important;
+          padding-bottom: 0.5rem !important;
+        }
+        .mobile-view .px-3 {
+          padding-left: 0.75rem !important;
+          padding-right: 0.75rem !important;
+        }
+        .mobile-view .py-1.5 {
+          padding-top: 0.375rem !important;
+          padding-bottom: 0.375rem !important;
+        }
+        .mobile-view .px-2 {
+          padding-left: 0.5rem !important;
+          padding-right: 0.5rem !important;
+        }
+        .mobile-view .py-1 {
+          padding-top: 0.25rem !important;
+          padding-bottom: 0.25rem !important;
+        }
+        .mobile-view .px-1 {
+          padding-left: 0.25rem !important;
+          padding-right: 0.25rem !important;
+        }
+        .mobile-view .py-0.5 {
+          padding-top: 0.125rem !important;
+          padding-bottom: 0.125rem !important;
+        }
+        .mobile-view .text-2xl {
+          font-size: 1.5rem !important;
+          line-height: 2rem !important;
+        }
+        .mobile-view .text-xl {
+          font-size: 1.25rem !important;
+          line-height: 1.75rem !important;
+        }
+        .mobile-view .text-lg {
+          font-size: 1.125rem !important;
+          line-height: 1.75rem !important;
+        }
+        .mobile-view .text-base {
+          font-size: 1rem !important;
+          line-height: 1.5rem !important;
+        }
+        .mobile-view .text-sm {
+          font-size: 0.875rem !important;
+          line-height: 1.25rem !important;
+        }
+        .mobile-view .text-xs {
+          font-size: 0.75rem !important;
+          line-height: 1rem !important;
+        }
+        .mobile-view .text-[10px] {
+          font-size: 0.625rem !important;
+          line-height: 1rem !important;
+        }
+        .mobile-view .text-[11px] {
+          font-size: 0.6875rem !important;
+          line-height: 1rem !important;
+        }
+        .mobile-view .text-[12px] {
+          font-size: 0.75rem !important;
+          line-height: 1rem !important;
+        }
+        .mobile-view .text-[13px] {
+          font-size: 0.8125rem !important;
+          line-height: 1.25rem !important;
+        }
+        .mobile-view .text-[14px] {
+          font-size: 0.875rem !important;
+          line-height: 1.25rem !important;
+        }
+        .mobile-view .text-[15px] {
+          font-size: 0.9375rem !important;
+          line-height: 1.5rem !important;
+        }
+      `}</style>
 
       {/* Background Decor */}
       <div className="fixed top-0 left-0 w-[40vw] h-[40vw] bg-emerald-50/60 rounded-full blur-[120px] pointer-events-none -z-10 -translate-x-1/2 -translate-y-1/2" />
@@ -602,8 +881,7 @@ export default function Dashboard() {
                       canRequestCoaching
                         ? "bg-white/10 hover:bg-white/20 disabled:bg-white/5 disabled:text-white/50 disabled:border-white/10 backdrop-blur-md border border-white/20 text-white"
                         : "bg-gray-100 text-gray-500 border border-gray-200 disabled:opacity-100"
-                    }`}
-                  >
+                    }`}>
                     <Activity className={`w-4 h-4 ${isGeneratingInsight ? 'animate-spin' : ''}`} />
                     {isGeneratingInsight ? "Analyzing..." : "Generate AI Insights"}
                   </button>
@@ -695,6 +973,9 @@ export default function Dashboard() {
 
                   <div className="rounded-3xl border border-white/10 bg-black/10 p-4 space-y-3">
                     <button
+                      onClick={() => scrollToLog()}
+                      className="w-full bg-white text-[#064E3B] hover:bg-gray-100 font-bold py-3.5 rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2"
+                    >
                       onClick={() => scrollToLog()}
                       className="w-full bg-white text-[#064E3B] hover:bg-gray-100 font-bold py-3.5 rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2"
                     >

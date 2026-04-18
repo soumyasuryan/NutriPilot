@@ -55,7 +55,7 @@ export default function HomePage() {
         <div className="absolute top-0 right-0 w-[45vw] h-[45vw] bg-linear-to-b from-[#E6F4EA] to-transparent rounded-full blur-[100px] pointer-events-none -z-10 opacity-70 translate-x-1/4 -translate-y-1/4" />
 
         {/* Hero Section */}
-        <main className="max-w-[1200px] mx-auto px-6 lg:px-8 pt-12 pb-24 md:pt-20 relative z-10">
+        <main className="max-w-[1200px] mx-auto px-6 lg:px-8 pt-8 pb-16 md:pt-20 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-16 lg:gap-12 items-center">
 
             {/* Hero Left Content */}
@@ -74,9 +74,9 @@ export default function HomePage() {
               {/* Headline */}
               <motion.h1
                 variants={fadeInUp}
-                className="text-[3rem] md:text-[4rem] font-semibold leading-[1.08] tracking-tight mb-6 text-[#111827]"
+                className="text-[2.25rem] sm:text-[3rem] md:text-[4rem] font-bold leading-[1.1] md:leading-[1.08] tracking-tight mb-6 text-[#111827]"
               >
-                Fix your diet. <br />
+                Fix your diet. <br className="hidden sm:block" />
                 <span className="text-[#057A55]">Not just track it.</span>
               </motion.h1>
 
@@ -94,15 +94,15 @@ export default function HomePage() {
               </motion.div>
 
               {/* Precise Stats */}
-              <motion.div variants={fadeInUp} className="flex items-center gap-10 mt-14 pt-8 w-full md:max-w-fit">
+              <motion.div variants={fadeInUp} className="flex items-center gap-6 sm:gap-10 mt-10 sm:mt-14 pt-8 w-full md:max-w-fit border-t border-gray-100 md:border-t-0">
                 <div>
-                  <div className="text-[28px] font-semibold text-[#111827] mb-0.5">₹850</div>
-                  <div className="text-[13px] text-[#6B7280] font-medium">Avg. monthly savings</div>
+                  <div className="text-[24px] sm:text-[28px] font-semibold text-[#111827] mb-0.5">₹850</div>
+                  <div className="text-[12px] sm:text-[13px] text-[#6B7280] font-medium">Avg. monthly savings</div>
                 </div>
                 <div className="w-px h-10 bg-gray-200 rounded-full"></div>
                 <div>
-                  <div className="text-[28px] font-semibold text-[#111827] mb-0.5">2.4k+</div>
-                  <div className="text-[13px] text-[#6B7280] font-medium">Students improving</div>
+                  <div className="text-[24px] sm:text-[28px] font-semibold text-[#111827] mb-0.5">2.4k+</div>
+                  <div className="text-[12px] sm:text-[13px] text-[#6B7280] font-medium">Students improving</div>
                 </div>
               </motion.div>
             </motion.div>
@@ -132,14 +132,14 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8, type: "spring", stiffness: 80, damping: 20 }}
-                  className="absolute -left-4 md:-left-12 top-20 bg-white/80 backdrop-blur-xl p-3.5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white flex items-center gap-3.5 z-20"
+                  className="absolute -left-2 sm:-left-12 top-10 sm:top-20 bg-white/80 backdrop-blur-xl p-2.5 sm:p-3.5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white flex items-center gap-2.5 sm:gap-3.5 z-20 scale-90 sm:scale-100"
                 >
-                  <div className="bg-[#E6F4EA] p-2 rounded-[10px] text-[#057A55]">
-                    <Activity className="w-4 h-4" />
+                  <div className="bg-[#E6F4EA] p-1.5 sm:p-2 rounded-[8px] sm:rounded-[10px] text-[#057A55]">
+                    <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
-                  <div className="pr-2">
-                    <p className="text-[11px] text-gray-500 font-medium mb-0.5">Daily Goal</p>
-                    <p className="text-[13px] font-semibold text-gray-900">85% Complete</p>
+                  <div className="pr-1 sm:pr-2">
+                    <p className="text-[10px] sm:text-[11px] text-gray-500 font-medium mb-0.5">Daily Goal</p>
+                    <p className="text-[12px] sm:text-[13px] font-semibold text-gray-900">85% Complete</p>
                   </div>
                 </motion.div>
 
@@ -148,14 +148,14 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: -15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1, type: "spring", stiffness: 80, damping: 20 }}
-                  className="absolute -right-4 md:-right-8 -bottom-6 bg-white/80 backdrop-blur-xl p-3.5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white flex items-center gap-3.5 z-20"
+                  className="absolute -right-2 sm:-right-8 -bottom-4 sm:-bottom-6 bg-white/80 backdrop-blur-xl p-2.5 sm:p-3.5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white flex items-center gap-2.5 sm:gap-3.5 z-20 scale-90 sm:scale-100"
                 >
-                  <div className="bg-orange-50 p-2 rounded-[10px] text-orange-500">
-                    <Wallet className="w-4 h-4" />
+                  <div className="bg-orange-50 p-1.5 sm:p-2 rounded-[8px] sm:rounded-[10px] text-orange-500">
+                    <Wallet className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
-                  <div className="pr-2">
-                    <p className="text-[11px] text-gray-500 font-medium mb-0.5">Saved Today</p>
-                    <p className="text-[13px] font-semibold text-gray-900">₹42.50</p>
+                  <div className="pr-1 sm:pr-2">
+                    <p className="text-[10px] sm:text-[11px] text-gray-500 font-medium mb-0.5">Saved Today</p>
+                    <p className="text-[12px] sm:text-[13px] font-semibold text-gray-900">₹42.50</p>
                   </div>
                 </motion.div>
 
@@ -209,20 +209,20 @@ export default function HomePage() {
         </main>
 
         {/* How It Works Section - Refined Grid */}
-        <section id="how-it-works" className="py-32 px-6 lg:px-8 bg-white relative">
-          <div className="max-w-[1200px] mx-auto border-t border-gray-100 pt-24">
+        <section id="how-it-works" className="py-20 sm:py-32 px-6 lg:px-8 bg-white relative">
+          <div className="max-w-[1200px] mx-auto border-t border-gray-100 pt-16 sm:pt-24">
 
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
               variants={staggerContainer}
-              className="flex flex-col items-center text-center mb-20"
+              className="flex flex-col items-center text-center mb-16 sm:mb-20"
             >
-              <motion.h2 variants={fadeInUp} className="text-[2.25rem] md:text-[2.75rem] font-semibold text-[#111827] mb-4 tracking-tight">
+              <motion.h2 variants={fadeInUp} className="text-[1.85rem] sm:text-[2.25rem] md:text-[2.75rem] font-bold text-[#111827] mb-4 tracking-tight leading-tight">
                 A systematic approach to diet
               </motion.h2>
-              <motion.p variants={fadeInUp} className="text-[17px] text-gray-500 max-w-xl">
+              <motion.p variants={fadeInUp} className="text-[15px] sm:text-[17px] text-gray-500 max-w-xl">
                 Our 3-step process simplifies nutrition without compromising your wallet.
               </motion.p>
             </motion.div>
@@ -283,23 +283,23 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="max-w-[1000px] mx-auto bg-[#064E3B] rounded-3xl p-12 md:p-16 text-center relative overflow-hidden"
+            className="max-w-[1000px] mx-auto bg-[#064E3B] rounded-3xl p-10 sm:p-12 md:p-16 text-center relative overflow-hidden"
           >
             {/* Internal gradient decoration */}
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#059669] blur-[80px] rounded-full opacity-60"></div>
 
-            <h2 className="text-[2rem] md:text-[2.75rem] font-semibold text-white mb-5 tracking-tight relative z-10">
+            <h2 className="text-[1.75rem] sm:text-[2.25rem] md:text-[2.75rem] font-bold text-white mb-5 tracking-tight relative z-10 leading-tight">
               Ready to transform your diet?
             </h2>
 
-            <p className="text-[#A7F3D0] text-[16px] md:text-[18px] mb-10 max-w-2xl mx-auto relative z-10">
+            <p className="text-[#A7F3D0] text-[15px] sm:text-[16px] md:text-[18px] mb-8 sm:mb-10 max-w-2xl mx-auto relative z-10">
               Join 2,400+ students who are breaking past physical plateaus and saving money with NutriPilot.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
               <Link
                 href="/signup"
-                className="w-full sm:w-auto bg-white text-[#064E3B] font-medium px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors duration-200 shadow-sm flex items-center justify-center text-[15px]"
+                className="w-full sm:w-auto bg-white text-[#064E3B] font-bold px-8 py-4 rounded-xl hover:bg-gray-50 transition-colors duration-200 shadow-sm flex items-center justify-center text-[15px]"
               >
                 Start Free Trial
               </Link>
