@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getBudgetAlternativeFromAI } = require('../services/budgetService');
 const { getNutritionFromAI } = require('../services/groqService');
+const db = require('../config/db');
 
 // POST /api/budget/optimize
 // Body: { foodName: string } OR { foodName: string, macros: { calories, protein, carbs, fats } }
