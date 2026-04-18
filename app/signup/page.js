@@ -23,6 +23,7 @@ export default function Signup() {
     password: '',
     age: '',
     gender: '',
+    diet_preference: 'any',
     height: '',
     weight: '',
     goal: '',
@@ -81,6 +82,7 @@ export default function Signup() {
           userId: userId,
           age: finalData.age,
           gender: finalData.gender,
+          diet_preference: finalData.diet_preference,
           height: finalData.height,
           weight: finalData.weight,
           goal: finalData.goal,
@@ -244,6 +246,15 @@ export default function Signup() {
                     <option value="Very little exercise">Very little exercise</option>
                     <option value="Moderate exercise">Moderate exercise</option>
                     <option value="Intensive exercise">Intensive exercise</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Diet Preference</label>
+                  <select name="diet_preference" className="block w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all" value={formData.diet_preference} onChange={handleChange} required>
+                    <option value="veg">Veg</option>
+                    <option value="non_veg">Non-Veg</option>
+                    <option value="any">Any</option>
                   </select>
                 </div>
 

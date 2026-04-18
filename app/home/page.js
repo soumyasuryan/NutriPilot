@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock, ChevronRight, Scale, CheckCircle2 } from 'lucide-react';
+import { Flame, Droplet, Wheat, Info, Sparkles, TrendingUp, Plus, Search, Clock, ChevronRight, Scale, CheckCircle2, ShieldAlert, Activity } from 'lucide-react';
 import Toast from '@/components/Toast';
 
 // --- Reusable SVG Circular Progress Ring ---
@@ -110,7 +110,17 @@ export default function Dashboard() {
   const [analyzedMeal, setAnalyzedMeal] = useState(null);
   const [dailyInsight, setDailyInsight] = useState(null);
   const [isGeneratingInsight, setIsGeneratingInsight] = useState(false);
+  const [isConfirmingMeal, setIsConfirmingMeal] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', sub: '', type: 'success' });
+
+  // New states for behavioral data
+  const [failureInsights, setFailureInsights] = useState([]);
+  const [dailyScore, setDailyScore] = useState(null);
+  const [prediction, setPrediction] = useState(null);
+  const [coaching, setCoaching] = useState(null);
+  const [rollingAudit, setRollingAudit] = useState(null);
+  const [patterns, setPatterns] = useState(null);
+  const [isLogging, setIsLogging] = useState(false);
 
   const showToast = (message, sub, type = 'success', duration = 3000) => {
     setToast({ show: true, message, sub, type });
@@ -140,20 +150,59 @@ export default function Dashboard() {
 
   const fetchMealData = async (user, token) => {
     try {
-      const [todayRes, recentRes, todayMealsRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/today/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/recent/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/today-meals/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const [todayRes, recentRes, todayMealsRes, behaviorRes] = await Promise.all([
+        fetch(`${apiUrl}/api/meals/today/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch(`${apiUrl}/api/meals/recent/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch(`${apiUrl}/api/meals/today-meals/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch(`${apiUrl}/api/meals/behavioral-status/${user.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
       ]);
+      
       const todayData = await todayRes.json();
       const recentData = await recentRes.json();
       const todayMealsData = await todayMealsRes.json();
+      const behaviorData = await behaviorRes.json();
+
       if (todayData.success) setTodayTotals(todayData.data);
       if (recentData.success) setRecentMeals(recentData.data);
       if (todayMealsData.success) setTodayMeals(todayMealsData.data);
+      if (behaviorData.success) {
+        setDailyScore(behaviorData.daily_score);
+        setFailureInsights(behaviorData.failure_insights);
+        setPrediction(behaviorData.prediction);
+        setRollingAudit(behaviorData.rolling_audit);
+        setPatterns(behaviorData.patterns);
+        if (behaviorData.latest_coaching) {
+          setCoaching(behaviorData.latest_coaching);
+        }
+      }
     } catch (err) {
       console.error("Error fetching meal data", err);
     }
+  };
+
+  const handleReAnalyze = async () => {
+    setIsGeneratingInsight(true);
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/re-analyze/${user.id}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCoaching(data.coaching);
+        setDailyScore(data.daily_score);
+        setPrediction(data.prediction);
+        setFailureInsights(data.failure_insights);
+        showToast("Analysis Updated!", "Fresh AI coaching generated.", "success");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Analysis Failed", "Could not refresh coaching status.", "error");
+    }
+    setIsGeneratingInsight(false);
   };
 
   const handleAnalyze = async () => {
@@ -187,10 +236,12 @@ export default function Dashboard() {
   };
 
   const handleConfirmAndLog = async (foodObj = analyzedMeal) => {
+    setIsConfirmingMeal(true);
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       const token = localStorage.getItem('token');
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/log`, {
+      
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meals/analyze-meal`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
@@ -202,13 +253,26 @@ export default function Dashboard() {
           fats: foodObj.fats
         })
       });
-      setAnalyzedMeal(null);
-      setSearchQuery('');
-      fetchMealData(user, token);
-      showToast("Meal Logged!", "Your daily totals have been updated.", "success");
+      const data = await res.json();
+      
+      if (data.success) {
+        setAnalyzedMeal(null);
+        setSearchQuery('');
+        
+        // Populate rich behavioral data
+        setDailyScore(data.daily_score);
+        setFailureInsights(data.failure_insights);
+        setPrediction(data.prediction);
+        setCoaching(data.coaching);
+        
+        fetchMealData(user, token);
+        showToast("Meal Logged!", "Intelligence updated.", "success");
+      }
     } catch (err) {
       console.error(err);
-      showToast("Logging Failed", "Could not save meal to your history.", "error");
+      showToast("Logging Failed", "Could not save meal with intelligence.", "error");
+    } finally {
+      setIsConfirmingMeal(false);
     }
   };
 
@@ -328,14 +392,13 @@ export default function Dashboard() {
           </motion.div>
         </motion.div>
 
-        {/* Dashboard Grid */}
+        {/* Dashboard Grid - Primary Stats */}
         <motion.div
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
-          className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
         >
-
           {/* Card 1: Calories Fuel Gauge */}
           <motion.div
             variants={fadeInUp}
@@ -407,7 +470,7 @@ export default function Dashboard() {
                 current={Number(todayTotals.total_protein || 0)}
                 target={profile?.target_protein || 80}
                 unit="g"
-                colorClass="bg-[#2563EB]" // Blue
+                colorClass="bg-[#2563EB]"
                 bgClass="bg-blue-50"
               />
               <MacroBar
@@ -416,7 +479,7 @@ export default function Dashboard() {
                 current={Number(todayTotals.total_carbs || 0)}
                 target={profile?.target_carbs || 220}
                 unit="g"
-                colorClass="bg-[#D97706]" // Amber/Orange
+                colorClass="bg-[#D97706]"
                 bgClass="bg-amber-50"
               />
               <MacroBar
@@ -425,84 +488,299 @@ export default function Dashboard() {
                 current={Number(todayTotals.total_fats || 0)}
                 target={profile?.target_fats || 65}
                 unit="g"
-                colorClass="bg-[#057A55]" // Emerald
+                colorClass="bg-[#057A55]"
                 bgClass="bg-emerald-50"
               />
             </div>
           </motion.div>
+        </motion.div>
 
-          {/* Card 3: AI Insight (Glassmorphism + Glow or Locked) */}
+        {/* Card 3: Contextual AI Coaching (Full Width Row) */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+          className={`mt-6 rounded-3xl p-8 relative overflow-hidden transition-all duration-700 ${todayTotals.meal_count >= 1
+              ? "bg-linear-to-br from-[#064E3B] to-[#042F2E] shadow-[0_12px_40px_-10px_rgba(4,47,46,0.3)]"
+              : "bg-gray-50 border border-gray-100"
+            }`}
+        >
+          {/* Background Decor */}
+          {todayTotals.meal_count >= 1 && (
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#059669] rounded-full blur-[80px] opacity-30 -translate-y-1/2 translate-x-1/3"></div>
+          )}
+
+          <div className="relative z-10">
+            <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-6 ${todayTotals.meal_count >= 1
+                ? "bg-white/10 backdrop-blur-md border border-white/10"
+                : "bg-white border border-gray-200"
+              }`}>
+              <Sparkles className={`w-3.5 h-3.5 ${todayTotals.meal_count >= 1 ? "text-[#34D399]" : "text-gray-400"}`} />
+              <span className={`text-[12px] font-semibold tracking-wide uppercase ${todayTotals.meal_count >= 1 ? "text-[#A7F3D0]" : "text-gray-500"}`}>
+                Contextual Coach
+              </span>
+            </div>
+
+            {!coaching ? (
+              <h3 className="text-lg font-medium text-gray-500 leading-relaxed mt-2">
+                {todayTotals.meal_count === 0
+                  ? "Log your first meal to initialize the AI coach."
+                  : "Analysis is running in the background..."}
+              </h3>
+            ) : (
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-5">
+                <div className="xl:col-span-7 space-y-4">
+                  <div className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-sm p-5">
+                    <div className="flex flex-wrap items-center gap-3 mb-4">
+                      <p className="text-[10px] font-bold text-[#34D399] uppercase tracking-widest">Status Judgment</p>
+                      {coaching.judgment && (
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          coaching.judgment === 'bad'
+                            ? 'bg-red-500/20 text-red-200'
+                            : coaching.judgment === 'okay'
+                              ? 'bg-amber-500/20 text-amber-100'
+                              : 'bg-emerald-500/20 text-emerald-100'
+                        }`}>
+                          {coaching.judgment}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-[18px] md:text-[22px] font-semibold text-white leading-[1.15] tracking-tight max-w-2xl">
+                      {coaching.why}
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-4">
+                      <p className="text-[10px] font-bold text-[#34D399] uppercase tracking-widest mb-2">Smart Fix</p>
+                      <p className="text-[15px] text-white font-medium leading-6">
+                        {coaching.smart_meal_completion}
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                      <p className="text-[10px] font-bold text-[#A7F3D0] uppercase tracking-widest mb-2">Immediate Fix</p>
+                      <p className="text-[15px] text-white/90 font-medium leading-6">
+                        {coaching.immediate_fix || "Keep the next meal aligned with your target and protein needs."}
+                      </p>
+                    </div>
+                  </div>
+
+                  {coaching.warning && (
+                    <div className="rounded-2xl border border-red-400/20 bg-red-500/10 p-4">
+                      <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mb-2">Warning</p>
+                      <p className="text-[14px] text-white/90 font-medium leading-6">{coaching.warning}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="xl:col-span-5 space-y-4">
+                  {prediction && (
+                    <div className="rounded-3xl border border-white/10 bg-white/[0.05] backdrop-blur-sm p-5">
+                      <div className="flex items-center justify-between gap-3 mb-4">
+                        <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">EOD Prediction</p>
+                        <div className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
+                          prediction.risk_level === 'danger' ? 'bg-red-500/20 text-red-300' :
+                          prediction.risk_level === 'warning' ? 'bg-orange-500/20 text-orange-300' :
+                          'bg-emerald-500/20 text-emerald-300'
+                        }`}>
+                          {prediction.risk_level} risk
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-[11px] uppercase tracking-widest text-gray-400 mb-1">Projected Calories</p>
+                          <p className="text-4xl font-bold text-white tracking-tight">
+                            {prediction.projected_calories}
+                            <span className="ml-2 text-sm font-medium text-gray-400">kcal</span>
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 pt-1">
+                          <div className="rounded-2xl bg-black/10 border border-white/5 p-3">
+                            <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Protein</p>
+                            <p className="text-lg font-semibold text-white">{prediction.projected_protein}g</p>
+                          </div>
+                          <div className="rounded-2xl bg-black/10 border border-white/5 p-3">
+                            <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Coach Mode</p>
+                            <p className="text-lg font-semibold text-white capitalize">{prediction.risk_level}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="rounded-3xl border border-white/10 bg-black/10 p-4 space-y-3">
+                    <button
+                      onClick={() => scrollToLog()}
+                      className="w-full bg-white text-[#064E3B] hover:bg-gray-100 font-bold py-3.5 rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Log Next Meal
+                    </button>
+
+                    <button
+                      onClick={handleReAnalyze}
+                      disabled={isGeneratingInsight || !coaching}
+                      className="w-full bg-white/10 hover:bg-white/20 disabled:bg-white/5 disabled:text-white/50 disabled:border-white/10 backdrop-blur-md border border-white/20 text-white font-medium py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2"
+                    >
+                      <Activity className={`w-4 h-4 ${isGeneratingInsight ? 'animate-spin' : ''}`} />
+                      {isGeneratingInsight ? "Analyzing..." : "Analyze Again"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+        
+        {/* Behavioral Performance Section */}
+        {(dailyScore || (failureInsights && failureInsights.length > 0)) && (
           <motion.div
-            variants={fadeInUp}
-            className={`rounded-3xl p-8 relative overflow-hidden flex flex-col justify-between transition-all duration-700 ${todayTotals.meal_count >= 3
-                ? "bg-linear-to-br from-[#064E3B] to-[#042F2E] shadow-[0_12px_40px_-10px_rgba(4,47,46,0.3)]"
-                : "bg-gray-50 border border-gray-200"
-              }`}
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+            className="mt-8 space-y-6"
           >
-            {/* Background Decor */}
-            {todayTotals.meal_count >= 3 && (
-              <div className="absolute top-0 right-0 w-48 h-48 bg-[#059669] rounded-full blur-[60px] opacity-40 -translate-y-1/2 translate-x-1/3"></div>
+            {/* Mistake Streaks Row */}
+            {patterns?.mistake_streaks && Object.values(patterns.mistake_streaks).some(v => v > 0) && (
+              <motion.div variants={fadeInUp} className="flex flex-wrap gap-3">
+                {Object.entries(patterns.mistake_streaks).map(([key, value]) => value > 0 && (
+                  <div key={key} className="flex items-center gap-2 bg-red-50 border border-red-100 px-4 py-2 rounded-2xl shadow-sm">
+                    <Flame className="w-4 h-4 text-red-500 animate-pulse" />
+                    <span className="text-xs font-bold text-red-700 uppercase tracking-tight">
+                      {key.replace(/_/g, ' ')} Streak: <span className="text-sm">{value} Days</span>
+                    </span>
+                  </div>
+                ))}
+              </motion.div>
             )}
 
-            <div>
-              <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-6 ${todayTotals.meal_count >= 3
-                  ? "bg-white/10 backdrop-blur-md border border-white/10"
-                  : "bg-white border border-gray-200"
-                }`}>
-                <Sparkles className={`w-3.5 h-3.5 ${todayTotals.meal_count >= 3 ? "text-[#34D399]" : "text-gray-400"}`} />
-                <span className={`text-[12px] font-semibold tracking-wide uppercase ${todayTotals.meal_count >= 3 ? "text-[#A7F3D0]" : "text-gray-500"}`}>
-                  AI Insight
-                </span>
-              </div>
-
-              {todayTotals.meal_count < 3 ? (
-                <>
-                  <h3 className="text-lg font-medium text-gray-500 leading-relaxed mt-2">
-                    Log <span className="font-bold text-gray-800">{3 - todayTotals.meal_count} more meals</span> today to unlock your personalized coach.
-                  </h3>
-                </>
-              ) : dailyInsight ? (
-                <>
-                  <h3 className="text-xl font-medium text-white leading-relaxed z-10 relative mt-2 shrink-0">
-                    "{dailyInsight}"
-                  </h3>
-                </>
-              ) : (
-                <>
-                  <h3 className="text-xl font-medium text-white leading-relaxed z-10 relative mt-2 opacity-90">
-                    You've logged {todayTotals.meal_count} meals. Your personalized daily analysis is ready.
-                  </h3>
-                </>
-              )}
-            </div>
-
-            <div className="mt-8 z-10 relative">
-              {todayTotals.meal_count < 3 ? (
-                <div className="w-full bg-gray-100/50 text-gray-400 font-medium py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2 cursor-not-allowed border border-gray-200/50">
-                  <Clock className="w-4 h-4" />
-                  Awaiting Data...
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Daily Score Component */}
+              <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] flex flex-col md:flex-row items-center gap-8">
+                <div className="relative">
+                  <CircularProgress 
+                    value={dailyScore?.score || 0} 
+                    max={100} 
+                    color="#057A55" 
+                    size={140} 
+                    strokeWidth={12}
+                    label="Score"
+                    subLabel="Consistency" 
+                  />
+                  <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1.5 rounded-full shadow-lg">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
                 </div>
-              ) : !dailyInsight ? (
-                <button
-                  onClick={generateInsight}
-                  disabled={isGeneratingInsight}
-                  className="w-full bg-white text-[#064E3B] hover:bg-gray-100 font-bold py-3 rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2"
-                >
-                  {isGeneratingInsight ? "Analyzing Day..." : "Generate Coaching Insight"}
-                </button>
-              ) : (
-                <button
-                  onClick={() => scrollToLog()}
-                  className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-medium py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Recommended Item
-                </button>
-              )}
+                <div className="flex-1 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-gray-900">Daily Performance</h3>
+                  </div>
+                  <p className="text-sm text-gray-500 font-medium">Your score is based on macro precision and protein density.</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="text-center p-2 bg-gray-50 rounded-xl">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase">Protein</p>
+                        <p className="text-sm font-bold text-[#2563EB]">{dailyScore?.protein_score || 0}%</p>
+                    </div>
+                    <div className="text-center p-2 bg-gray-50 rounded-xl">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase">Calories</p>
+                        <p className="text-sm font-bold text-[#D97706]">{dailyScore?.calorie_score || 0}%</p>
+                    </div>
+                    <div className="text-center p-2 bg-gray-50 rounded-xl">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase">Quality</p>
+                        <p className="text-sm font-bold text-[#057A55]">{dailyScore?.quality_score || 0}%</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* 3-Day Rolling Audit Component */}
+              <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)]">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">3-Day Rolling Audit</h3>
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Historical Drift Analysis</p>
+                  </div>
+                  <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-100">
+                    Live Feedback
+                  </div>
+                </div>
+                
+                {rollingAudit?.fast_feedback ? (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Avg Calories</p>
+                        <p className="text-xl font-bold text-gray-900">{rollingAudit.fast_feedback.avg_calories}</p>
+                        <p className={`text-[11px] font-bold mt-1 ${rollingAudit.fast_feedback.calorie_gap > 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+                          {rollingAudit.fast_feedback.calorie_gap > 0 ? '+' : ''}{rollingAudit.fast_feedback.calorie_gap} from goal
+                        </p>
+                      </div>
+                      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Avg Protein</p>
+                        <p className="text-xl font-bold text-gray-900">{rollingAudit.fast_feedback.avg_protein}g</p>
+                        <p className={`text-[11px] font-bold mt-1 ${rollingAudit.fast_feedback.protein_gap < 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+                          {rollingAudit.fast_feedback.protein_gap > 0 ? '+' : ''}{rollingAudit.fast_feedback.protein_gap}g from goal
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className={`p-4 rounded-2xl border flex items-center gap-3 ${
+                      rollingAudit.fast_feedback.trend === 'over_target' 
+                        ? 'bg-red-50 border-red-100 text-red-800' 
+                        : 'bg-emerald-50 border-emerald-100 text-emerald-800'
+                    }`}>
+                      <Info className="w-5 h-5 opacity-70" />
+                      <p className="text-sm font-semibold">
+                        {rollingAudit.fast_feedback.trend === 'over_target' 
+                          ? "You are trending above your calorie budget. Tighten portions."
+                          : "Your recent energy balance is stable. Keep hitting protein targets."}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                   <p className="text-sm text-gray-400 font-medium text-center py-8">Gathering historical data for your 3-day audit...</p>
+                )}
+              </motion.div>
+
+              {/* Failure Insights Component */}
+              <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] flex flex-col lg:col-span-2">
+                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <ShieldAlert className="w-5 h-5 text-red-500" /> Behavioral Failure Insights
+                </h3>
+                <div className="space-y-4">
+                  {failureInsights && failureInsights.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {failureInsights.map((insight, idx) => (
+                        <div key={idx} className="space-y-1.5">
+                          <div className="flex justify-between items-center text-[13px]">
+                            <span className="font-semibold text-gray-700">{insight.issue}</span>
+                            <span className="font-bold text-gray-400">{insight.percentage_contribution}% Contribution</span>
+                          </div>
+                          <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                             <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: `${insight.percentage_contribution}%` }}
+                                className="h-full bg-red-500/80 rounded-full"
+                             />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full py-4 text-center">
+                      <CheckCircle2 className="w-10 h-10 text-emerald-100 mb-2" />
+                      <p className="text-sm text-gray-400 font-medium tracking-tight">No significant patterns of failure detected today. Keep going!</p>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             </div>
           </motion.div>
-
-        </motion.div>
+        )}
 
         {/* --- Tab 2: The Log Zone --- */}
         <motion.div
@@ -577,24 +855,26 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <button
+                    disabled={isConfirmingMeal}
                     onClick={() => handleConfirmAndLog()}
-                    className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-emerald-700 shadow-sm"
+                    className="bg-emerald-600 disabled:bg-gray-400 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-emerald-700 shadow-sm flex items-center gap-2 transition-all"
                   >
-                    Confirm This Meal
+                    {isConfirmingMeal ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                    {isConfirmingMeal ? "Logging..." : "Confirm This Meal"}
                   </button>
                 </div>
 
-                <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white p-4 rounded-xl border border-emerald-100/50">
-                    <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Info className="w-3.5 h-3.5" /> Est. Measurement</p>
-                    <p className="text-sm text-gray-700">{analyzedMeal.household_measurement || "1 standard portion"}</p>
+                <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="bg-white p-4 rounded-xl border border-emerald-100/50 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Scale className="w-3.5 h-3.5" /> Indian Measurements</p>
+                    <p className="text-sm text-gray-700 font-medium">{analyzedMeal.household_measurement || "Standard portion"}</p>
                   </div>
-                  <div className="bg-white p-4 rounded-xl border border-emerald-100/50">
+                  <div className="bg-white p-4 rounded-xl border border-emerald-100/50 shadow-sm">
                     <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Droplet className="w-3.5 h-3.5" /> Bioavailability</p>
                     <p className="text-sm text-gray-700">{analyzedMeal.bioavailability || "Standard metric."}</p>
                   </div>
-                  <div className="bg-white p-4 rounded-xl border border-emerald-100/50">
-                    <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> AI Suggestion</p>
+                  <div className="bg-white p-4 rounded-xl border border-emerald-100/50 shadow-sm">
+                    <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> AI Tip</p>
                     <p className="text-sm text-gray-700">{analyzedMeal.suggestion || "Looks good!"}</p>
                   </div>
                 </div>

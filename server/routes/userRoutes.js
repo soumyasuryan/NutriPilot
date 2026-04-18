@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 const axios = require('axios');
+const { normalizeDietPreference } = require('../services/behaviorService');
 
 // GET user profile
 router.get('/:id', async (req, res) => {
@@ -55,22 +56,29 @@ const getTargetsFromGroq = async (height, weight, goal, activity, waist, age, ge
 
 // UPDATE user profile (Height, Weight, Goal)
 router.put('/update', async (req, res) => {
-  const { userId, height, weight, goal, activity, waist, age, gender } = req.body;
+  const { userId, height, weight, goal, activity, waist, age, gender, diet_preference } = req.body;
   try {
+    const normalizedDietPreference = normalizeDietPreference(diet_preference);
+
     // Generate AI Targets based on profile details
     const targets = await getTargetsFromGroq(height, weight, goal, activity, waist, age, gender);
 
     const { rows } = await db.query(
-      `INSERT INTO profiles (id, age, gender, height, weight, fitness_goal, activity_level, waist_cm, target_calories, target_protein, target_carbs, target_fats)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      `INSERT INTO profiles (id, age, gender, height, weight, fitness_goal, activity_level, waist_cm, diet_preference, target_calories, target_protein, target_carbs, target_fats)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        ON CONFLICT (id) DO UPDATE 
        SET age = EXCLUDED.age, gender = EXCLUDED.gender, height = EXCLUDED.height, weight = EXCLUDED.weight, fitness_goal = EXCLUDED.fitness_goal, activity_level = EXCLUDED.activity_level, waist_cm = EXCLUDED.waist_cm,
-           target_calories = EXCLUDED.target_calories, target_protein = EXCLUDED.target_protein, target_carbs = EXCLUDED.target_carbs, target_fats = EXCLUDED.target_fats
+           diet_preference = EXCLUDED.diet_preference, target_calories = EXCLUDED.target_calories, target_protein = EXCLUDED.target_protein, target_carbs = EXCLUDED.target_carbs, target_fats = EXCLUDED.target_fats
        RETURNING *`,
-      [userId, age, gender, height, weight, goal, activity, waist, targets.target_calories, targets.target_protein, targets.target_carbs, targets.target_fats]
+      [userId, age, gender, height, weight, goal, activity, waist, normalizedDietPreference, targets.target_calories, targets.target_protein, targets.target_carbs, targets.target_fats]
     );
     res.json({ message: "Profile updated!", data: rows[0] });
   } catch (error) {
+    if (error.code === '42703' && /diet_preference/i.test(error.message || '')) {
+      return res.status(500).json({
+        error: 'Database is missing the new diet_preference column. Run: node server/database/run-migrate.js',
+      });
+    }
     res.status(400).json({ error: error.message });
   }
 });

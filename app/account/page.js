@@ -22,7 +22,7 @@ export default function AccountPage() {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   const [formData, setFormData] = useState({
-    height: '', weight: '', waist_cm: '', fitness_goal: 'Cut', activity_level: 'Light'
+    height: '', weight: '', waist_cm: '', fitness_goal: 'Cut', activity_level: 'Light', diet_preference: 'any'
   });
   const [isUpdating, setIsUpdating] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', sub: '', type: 'success' });
@@ -58,6 +58,7 @@ export default function AccountPage() {
             waist_cm: data.waist_cm || '',
             fitness_goal: data.fitness_goal || 'Cut',
             activity_level: data.activity_level || 'Light',
+            diet_preference: data.diet_preference || 'any',
           });
         })
         .catch(err => console.error("Error fetching profile", err));
@@ -82,7 +83,12 @@ export default function AccountPage() {
           userId: user.id,
           age: profile?.age || 25,
           gender: profile?.gender || 'male',
-          ...formData
+          height: formData.height,
+          weight: formData.weight,
+          waist: formData.waist_cm,
+          goal: formData.fitness_goal,
+          activity: formData.activity_level,
+          diet_preference: formData.diet_preference,
         })
       });
       const data = await res.json();
@@ -210,6 +216,14 @@ export default function AccountPage() {
                       <option value="Light">Light</option>
                       <option value="Moderate">Moderate</option>
                       <option value="Heavy">Heavy</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Diet</label>
+                    <select value={formData.diet_preference} onChange={e => setFormData({ ...formData, diet_preference: e.target.value })} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]">
+                      <option value="veg">Veg</option>
+                      <option value="non_veg">Non-Veg</option>
+                      <option value="any">Any</option>
                     </select>
                   </div>
                 </div>

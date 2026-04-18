@@ -22,6 +22,7 @@ CREATE TABLE profiles (
     fitness_goal TEXT,
     activity_level TEXT,
     waist_cm NUMERIC,
+    diet_preference TEXT DEFAULT 'any' CHECK (diet_preference IN ('veg', 'non_veg', 'any')),
     target_calories NUMERIC,
     target_protein NUMERIC,
     target_carbs NUMERIC,
@@ -44,5 +45,38 @@ CREATE TABLE meal_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     food_id UUID REFERENCES food_library(id) ON DELETE SET NULL,
-    logged_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    logged_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    meal_text TEXT,
+    calories NUMERIC,
+    protein NUMERIC,
+    carbs NUMERIC,
+    fats NUMERIC
+);
+
+-- ─────────────────────────────────────────────────────────────────
+-- user_patterns: aggregated behavioral data per user (upserted
+-- after every meal log by the pattern engine)
+-- ─────────────────────────────────────────────────────────────────
+CREATE TABLE user_patterns (
+    user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    common_mistakes TEXT[],
+    mistake_streaks JSONB DEFAULT '{}'::jsonb,
+    consistency_score NUMERIC,
+    avg_daily_protein NUMERIC,
+    avg_daily_calories NUMERIC,
+    user_state TEXT CHECK (user_state IN ('on_track', 'slipping', 'failing')),
+    last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE daily_scores (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    date DATE NOT NULL,
+    score NUMERIC NOT NULL,
+    protein_score NUMERIC NOT NULL,
+    calorie_score NUMERIC NOT NULL,
+    quality_score NUMERIC NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, date)
 );

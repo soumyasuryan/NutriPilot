@@ -1,9 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { getNutritionFromAI } = require('../services/groqService');
+const {
+  getNutritionFromAI,
+  getContextualCoachingFromAI,
+  getDailyInsightFromAI,
+  getKitchenMeasurementFromAI,
+} = require('../services/groqService');
+const { analyzeUserPatterns } = require('../services/patternService');
+const { buildLLMContext } = require('../services/contextService');
+const {
+  calculateDailyScore,
+  generateFailureInsights,
+  generateMealFix,
+  normalizeDietPreference,
+  predictDayOutcome,
+  updateMistakeStreaks,
+  analyzeThreeDayAudit,
+} = require('../services/behaviorService');
 
-// 1. ANALYZE (Hit Groq and return payload without saving)
 router.post('/analyze', async (req, res) => {
   const { foodQuery } = req.body;
   try {
@@ -11,15 +26,13 @@ router.post('/analyze', async (req, res) => {
     res.json({ success: true, data: nutrition });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to analyze food." });
+    res.status(500).json({ error: 'Failed to analyze food.' });
   }
 });
 
-// 2. LOG (Save previously analyzed or chosen food to the DB)
 router.post('/log', async (req, res) => {
   const { userId, foodName, calories, protein, carbs, fats } = req.body;
   try {
-    // Check if exact food already exists in user's library
     const checkLibrary = await db.query(
       'SELECT * FROM food_library WHERE food_name = $1 AND user_id = $2',
       [foodName, userId]
@@ -27,7 +40,6 @@ router.post('/log', async (req, res) => {
 
     let foodItem = checkLibrary.rows[0];
 
-    // If it doesn't exist, insert into food_library
     if (!foodItem) {
       const insertFood = await db.query(
         'INSERT INTO food_library (user_id, food_name, calories, protein, carbs, fats) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
@@ -36,20 +48,27 @@ router.post('/log', async (req, res) => {
       foodItem = insertFood.rows[0];
     }
 
-    // Insert the actual meal log (timestamp generated automatically)
     await db.query(
-      'INSERT INTO meal_logs (user_id, food_id) VALUES ($1, $2)',
-      [userId, foodItem.id]
+      `INSERT INTO meal_logs (user_id, food_id, meal_text, calories, protein, carbs, fats)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [
+        userId,
+        foodItem.id,
+        foodItem.food_name,
+        foodItem.calories || 0,
+        foodItem.protein || 0,
+        foodItem.carbs || 0,
+        foodItem.fats || 0,
+      ]
     );
 
     res.json({ success: true, food: foodItem });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Database error logging meal" });
+    res.status(500).json({ error: 'Database error logging meal' });
   }
 });
 
-// 3. RECENT MEALS (Last 4 unique meals)
 router.get('/recent/:userId', async (req, res) => {
   try {
     const { rows } = await db.query(`
@@ -60,19 +79,16 @@ router.get('/recent/:userId', async (req, res) => {
       ORDER BY f.food_name, m.logged_at DESC
       LIMIT 4;
     `, [req.params.userId]);
-    // Sort by most recently logged
     rows.sort((a, b) => new Date(b.logged_at) - new Date(a.logged_at));
     res.json({ success: true, data: rows.slice(0, 4) });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch recent meals" });
+    res.status(500).json({ error: 'Failed to fetch recent meals' });
   }
 });
 
-// 4. TODAY'S TOTALS
 router.get('/today/:userId', async (req, res) => {
   try {
-    // Group all entries from midnight today
     const { rows } = await db.query(`
       SELECT 
         COUNT(m.id) as meal_count,
@@ -85,7 +101,6 @@ router.get('/today/:userId', async (req, res) => {
       WHERE m.user_id = $1 AND m.logged_at >= CURRENT_DATE
     `, [req.params.userId]);
 
-    // -- STREAK CALCULATION LOGIC --
     const { rows: streakRows } = await db.query(`
       SELECT DISTINCT TO_CHAR(logged_at, 'YYYY-MM-DD') as log_date
       FROM meal_logs
@@ -97,33 +112,29 @@ router.get('/today/:userId', async (req, res) => {
     const todayStr = todayRows[0].today;
 
     let streak = 0;
-    let currentCheck = new Date(todayStr + "T00:00:00Z").getTime();
+    let currentCheck = new Date(`${todayStr}T00:00:00Z`).getTime();
     let isFirst = true;
 
     for (const row of streakRows) {
-        let rowDate = new Date(row.log_date + "T00:00:00Z").getTime();
-        
-        if (isFirst) {
-            if (rowDate === currentCheck) { 
-                streak++;
-                currentCheck -= 86400000;
-            } else if (rowDate === currentCheck - 86400000) { 
-                // User missed today, but hit yesterday. Streak still valid but starts from yesterday.
-                streak++;
-                currentCheck -= 2 * 86400000; 
-            } else {
-                // Gap of more than 1 day from today.
-                break; 
-            }
-            isFirst = false;
+      const rowDate = new Date(`${row.log_date}T00:00:00Z`).getTime();
+
+      if (isFirst) {
+        if (rowDate === currentCheck) {
+          streak += 1;
+          currentCheck -= 86400000;
+        } else if (rowDate === currentCheck - 86400000) {
+          streak += 1;
+          currentCheck -= 2 * 86400000;
         } else {
-            if (rowDate === currentCheck) {
-                streak++;
-                currentCheck -= 86400000; 
-            } else {
-                break;
-            }
+          break;
         }
+        isFirst = false;
+      } else if (rowDate === currentCheck) {
+        streak += 1;
+        currentCheck -= 86400000;
+      } else {
+        break;
+      }
     }
 
     const payload = rows[0];
@@ -136,7 +147,6 @@ router.get('/today/:userId', async (req, res) => {
   }
 });
 
-// 4.5. TODAY'S MEALS
 router.get('/today-meals/:userId', async (req, res) => {
   try {
     const { rows } = await db.query(`
@@ -153,18 +163,13 @@ router.get('/today-meals/:userId', async (req, res) => {
   }
 });
 
-const { getDailyInsightFromAI, getKitchenMeasurementFromAI } = require('../services/groqService');
-
-// 5. GENERATE DAILY COACHING INSIGHT
 router.post('/insight', async (req, res) => {
   const { userId } = req.body;
   try {
-    // A. Get User Targets
     const profileRes = await db.query('SELECT target_calories, target_protein, target_carbs, target_fats FROM profiles WHERE id = $1', [userId]);
     const profile = profileRes.rows[0];
-    if (!profile) return res.status(404).json({ error: "Profile not found" });
+    if (!profile) return res.status(404).json({ error: 'Profile not found' });
 
-    // B. Get Today's Consumed
     const todayRes = await db.query(`
       SELECT 
         array_agg(f.food_name) as eaten_foods,
@@ -176,52 +181,45 @@ router.post('/insight', async (req, res) => {
       JOIN food_library f ON m.food_id = f.id
       WHERE m.user_id = $1 AND m.logged_at >= CURRENT_DATE
     `, [userId]);
-    
+
     const consumed = todayRes.rows[0];
     if (!consumed.eaten_foods) consumed.eaten_foods = [];
 
-    // C. Pre-calculate exact deficits to prevent AI math hallucinations (LLMs are bad at math)
     const getDeficitStr = (consumedAmount, targetAmount) => {
       const diff = targetAmount - consumedAmount;
       if (diff > 0) return `SHORT by ${diff.toFixed(1)}`;
       if (diff < 0) return `OVER by ${Math.abs(diff).toFixed(1)}`;
-      return `exactly ON TARGET`;
+      return 'exactly ON TARGET';
     };
 
     const exactMath = {
       calories: getDeficitStr(consumed.total_calories, profile.target_calories),
       protein: getDeficitStr(consumed.total_protein, profile.target_protein),
       carbs: getDeficitStr(consumed.total_carbs, profile.target_carbs),
-      fats: getDeficitStr(consumed.total_fats, profile.target_fats)
+      fats: getDeficitStr(consumed.total_fats, profile.target_fats),
     };
 
-    // D. Call AI
-    const insightText = await getDailyInsightFromAI(
-      consumed.eaten_foods,
-      exactMath
-    );
+    const insightText = await getDailyInsightFromAI(consumed.eaten_foods, exactMath);
 
     res.json({ success: true, insight: insightText });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to generate daily insight" });
+    res.status(500).json({ error: 'Failed to generate daily insight' });
   }
 });
 
-// 6. KITCHEN CONVERTER ROUTE
 router.post('/converter', async (req, res) => {
   const { query } = req.body;
-  if (!query) return res.status(400).json({ error: "No query provided." });
+  if (!query) return res.status(400).json({ error: 'No query provided.' });
   try {
     const measurement = await getKitchenMeasurementFromAI(query);
     res.json({ success: true, measurement });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to convert measurement." });
+    res.status(500).json({ error: 'Failed to convert measurement.' });
   }
 });
 
-// 7. CHART DATA (Last 7 Days Calorie Aggregation)
 router.get('/chart/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -240,15 +238,13 @@ router.get('/chart/:userId', async (req, res) => {
     res.json({ success: true, data: rows });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch chart data" });
+    res.status(500).json({ error: 'Failed to fetch chart data' });
   }
 });
 
-// 8. PERSONAL FOOD LIBRARY
 router.get('/library/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-    // Get unique items from the user's food library
     const { rows } = await db.query(`
       SELECT DISTINCT ON (food_name) *
       FROM food_library 
@@ -259,11 +255,10 @@ router.get('/library/:userId', async (req, res) => {
     res.json({ success: true, data: rows });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch food library" });
+    res.status(500).json({ error: 'Failed to fetch food library' });
   }
 });
 
-// 6. LAST 7 DAYS CALORIC HISTORY
 router.get('/weekly/:userId', async (req, res) => {
   try {
     const { rows } = await db.query(`
@@ -280,27 +275,290 @@ router.get('/weekly/:userId', async (req, res) => {
 
     const weeklyData = [];
     const today = new Date();
-    today.setHours(12, 0, 0, 0); // Normalize today to prevent timezone shift issues
+    today.setHours(12, 0, 0, 0);
 
-    // Generate the last 7 dates mapping ensuring exact slots
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const dateString = d.toISOString().split('T')[0];
-      
-      const found = rows.find(r => {
-        const rowDate = new Date(r.date);
-        rowDate.setHours(12, 0, 0, 0); // Normalize row date
+    for (let i = 6; i >= 0; i -= 1) {
+      const day = new Date(today);
+      day.setDate(day.getDate() - i);
+      const dateString = day.toISOString().split('T')[0];
+
+      const found = rows.find((row) => {
+        const rowDate = new Date(row.date);
+        rowDate.setHours(12, 0, 0, 0);
         return rowDate.toISOString().split('T')[0] === dateString;
       });
-      
+
       weeklyData.push(found ? Number(found.total_calories) : 0);
     }
 
     res.json({ success: true, data: weeklyData });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch weekly history" });
+    res.status(500).json({ error: 'Failed to fetch weekly history' });
+  }
+});
+
+router.post('/analyze-meal', async (req, res) => {
+  const { userId, foodQuery, foodName, calories, protein, carbs, fats } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'userId is required.' });
+  }
+  if (!foodQuery && !foodName) {
+    return res.status(400).json({ error: 'Provide either foodQuery or foodName.' });
+  }
+
+  try {
+    let nutrition;
+    if (foodQuery) {
+      nutrition = await getNutritionFromAI(foodQuery);
+    } else {
+      nutrition = {
+        food_name: foodName,
+        calories: Number(calories) || 0,
+        protein: Number(protein) || 0,
+        carbs: Number(carbs) || 0,
+        fats: Number(fats) || 0,
+      };
+    }
+
+    const resolvedName = nutrition.food_name || foodQuery || foodName;
+
+    let foodItem;
+    const checkLib = await db.query(
+      'SELECT * FROM food_library WHERE food_name = $1 AND user_id = $2 LIMIT 1',
+      [resolvedName, userId]
+    );
+
+    if (checkLib.rows.length > 0) {
+      foodItem = checkLib.rows[0];
+    } else {
+      const insertFood = await db.query(
+        `INSERT INTO food_library (user_id, food_name, calories, protein, carbs, fats)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+        [userId, resolvedName, nutrition.calories, nutrition.protein, nutrition.carbs, nutrition.fats]
+      );
+      foodItem = insertFood.rows[0];
+    }
+
+    const insertMealRes = await db.query(
+      `INSERT INTO meal_logs (user_id, food_id, meal_text, calories, protein, carbs, fats)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING logged_at`,
+      [
+        userId,
+        foodItem.id,
+        resolvedName,
+        nutrition.calories,
+        nutrition.protein,
+        nutrition.carbs,
+        nutrition.fats,
+      ]
+    );
+
+    const loggedAt = insertMealRes.rows[0]?.logged_at || new Date();
+
+    const currentMeal = {
+      food_name: resolvedName,
+      calories: nutrition.calories,
+      protein: nutrition.protein,
+      carbs: nutrition.carbs,
+      fats: nutrition.fats,
+    };
+
+    const { rows: last3DaysMeals } = await db.query(
+      `SELECT
+         COALESCE(ml.meal_text, fl.food_name) AS food_name,
+         COALESCE(ml.calories, fl.calories) AS calories,
+         COALESCE(ml.protein, fl.protein) AS protein,
+         COALESCE(ml.carbs, fl.carbs) AS carbs,
+         COALESCE(ml.fats, fl.fats) AS fats,
+         ml.logged_at
+       FROM meal_logs ml
+       LEFT JOIN food_library fl ON fl.id = ml.food_id
+       WHERE ml.user_id = $1
+         AND ml.logged_at >= CURRENT_TIMESTAMP - INTERVAL '3 days'
+       ORDER BY ml.logged_at DESC`,
+      [userId]
+    );
+
+    const profileRes = await db.query(
+      `SELECT target_calories, target_protein, diet_preference
+       FROM profiles
+       WHERE id = $1`,
+      [userId]
+    );
+    const profile = profileRes.rows[0] || {};
+    const targetCalories = profile.target_calories || 2000;
+    const dietPreference = normalizeDietPreference(profile.diet_preference);
+
+    const patternResult = analyzeUserPatterns(last3DaysMeals, Number(targetCalories));
+
+    const streakRes = await db.query(
+      `SELECT mistake_streaks
+       FROM user_patterns
+       WHERE user_id = $1`,
+      [userId]
+    );
+    const mistakeStreaks = updateMistakeStreaks(
+      streakRes.rows[0]?.mistake_streaks || {},
+      currentMeal,
+      loggedAt
+    );
+
+    await db.query(
+      `INSERT INTO user_patterns
+         (user_id, common_mistakes, mistake_streaks, consistency_score, avg_daily_protein, avg_daily_calories, user_state, latest_coaching, last_updated)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+       ON CONFLICT (user_id) DO UPDATE SET
+         common_mistakes = EXCLUDED.common_mistakes,
+         mistake_streaks = EXCLUDED.mistake_streaks,
+         consistency_score = EXCLUDED.consistency_score,
+         avg_daily_protein = EXCLUDED.avg_daily_protein,
+         avg_daily_calories = EXCLUDED.avg_daily_calories,
+         user_state = EXCLUDED.user_state,
+         latest_coaching = EXCLUDED.latest_coaching,
+         last_updated = NOW()`,
+      [
+        userId,
+        patternResult.common_mistakes,
+        mistakeStreaks,
+        patternResult.consistency_score,
+        patternResult.avg_daily_protein,
+        patternResult.avg_daily_calories,
+        patternResult.user_state,
+        coaching,
+      ]
+    );
+
+    const scoreDate = new Date(new Date(loggedAt).getTime() + (330 * 60 * 1000)).toISOString().split('T')[0];
+    const dailyScore = await calculateDailyScore(userId, scoreDate, db);
+    const prediction = await predictDayOutcome(userId, db);
+    const mealFix = generateMealFix(currentMeal, dietPreference);
+    const enrichedPatterns = {
+      ...patternResult,
+      mistake_streaks: mistakeStreaks,
+    };
+    const failureInsights = generateFailureInsights(enrichedPatterns);
+
+    const context = await buildLLMContext(userId, currentMeal, db, {
+      dailyScore,
+      prediction,
+      failureInsights,
+      mealFix,
+    });
+
+    const coaching = await getContextualCoachingFromAI(context);
+
+    return res.json({
+      success: true,
+      meal: currentMeal,
+      nutrition_detail: {
+        bioavailability: nutrition.bioavailability || null,
+        suggestion: nutrition.suggestion || null,
+        household_measurement: nutrition.household_measurement || null,
+      },
+      patterns: enrichedPatterns,
+      daily_score: dailyScore,
+      prediction,
+      meal_fix: mealFix,
+      failure_insights: failureInsights,
+      coaching: {
+        ...coaching,
+        smart_meal_completion: coaching.smart_meal_completion || mealFix.quick_fix,
+      },
+    });
+  } catch (err) {
+    console.error('[/analyze-meal]', err);
+    res.status(500).json({ error: 'Failed to analyze meal with context.' });
+  }
+});
+
+router.get('/behavioral-status/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const profileRes = await db.query('SELECT target_calories, target_protein, diet_preference FROM profiles WHERE id = $1', [userId]);
+    const profile = profileRes.rows[0] || {};
+    
+    const patternRes = await db.query('SELECT * FROM user_patterns WHERE user_id = $1', [userId]);
+    const patterns = patternRes.rows[0] || {};
+
+    const scoreDate = new Date(new Date().getTime() + (330 * 60 * 1000)).toISOString().split('T')[0];
+    const dailyScore = await calculateDailyScore(userId, scoreDate, db);
+    const prediction = await predictDayOutcome(userId, db);
+    
+    // Fetch last 3 days of meals for the rolling audit
+    const mealsRes = await db.query(
+      `SELECT calories, protein, carbs, fats, logged_at 
+       FROM meal_logs 
+       WHERE user_id = $1 
+         AND logged_at >= NOW() - INTERVAL '3 days' 
+       ORDER BY logged_at DESC`,
+      [userId]
+    );
+    const rollingAudit = analyzeThreeDayAudit(profile, mealsRes.rows);
+    
+    const failure_insights = generateFailureInsights(patterns);
+    
+    res.json({
+      success: true,
+      daily_score: dailyScore,
+      prediction: prediction,
+      failure_insights: failure_insights,
+      rolling_audit: rollingAudit,
+      patterns: patterns,
+      latest_coaching: patterns.latest_coaching || null,
+      diet_preference: profile.diet_preference
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch behavioral status' });
+  }
+});
+
+router.post('/re-analyze/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const { rows: patternRows } = await db.query('SELECT * FROM user_patterns WHERE user_id = $1', [userId]);
+    const patterns = patternRows[0] || {};
+    
+    const scoreDate = new Date(new Date().getTime() + (330 * 60 * 1000)).toISOString().split('T')[0];
+    const dailyScore = await calculateDailyScore(userId, scoreDate, db);
+    const prediction = await predictDayOutcome(userId, db);
+    const failureInsights = generateFailureInsights(patterns);
+    
+    // We need the last meal to build context, or just use general context
+    const { rows: lastMeals } = await db.query(
+      'SELECT meal_text as food_name, calories, protein, carbs, fats FROM meal_logs WHERE user_id = $1 ORDER BY logged_at DESC LIMIT 1',
+      [userId]
+    );
+    const lastMeal = lastMeals[0] || null;
+
+    const context = await buildLLMContext(userId, lastMeal, db, {
+      dailyScore,
+      prediction,
+      failureInsights,
+      mealFix: lastMeal ? generateMealFix(lastMeal, patterns.diet_preference) : null,
+    });
+
+    const coaching = await getContextualCoachingFromAI(context);
+
+    // Save it
+    await db.query(
+      'UPDATE user_patterns SET latest_coaching = $1, last_updated = NOW() WHERE user_id = $2',
+      [coaching, userId]
+    );
+
+    res.json({
+      success: true,
+      coaching,
+      daily_score: dailyScore,
+      prediction,
+      failure_insights: failureInsights
+    });
+  } catch (err) {
+    console.error('[/re-analyze]', err);
+    res.status(500).json({ error: 'Failed to re-analyze behavioral state.' });
   }
 });
 

@@ -4,6 +4,7 @@ const router = express.Router();
 const db = require('../config/db');
 const { calculateStatus } = require('../services/strategyService');
 const { getJudgeSwapFromAI } = require('../services/groqService');
+const { ROLLING_AUDIT_DAYS } = require('../services/behaviorService');
 
 router.get('/analysis/:userId', async (req, res) => {
   const { userId } = req.params;
@@ -13,11 +14,11 @@ router.get('/analysis/:userId', async (req, res) => {
     const { rows: profileRows } = await db.query('SELECT * FROM profiles WHERE id = $1', [userId]);
     const profile = profileRows[0];
 
-    // Fetch last 7 days of logs
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    // Fetch rolling 3-day logs for fast feedback
+    const rollingWindowStart = new Date();
+    rollingWindowStart.setDate(rollingWindowStart.getDate() - ROLLING_AUDIT_DAYS);
 
-    const { rows: logs } = await db.query(
+    const { rows: rollingLogs } = await db.query(
       `SELECT ml.*, 
         json_build_object(
           'id', fl.id,
@@ -30,12 +31,31 @@ router.get('/analysis/:userId', async (req, res) => {
        FROM meal_logs ml
        JOIN food_library fl ON ml.food_id = fl.id
        WHERE ml.user_id = $1 AND ml.logged_at >= $2`,
-      [userId, sevenDaysAgo.toISOString()]
+      [userId, rollingWindowStart.toISOString()]
     );
 
-    if (!profile || !logs) return res.status(404).json({ message: "Data missing" });
+    const weeklyWindowStart = new Date();
+    weeklyWindowStart.setDate(weeklyWindowStart.getDate() - 7);
 
-    const analysis = calculateStatus(profile, logs);
+    const { rows: weeklyLogs } = await db.query(
+      `SELECT ml.*, 
+        json_build_object(
+          'id', fl.id,
+          'food_name', fl.food_name,
+          'calories', fl.calories,
+          'protein', fl.protein,
+          'carbs', fl.carbs,
+          'fats', fl.fats
+        ) as food_library
+       FROM meal_logs ml
+       JOIN food_library fl ON ml.food_id = fl.id
+       WHERE ml.user_id = $1 AND ml.logged_at >= $2`,
+      [userId, weeklyWindowStart.toISOString()]
+    );
+
+    if (!profile || !rollingLogs) return res.status(404).json({ message: "Data missing" });
+
+    const analysis = calculateStatus(profile, rollingLogs, weeklyLogs);
 
     res.json(analysis);
   } catch (error) {

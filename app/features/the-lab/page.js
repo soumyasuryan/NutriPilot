@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Target, Activity, ShieldAlert, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowLeft, Target, Activity, ShieldAlert, Sparkles, Loader2, Info } from 'lucide-react';
 import Toast from '@/components/Toast';
 
 export default function TheLab() {
@@ -91,13 +91,30 @@ export default function TheLab() {
             <div className="relative z-10 flex-1 max-w-2xl mx-auto w-full">
               {judgeData ? (
                 <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-8 backdrop-blur-sm text-left">
-                  <p className="text-[12px] font-bold uppercase tracking-widest text-[#057A55] mb-2">Worst Offender Detected</p>
-                  <p className="text-2xl text-gray-900 font-bold mb-6">"{judgeData.offender}"</p>
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <p className="text-[12px] font-bold uppercase tracking-widest text-[#057A55] mb-2 font-mono">Worst Offender Detected</p>
+                      <p className="text-2xl text-gray-900 font-bold">"{judgeData.offender}"</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/40 p-5 rounded-2xl border border-emerald-100/50 mb-6 font-sans">
+                    <p className="text-[11px] font-bold uppercase text-emerald-600 mb-2 flex items-center gap-1"><Info className="w-3.5 h-3.5" /> Why this is holding you back</p>
+                    <p className="text-[15px] text-gray-700 leading-relaxed font-medium italic">"{judgeData.reasoning || "Empty calories identified during the audit."}"</p>
+                  </div>
 
                   <div className="h-px w-full bg-emerald-200/50 mb-6"></div>
 
-                  <p className="text-[12px] font-bold uppercase tracking-widest text-[#057A55] mb-2 flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> AI Swap Protocol</p>
-                  <p className="text-lg text-gray-700 leading-relaxed font-medium">"{judgeData.swap_text}"</p>
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-[12px] font-bold uppercase tracking-widest text-[#057A55] mb-2 flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> AI Swap Protocol</p>
+                      <p className="text-xl text-gray-900 font-bold font-sans">"{judgeData.swap_text}"</p>
+                    </div>
+                    <div className="p-5 bg-emerald-600 text-white rounded-2xl shadow-lg shadow-emerald-900/10">
+                       <p className="text-[11px] font-bold uppercase opacity-80 mb-2">Benefit of switching</p>
+                       <p className="text-[16px] font-semibold">{judgeData.benefits || "Optimized nutritional profile."}</p>
+                    </div>
+                  </div>
                 </motion.div>
               ) : (
                 <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-6 flex flex-col items-center justify-center text-center h-32 border-dashed">
