@@ -22,7 +22,7 @@ export default function AccountPage() {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   const [formData, setFormData] = useState({
-    height: '', weight: '', waist_cm: '', fitness_goal: 'Cut', activity_level: 'Light', diet_preference: 'any'
+    name: '', age: '', gender: 'Male', height: '', weight: '', waist_cm: '', fitness_goal: 'Cut', activity_level: 'Light', diet_preference: 'any'
   });
   const [isUpdating, setIsUpdating] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', sub: '', type: 'success' });
@@ -53,6 +53,9 @@ export default function AccountPage() {
         .then(data => {
           setProfile(data);
           setFormData({
+            name: storedUser.full_name || storedUser.name || '',
+            age: data.age || '',
+            gender: data.gender || 'Male',
             height: data.height || '',
             weight: data.weight || '',
             waist_cm: data.waist_cm || '',
@@ -81,8 +84,9 @@ export default function AccountPage() {
         },
         body: JSON.stringify({
           userId: user.id,
-          age: profile?.age || 25,
-          gender: profile?.gender || 'male',
+          name: formData.name,
+          age: formData.age,
+          gender: formData.gender,
           height: formData.height,
           weight: formData.weight,
           waist: formData.waist_cm,
@@ -95,6 +99,11 @@ export default function AccountPage() {
       if (res.ok) {
         showToast("Targets Recalibrated!", "Your caloric and macro limits have been updated.", "success");
         setProfile(data.data); // Update displayed macros
+        
+        // Update local user if name changed
+        const newUser = { ...user, full_name: formData.name };
+        setUser(newUser);
+        localStorage.setItem('user', JSON.stringify(newUser));
       } else {
         showToast("Update Failed", data.error || "Failed to update targets.", "error");
       }
@@ -120,7 +129,7 @@ export default function AccountPage() {
             className="mb-10 text-center"
           >
             <div className="w-24 h-24 rounded-full bg-linear-to-br from-[#16a34a] to-[#046C4E] flex items-center justify-center text-white text-[32px] font-bold mx-auto mb-4 shadow-lg shadow-green-600/20 ring-4 ring-green-50">
-              {(user?.full_name || user?.name || 'U')[0].toUpperCase()}
+              {(formData.name || user?.full_name || user?.name || 'U')[0].toUpperCase()}
             </div>
             <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-2">My Profile</h1>
             <p className="text-gray-500 font-medium">Review your personal information and current macro targets.</p>
@@ -149,9 +158,12 @@ export default function AccountPage() {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <User className="w-4 h-4 text-emerald-600" />
                     </div>
-                    <div className="w-full bg-white border border-emerald-100/60 text-gray-900 font-medium text-[16px] rounded-2xl pl-11 pr-4 py-3.5 shadow-sm">
-                      {user?.full_name || user?.name || "-"}
-                    </div>
+                    <input 
+                      type="text" 
+                      value={formData.name} 
+                      onChange={e => setFormData({ ...formData, name: e.target.value })} 
+                      className="w-full bg-white border border-emerald-100/60 text-gray-900 font-medium text-[16px] rounded-2xl pl-11 pr-4 py-3.5 shadow-sm focus:border-emerald-500 outline-none transition-all" 
+                    />
                   </div>
                 </div>
 
@@ -161,7 +173,7 @@ export default function AccountPage() {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <Mail className="w-4 h-4 text-emerald-600" />
                     </div>
-                    <div className="w-full bg-white border border-emerald-100/60 text-gray-900 font-medium text-[16px] rounded-2xl pl-11 pr-4 py-3.5 shadow-sm">
+                    <div className="w-full bg-gray-50/50 border border-emerald-100/60 text-gray-400 font-medium text-[16px] rounded-2xl pl-11 pr-4 py-3.5 shadow-sm cursor-not-allowed">
                       {user?.email || "-"}
                     </div>
                   </div>
@@ -179,13 +191,17 @@ export default function AccountPage() {
 
               <form onSubmit={handleUpdateGoals} className="space-y-5">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-blue-50/50 border border-blue-100/50 rounded-2xl p-4">
-                    <p className="text-[12px] font-bold text-blue-600 uppercase tracking-wide mb-1">Age</p>
-                    <p className="text-[18px] font-semibold text-gray-900">{profile?.age || "-"}</p>
+                  <div>
+                    <label className="text-[12px] font-bold text-blue-600 uppercase tracking-wide mb-1 block">Age</label>
+                    <input type="number" value={formData.age} onChange={e => setFormData({ ...formData, age: e.target.value })} className="w-full bg-blue-50/50 border border-blue-100/50 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[16px]" />
                   </div>
-                  <div className="bg-indigo-50/50 border border-indigo-100/50 rounded-2xl p-4">
-                    <p className="text-[12px] font-bold text-indigo-600 uppercase tracking-wide mb-1">Gender</p>
-                    <p className="text-[18px] font-semibold text-gray-900 capitalize">{profile?.gender || "-"}</p>
+                  <div>
+                    <label className="text-[12px] font-bold text-indigo-600 uppercase tracking-wide mb-1 block">Gender</label>
+                    <select value={formData.gender} onChange={e => setFormData({ ...formData, gender: e.target.value })} className="w-full bg-indigo-50/50 border border-indigo-100/50 rounded-2xl p-3.5 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-gray-900 font-semibold text-[16px]">
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
                   <div>
                     <label className="text-[12px] font-bold text-emerald-600 uppercase tracking-wide mb-1 block">Height (cm)</label>

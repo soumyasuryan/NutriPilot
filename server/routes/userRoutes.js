@@ -54,14 +54,33 @@ const getTargetsFromGroq = async (height, weight, goal, activity, waist, age, ge
   }
 };
 
-// UPDATE user profile (Height, Weight, Goal)
+// UPDATE user profile (Name, Height, Weight, Goal)
 router.put('/update', async (req, res) => {
-  const { userId, height, weight, goal, activity, waist, age, gender, diet_preference } = req.body;
+  const { userId, name, height, weight, goal, activity, waist, age, gender, diet_preference } = req.body;
+  
+  // Helper to sanitize numeric inputs (convert empty strings or invalid data to null)
+  const toNum = (val) => {
+    if (val === null || val === undefined || val === '') return null;
+    const num = Number(val);
+    return isNaN(num) ? null : num;
+  };
+
   try {
+    // 1. Update name in users table if provided
+    if (name) {
+      await db.query('UPDATE users SET full_name = $1 WHERE id = $2', [name, userId]);
+    }
+
     const normalizedDietPreference = normalizeDietPreference(diet_preference);
 
+    // Sanitize numeric fields for DB
+    const sAge = toNum(age);
+    const sHeight = toNum(height);
+    const sWeight = toNum(weight);
+    const sWaist = toNum(waist);
+
     // Generate AI Targets based on profile details
-    const targets = await getTargetsFromGroq(height, weight, goal, activity, waist, age, gender);
+    const targets = await getTargetsFromGroq(sHeight, sWeight, goal, activity, sWaist, sAge, gender);
 
     const { rows } = await db.query(
       `INSERT INTO profiles (id, age, gender, height, weight, fitness_goal, activity_level, waist_cm, diet_preference, target_calories, target_protein, target_carbs, target_fats)
@@ -70,7 +89,7 @@ router.put('/update', async (req, res) => {
        SET age = EXCLUDED.age, gender = EXCLUDED.gender, height = EXCLUDED.height, weight = EXCLUDED.weight, fitness_goal = EXCLUDED.fitness_goal, activity_level = EXCLUDED.activity_level, waist_cm = EXCLUDED.waist_cm,
            diet_preference = EXCLUDED.diet_preference, target_calories = EXCLUDED.target_calories, target_protein = EXCLUDED.target_protein, target_carbs = EXCLUDED.target_carbs, target_fats = EXCLUDED.target_fats
        RETURNING *`,
-      [userId, age, gender, height, weight, goal, activity, waist, normalizedDietPreference, targets.target_calories, targets.target_protein, targets.target_carbs, targets.target_fats]
+      [userId, sAge, gender, sHeight, sWeight, goal, activity, sWaist, normalizedDietPreference, targets.target_calories, targets.target_protein, targets.target_carbs, targets.target_fats]
     );
     res.json({ message: "Profile updated!", data: rows[0] });
   } catch (error) {
