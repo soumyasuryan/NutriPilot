@@ -171,6 +171,7 @@ export default function Dashboard() {
   const [patterns, setPatterns] = useState(null);
   const [isLogging, setIsLogging] = useState(false);
   const scoreAppearance = getScoreAppearance(dailyScore?.score || 0);
+  const canRequestCoaching = Number(todayTotals.meal_count || 0) >= 3;
 
   const showToast = (message, sub, type = 'success', duration = 3000) => {
     setToast({ show: true, message, sub, type });
@@ -222,9 +223,6 @@ export default function Dashboard() {
         setPrediction(behaviorData.prediction);
         setRollingAudit(behaviorData.rolling_audit);
         setPatterns(behaviorData.patterns);
-        if (behaviorData.latest_coaching) {
-          setCoaching(behaviorData.latest_coaching);
-        }
       }
     } catch (err) {
       console.error("Error fetching meal data", err);
@@ -232,6 +230,11 @@ export default function Dashboard() {
   };
 
   const handleReAnalyze = async () => {
+    if (!canRequestCoaching) {
+      showToast("Coach Locked", `Log ${3 - Number(todayTotals.meal_count || 0)} more meal${Number(todayTotals.meal_count || 0) === 2 ? '' : 's'} to unlock contextual coaching.`, "error");
+      return;
+    }
+
     setIsGeneratingInsight(true);
     try {
       const user = JSON.parse(localStorage.getItem('user'));
@@ -241,6 +244,9 @@ export default function Dashboard() {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Could not generate coaching right now.');
+      }
       if (data.success) {
         setCoaching(data.coaching);
         setDailyScore(data.daily_score);
@@ -313,10 +319,10 @@ export default function Dashboard() {
         setDailyScore(data.daily_score);
         setFailureInsights(data.failure_insights);
         setPrediction(data.prediction);
-        setCoaching(data.coaching);
+        setCoaching(null);
         
         fetchMealData(user, token);
-        showToast("Meal Logged!", "Intelligence updated.", "success");
+        showToast("Meal Logged!", data.can_request_coaching ? "You can now unlock contextual coaching." : "Keep logging meals to unlock the coach after 3 meals.", "success");
       }
     } catch (err) {
       console.error(err);
@@ -551,33 +557,58 @@ export default function Dashboard() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
-          className={`mt-6 rounded-3xl p-8 relative overflow-hidden transition-all duration-700 ${todayTotals.meal_count >= 1
+          className={`mt-6 rounded-3xl p-8 relative overflow-hidden transition-all duration-700 ${canRequestCoaching
               ? "bg-linear-to-br from-[#064E3B] to-[#042F2E] shadow-[0_12px_40px_-10px_rgba(4,47,46,0.3)]"
               : "bg-gray-50 border border-gray-100"
             }`}
         >
           {/* Background Decor */}
-          {todayTotals.meal_count >= 1 && (
+          {canRequestCoaching && (
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#059669] rounded-full blur-[80px] opacity-30 -translate-y-1/2 translate-x-1/3"></div>
           )}
 
           <div className="relative z-10">
-            <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-6 ${todayTotals.meal_count >= 1
+            <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 mb-6 ${canRequestCoaching
                 ? "bg-white/10 backdrop-blur-md border border-white/10"
                 : "bg-white border border-gray-200"
               }`}>
-              <Sparkles className={`w-3.5 h-3.5 ${todayTotals.meal_count >= 1 ? "text-[#34D399]" : "text-gray-400"}`} />
-              <span className={`text-[12px] font-semibold tracking-wide uppercase ${todayTotals.meal_count >= 1 ? "text-[#A7F3D0]" : "text-gray-500"}`}>
+              <Sparkles className={`w-3.5 h-3.5 ${canRequestCoaching ? "text-[#34D399]" : "text-gray-400"}`} />
+              <span className={`text-[12px] font-semibold tracking-wide uppercase ${canRequestCoaching ? "text-[#A7F3D0]" : "text-gray-500"}`}>
                 Contextual Coach
               </span>
             </div>
 
             {!coaching ? (
-              <h3 className="text-lg font-medium text-gray-500 leading-relaxed mt-2">
-                {todayTotals.meal_count === 0
-                  ? "Log your first meal to initialize the AI coach."
-                  : "Analysis is running in the background..."}
-              </h3>
+              <div className="space-y-5">
+                <h3 className="text-lg font-medium text-gray-500 leading-relaxed mt-2">
+                  {!canRequestCoaching
+                    ? `Log ${Math.max(0, 3 - Number(todayTotals.meal_count || 0))} more meal${Math.max(0, 3 - Number(todayTotals.meal_count || 0)) === 1 ? '' : 's'} to unlock the coach.`
+                    : "Coach is unlocked. Click the button below to generate AI insights."}
+                </h3>
+
+                <div className={`rounded-3xl p-4 space-y-3 ${canRequestCoaching ? "border border-white/10 bg-black/10" : "border border-gray-200 bg-white"}`}>
+                  <button
+                    onClick={() => scrollToLog()}
+                    className={`w-full font-bold py-3.5 rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2 ${canRequestCoaching ? "bg-white text-[#064E3B] hover:bg-gray-100" : "bg-[#057A55] text-white hover:bg-[#046C4E]"}`}
+                  >
+                    <Plus className="w-4 h-4" />
+                    Log Next Meal
+                  </button>
+
+                  <button
+                    onClick={handleReAnalyze}
+                    disabled={isGeneratingInsight || !canRequestCoaching}
+                    className={`w-full font-medium py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2 ${
+                      canRequestCoaching
+                        ? "bg-white/10 hover:bg-white/20 disabled:bg-white/5 disabled:text-white/50 disabled:border-white/10 backdrop-blur-md border border-white/20 text-white"
+                        : "bg-gray-100 text-gray-500 border border-gray-200 disabled:opacity-100"
+                    }`}
+                  >
+                    <Activity className={`w-4 h-4 ${isGeneratingInsight ? 'animate-spin' : ''}`} />
+                    {isGeneratingInsight ? "Analyzing..." : "Generate AI Insights"}
+                  </button>
+                </div>
+              </div>
             ) : (
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-5">
                 <div className="xl:col-span-7 space-y-4">
@@ -673,11 +704,11 @@ export default function Dashboard() {
 
                     <button
                       onClick={handleReAnalyze}
-                      disabled={isGeneratingInsight || !coaching}
+                      disabled={isGeneratingInsight || !canRequestCoaching}
                       className="w-full bg-white/10 hover:bg-white/20 disabled:bg-white/5 disabled:text-white/50 disabled:border-white/10 backdrop-blur-md border border-white/20 text-white font-medium py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2"
                     >
                       <Activity className={`w-4 h-4 ${isGeneratingInsight ? 'animate-spin' : ''}`} />
-                      {isGeneratingInsight ? "Analyzing..." : "Analyze Again"}
+                      {isGeneratingInsight ? "Analyzing..." : (coaching ? "Refresh AI Insights" : "Generate AI Insights")}
                     </button>
                   </div>
                 </div>

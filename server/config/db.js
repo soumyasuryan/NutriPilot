@@ -1,18 +1,14 @@
 const { Pool } = require('pg');
 require('dotenv').config();
+const { getDatabaseConfig } = require('./databaseUrl');
 
-// Debug: Check if the URL is even reaching the file
 if (!process.env.DATABASE_URL) {
-  console.error("🚨 ERROR: DATABASE_URL is missing from .env file!");
+  console.error('DATABASE_URL is missing from server/.env.');
 }
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
+const pool = new Pool(getDatabaseConfig());
 
 module.exports = {
   query: (text, params) => pool.query(text, params),
+  pool,
 };

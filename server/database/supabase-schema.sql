@@ -1,19 +1,18 @@
-DROP TABLE IF EXISTS meal_logs CASCADE;
-DROP TABLE IF EXISTS food_library CASCADE;
-DROP TABLE IF EXISTS profiles CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
+-- Supabase bootstrap schema for NutriPilot.
+-- This preserves the current application model: custom users table, JWT auth in Express,
+-- and direct PostgreSQL access from the backend. It does NOT switch the app to Supabase Auth.
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     full_name TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE profiles (
+CREATE TABLE IF NOT EXISTS profiles (
     id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     age NUMERIC,
     gender TEXT,
@@ -30,8 +29,8 @@ CREATE TABLE profiles (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE food_library (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS food_library (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     food_name TEXT NOT NULL,
     calories NUMERIC,
@@ -41,8 +40,8 @@ CREATE TABLE food_library (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE meal_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS meal_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     food_id UUID REFERENCES food_library(id) ON DELETE SET NULL,
     logged_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -53,11 +52,7 @@ CREATE TABLE meal_logs (
     fats NUMERIC
 );
 
--- ─────────────────────────────────────────────────────────────────
--- user_patterns: aggregated behavioral data per user (upserted
--- after every meal log by the pattern engine)
--- ─────────────────────────────────────────────────────────────────
-CREATE TABLE user_patterns (
+CREATE TABLE IF NOT EXISTS user_patterns (
     user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     common_mistakes TEXT[],
     mistake_streaks JSONB DEFAULT '{}'::jsonb,
@@ -69,8 +64,8 @@ CREATE TABLE user_patterns (
     last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE daily_scores (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE IF NOT EXISTS daily_scores (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     date DATE NOT NULL,
     score NUMERIC NOT NULL,
@@ -81,3 +76,12 @@ CREATE TABLE daily_scores (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (user_id, date)
 );
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_profiles_id ON profiles(id);
+CREATE INDEX IF NOT EXISTS idx_food_library_user_id ON food_library(user_id);
+CREATE INDEX IF NOT EXISTS idx_food_library_user_food_name ON food_library(user_id, food_name);
+CREATE INDEX IF NOT EXISTS idx_meal_logs_user_id_logged_at ON meal_logs(user_id, logged_at DESC);
+CREATE INDEX IF NOT EXISTS idx_meal_logs_food_id ON meal_logs(food_id);
+CREATE INDEX IF NOT EXISTS idx_daily_scores_user_date ON daily_scores(user_id, date DESC);
+CREATE INDEX IF NOT EXISTS idx_user_patterns_user_id ON user_patterns(user_id);

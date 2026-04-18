@@ -2,11 +2,9 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 const { Pool } = require('pg');
 const fs = require('fs');
+const { getDatabaseConfig } = require('../config/databaseUrl');
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+const pool = new Pool(getDatabaseConfig());
 
 const runSchema = async () => {
   try {

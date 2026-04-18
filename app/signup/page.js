@@ -188,7 +188,7 @@ export default function Signup() {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                     </div>
-                    <input type="text" name="name" className="block w-full pl-11 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all placeholder:text-gray-400" placeholder="Rahul Sharma" value={formData.name} onChange={handleChange} required />
+                    <input type="text" name="name" className="block w-full pl-11 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all placeholder:text-gray-400" placeholder="Name" value={formData.name} onChange={handleChange} required />
                   </div>
                 </div>
 
@@ -198,7 +198,7 @@ export default function Signup() {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
                     </div>
-                    <input type="email" name="email" className="block w-full pl-11 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all placeholder:text-gray-400" placeholder="rahul@example.com" value={formData.email} onChange={handleChange} required />
+                    <input type="email" name="email" className="block w-full pl-11 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#22c55e] focus:border-transparent outline-none transition-all placeholder:text-gray-400" placeholder="yourEmail@example.com" value={formData.email} onChange={handleChange} required />
                   </div>
                 </div>
 

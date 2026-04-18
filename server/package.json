@@ -4,8 +4,10 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "db:check": "node database/check-connection.js",
+    "db:schema": "node database/run-schema.js",
+    "db:migrate": "node database/run-migrate.js"
   },
   "keywords": [],
   "author": "",

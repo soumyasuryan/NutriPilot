@@ -408,8 +408,8 @@ router.post('/analyze-meal', async (req, res) => {
 
     await db.query(
       `INSERT INTO user_patterns
-         (user_id, common_mistakes, mistake_streaks, consistency_score, avg_daily_protein, avg_daily_calories, user_state, latest_coaching, last_updated)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+         (user_id, common_mistakes, mistake_streaks, consistency_score, avg_daily_protein, avg_daily_calories, user_state, last_updated)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
        ON CONFLICT (user_id) DO UPDATE SET
          common_mistakes = EXCLUDED.common_mistakes,
          mistake_streaks = EXCLUDED.mistake_streaks,
@@ -417,7 +417,6 @@ router.post('/analyze-meal', async (req, res) => {
          avg_daily_protein = EXCLUDED.avg_daily_protein,
          avg_daily_calories = EXCLUDED.avg_daily_calories,
          user_state = EXCLUDED.user_state,
-         latest_coaching = EXCLUDED.latest_coaching,
          last_updated = NOW()`,
       [
         userId,
@@ -427,7 +426,6 @@ router.post('/analyze-meal', async (req, res) => {
         patternResult.avg_daily_protein,
         patternResult.avg_daily_calories,
         patternResult.user_state,
-        coaching,
       ]
     );
 
@@ -440,15 +438,11 @@ router.post('/analyze-meal', async (req, res) => {
       mistake_streaks: mistakeStreaks,
     };
     const failureInsights = generateFailureInsights(enrichedPatterns);
-
-    const context = await buildLLMContext(userId, currentMeal, db, {
-      dailyScore,
-      prediction,
-      failureInsights,
-      mealFix,
-    });
-
-    const coaching = await getContextualCoachingFromAI(context);
+    const todaysMealCount = last3DaysMeals.filter((meal) => {
+      const mealDate = new Date(meal.logged_at);
+      const mealDateStr = new Date(mealDate.getTime() + (330 * 60 * 1000)).toISOString().split('T')[0];
+      return mealDateStr === scoreDate;
+    }).length;
 
     return res.json({
       success: true,
@@ -463,10 +457,9 @@ router.post('/analyze-meal', async (req, res) => {
       prediction,
       meal_fix: mealFix,
       failure_insights: failureInsights,
-      coaching: {
-        ...coaching,
-        smart_meal_completion: coaching.smart_meal_completion || mealFix.quick_fix,
-      },
+      coaching: null,
+      can_request_coaching: todaysMealCount >= 3,
+      meals_logged_today: todaysMealCount,
     });
   } catch (err) {
     console.error('[/analyze-meal]', err);
@@ -519,6 +512,23 @@ router.get('/behavioral-status/:userId', async (req, res) => {
 router.post('/re-analyze/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
+    const todaysMealsRes = await db.query(
+      `SELECT COUNT(*)::int AS meal_count
+       FROM meal_logs
+       WHERE user_id = $1
+         AND DATE(logged_at AT TIME ZONE 'Asia/Kolkata') = DATE(NOW() AT TIME ZONE 'Asia/Kolkata')`,
+      [userId]
+    );
+    const todaysMealCount = todaysMealsRes.rows[0]?.meal_count || 0;
+
+    if (todaysMealCount < 3) {
+      return res.status(400).json({
+        error: 'Contextual coach unlocks after 3 meals logged today.',
+        meals_logged_today: todaysMealCount,
+        meals_required: 3,
+      });
+    }
+
     const { rows: patternRows } = await db.query('SELECT * FROM user_patterns WHERE user_id = $1', [userId]);
     const patterns = patternRows[0] || {};
     

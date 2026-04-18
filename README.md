@@ -155,7 +155,7 @@ cd server
 npm install
 ```
 
-3. Configure `server/.env`:
+3. Configure `server/.env` from `server/.env.example`:
 
 ```env
 PORT=5000
@@ -164,26 +164,37 @@ DATABASE_URL=your_postgres_connection_string
 GROQ_API_KEY=your_groq_api_key
 ```
 
-4. Run database schema for a fresh setup:
+4. For a fresh Supabase Postgres setup, run [`server/database/supabase-schema.sql`](./server/database/supabase-schema.sql) once in the Supabase SQL editor.
 
-```bash
-node server/database/run-schema.js
-```
-
-5. Or run the additive migration for an existing database:
-
-```bash
-node server/database/run-migrate.js
-```
-
-6. Start the backend:
+5. Verify the backend can reach the database:
 
 ```bash
 cd server
-node server.js
+npm run db:check
 ```
 
-7. Start the frontend:
+6. If you are using a non-Supabase Postgres database instead, run the repo schema for a fresh setup:
+
+```bash
+cd server
+npm run db:schema
+```
+
+7. Or run the additive migration for an existing database:
+
+```bash
+cd server
+npm run db:migrate
+```
+
+8. Start the backend:
+
+```bash
+cd server
+npm start
+```
+
+9. Start the frontend:
 
 ```bash
 npm run dev
@@ -194,6 +205,7 @@ npm run dev
 - Recent meal history sent to the LLM is intentionally capped at `5` records to control token usage.
 - The meal coach is structured for production-safe JSON output.
 - Weekly summary routes still work, while fast behavioral intelligence now prioritizes the last `3` days.
+- For exact current functionality on Supabase, use Supabase as the PostgreSQL host only and keep the existing custom JWT auth flow.
 
 ## Positioning
 
