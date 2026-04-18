@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: nutripilot-frontend
+    env: static
+    buildCommand: npm run build
+    staticPublishPath: .next
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://nutripilot-backend.onrender.com
+    domains:
+      - nutripilot.com
+      - www.nutripilot.com
+
+  - type: web
+    name: nutripilot-backend
+    env: node
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/auth
+    healthCheckInterval: 30
+    healthCheckTimeout: 5
+    healthCheckRetries: 3
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: GROQ_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+    domains:
+      - api.nutripilot.com
+      - api.www.nutripilot.com
