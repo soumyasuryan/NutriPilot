@@ -270,19 +270,23 @@ const calculateDailyScore = async (userId, date, db) => {
     return acc;
   }, { calories: 0, protein: 0, carbs: 0, fats: 0 });
 
-  const proteinScore = clamp((totals.protein / targetProtein) * 100);
-  const calorieScore = clamp(100 - (Math.abs(totals.calories - targetCalories) / targetCalories) * 100);
+  // Protein Score: 100% if they hit at least 90% of target protein
+  const proteinScore = clamp((totals.protein / (targetProtein * 0.9)) * 100);
+  
+  // Calorie Score: 100% if within 10% of target calories. Penalize outside that window.
+  const calorieDeviation = Math.abs(totals.calories - targetCalories) / targetCalories;
+  const calorieScore = clamp(100 - Math.max(0, calorieDeviation - 0.10) * 150);
 
   const proteinDensity = totals.calories > 0 ? (totals.protein * 4) / totals.calories : 0;
   const carbShare = totals.calories > 0 ? (totals.carbs * 4) / totals.calories : 0;
   const balancedMeals = meals.filter((meal) => {
     const mealProtein = toNumber(meal.protein);
     const mealCalories = toNumber(meal.calories);
-    return mealProtein >= 15 || (mealCalories > 0 && (mealProtein * 4) / mealCalories >= 0.18);
+    return mealProtein >= 15 || (mealCalories > 0 && (mealProtein * 4) / mealCalories >= 0.15);
   }).length;
   const qualityScore = clamp(
-    (Math.min(1, proteinDensity / 0.2) * 40)
-    + (Math.max(0, 1 - Math.max(0, carbShare - 0.5) / 0.3) * 35)
+    (Math.min(1, proteinDensity / 0.15) * 40)
+    + (Math.max(0, 1 - Math.max(0, carbShare - 0.55) / 0.3) * 35)
     + ((meals.length ? balancedMeals / meals.length : 0) * 25)
   );
 

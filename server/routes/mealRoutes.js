@@ -102,13 +102,13 @@ router.get('/today/:userId', async (req, res) => {
     `, [req.params.userId]);
 
     const { rows: streakRows } = await db.query(`
-      SELECT DISTINCT TO_CHAR(logged_at, 'YYYY-MM-DD') as log_date
+      SELECT DISTINCT TO_CHAR(logged_at AT TIME ZONE 'Asia/Kolkata', 'YYYY-MM-DD') as log_date
       FROM meal_logs
       WHERE user_id = $1
       ORDER BY log_date DESC
     `, [req.params.userId]);
 
-    const { rows: todayRows } = await db.query("SELECT TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD') as today");
+    const { rows: todayRows } = await db.query("SELECT TO_CHAR(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata', 'YYYY-MM-DD') as today");
     const todayStr = todayRows[0].today;
 
     let streak = 0;

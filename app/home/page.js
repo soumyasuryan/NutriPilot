@@ -101,29 +101,32 @@ const getScoreAppearance = (score) => {
 };
 
 // --- Reusable Macro Linear Bar ---
-const MacroBar = ({ label, icon: Icon, current, target, colorClass, bgClass, unit }) => {
-  const percent = Math.min((current / target) * 100, 100);
+const MacroBar = ({ label, icon: Icon, current, target, barColor, iconBg, iconColor, unit }) => {
+  const safeTarget = target > 0 ? target : 1;
+  const percent = Math.min((current / safeTarget) * 100, 100);
+  const displayCurrent = Number(current).toFixed(1);
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex justify-between items-end">
-        <div className="flex items-center gap-2">
-          <div className={`p-1.5 rounded-md ${bgClass}`}>
-            <Icon className={`w-4 h-4 ${colorClass.replace('bg-', 'text-')}`} />
+    <div className="flex flex-col gap-2.5">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2.5">
+          <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+            <Icon className={`w-3.5 h-3.5 ${iconColor}`} />
           </div>
-          <span className="text-sm font-semibold text-gray-800">{label}</span>
+          <span className="text-sm font-medium text-gray-700">{label}</span>
         </div>
         <span className="text-sm">
-          <strong className="text-gray-900">{current}</strong>
-          <span className="text-gray-400 font-medium text-xs ml-1">/ {target}{unit}</span>
+          <strong className="text-gray-900 font-semibold">{displayCurrent}</strong>
+          <span className="text-gray-400 font-normal text-xs ml-1">/ {target}{unit}</span>
         </span>
       </div>
-      <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
           transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-          className={`h-full rounded-full ${colorClass}`}
+          style={{ backgroundColor: barColor }}
+          className="h-full rounded-full"
         />
       </div>
     </div>
@@ -161,6 +164,7 @@ export default function Dashboard() {
   const [isGeneratingInsight, setIsGeneratingInsight] = useState(false);
   const [isConfirmingMeal, setIsConfirmingMeal] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', sub: '', type: 'success' });
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // New states for behavioral data
   const [failureInsights, setFailureInsights] = useState([]);
@@ -170,6 +174,7 @@ export default function Dashboard() {
   const [rollingAudit, setRollingAudit] = useState(null);
   const [patterns, setPatterns] = useState(null);
   const [isLogging, setIsLogging] = useState(false);
+  const [loggingMealIdx, setLoggingMealIdx] = useState(null);
   const [isMobileView, setIsMobileView] = useState(false);
   const scoreAppearance = getScoreAppearance(dailyScore?.score || 0);
   const canRequestCoaching = Number(todayTotals.meal_count || 0) >= 3;
@@ -292,7 +297,8 @@ export default function Dashboard() {
     setIsAnalyzing(false);
   };
 
-  const handleConfirmAndLog = async (foodObj = analyzedMeal) => {
+  const handleConfirmAndLog = async (foodObj = analyzedMeal, idx = null) => {
+    if (idx !== null) setLoggingMealIdx(idx);
     setIsConfirmingMeal(true);
     try {
       const user = JSON.parse(localStorage.getItem('user'));
@@ -329,6 +335,7 @@ export default function Dashboard() {
       showToast("Logging Failed", "Could not save meal with intelligence.", "error");
     } finally {
       setIsConfirmingMeal(false);
+      setLoggingMealIdx(null);
     }
   };
 
@@ -389,7 +396,6 @@ export default function Dashboard() {
     };
     checkMobileView();
     window.addEventListener('resize', checkMobileView);
-    return () => window.removeEventListener('resize', checkMobileView);
 
     const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
@@ -403,18 +409,45 @@ export default function Dashboard() {
           headers: { 'Authorization': `Bearer ${token}` }
         })
           .then(res => res.json())
-          .then(data => {
+          .then(async data => {
             setProfile(data);
-            fetchMealData(user, token);
+            await fetchMealData(user, token);
+            setIsInitialLoading(false);
           })
-          .catch(err => console.error("Error fetching profile", err));
+          .catch(err => {
+            console.error("Error fetching profile", err);
+            setIsInitialLoading(false);
+          });
       } catch (err) {
         console.error("Invalid user JSON");
       }
     }
+
+    return () => window.removeEventListener('resize', checkMobileView);
   }, [router]);
 
   if (!isAuthorized) return null;
+
+  if (isInitialLoading) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-6"
+        >
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-emerald-50 border-t-emerald-600 rounded-full animate-spin" />
+            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-emerald-600" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Syncing Your Progress...</h2>
+            <p className="text-gray-500 text-sm max-w-[280px]">We're fetching your latest meal data and AI coaching insights.</p>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className={isMobileView ? 'mobile-view' : ''}>
@@ -694,38 +727,33 @@ export default function Dashboard() {
       {/* Background Decor */}
       <div className="fixed top-0 left-0 w-[40vw] h-[40vw] bg-emerald-50/60 rounded-full blur-[120px] pointer-events-none -z-10 -translate-x-1/2 -translate-y-1/2" />
 
-      <main className="max-w-[1100px] mx-auto px-6 lg:px-8">
+      <main className="max-w-[1100px] mx-auto px-6 lg:px-8 pt-28 pb-12">
 
         {/* Header Section */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10"
-        >
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
-            <motion.div variants={fadeInUp} className="flex items-center gap-3">
-              <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
                 Today's Overview
               </h1>
               {todayTotals.streak > 0 && (
-                <div className="flex items-center gap-1.5 bg-orange-50 border border-orange-100 px-3 py-1.5 rounded-full text-orange-600 shadow-sm shadow-orange-500/10 mb-1">
-                  <Flame className="w-4 h-4 fill-current" />
-                  <span className="font-bold text-[13px] tracking-wide">{todayTotals.streak} Day Streak</span>
+                <div className="flex items-center gap-1.5 bg-[#FFF5F0] border border-[#FFE4D6] px-3 py-1 rounded-full text-[#F97316] shadow-sm shadow-orange-500/5 mb-0.5">
+                  <Flame className="w-3.5 h-3.5 fill-current" />
+                  <span className="font-bold text-[12px] tracking-wide">{todayTotals.streak} Day Streak</span>
                 </div>
               )}
-            </motion.div>
-            <motion.p variants={fadeInUp} className="text-gray-500 font-medium mt-1.5 text-[15px]">
+            </div>
+            <p className="text-gray-500 font-medium mt-1.5 text-[15px]">
               Here is your daily fuel status and insights.
-            </motion.p>
+            </p>
           </div>
-          <motion.div variants={fadeInUp}>
+          <div>
             <button onClick={scrollToLog} className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
               <Plus className="w-4 h-4" />
               Log a Meal
             </button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Dashboard Grid - Primary Stats */}
         <motion.div
@@ -791,22 +819,36 @@ export default function Dashboard() {
             variants={fadeInUp}
             className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] flex flex-col relative"
           >
-            <h2 className="text-[15px] font-semibold text-gray-800 mb-8 flex items-center gap-2">
-              Macro Targets
-              <div className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider">
-                On Track
-              </div>
-            </h2>
+            <div className="flex items-center gap-2.5 mb-8">
+              <h2 className="text-[15px] font-semibold text-gray-800">Macro Targets</h2>
+              {(() => {
+                const protein = Number(todayTotals.total_protein || 0);
+                const carbs = Number(todayTotals.total_carbs || 0);
+                const fats = Number(todayTotals.total_fats || 0);
+                const tProtein = profile?.target_protein || 80;
+                const tCarbs = profile?.target_carbs || 220;
+                const tFats = profile?.target_fats || 65;
+                const allOnTrack = protein <= tProtein * 1.1 && carbs <= tCarbs * 1.1 && fats <= tFats * 1.1;
+                return (
+                  <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    allOnTrack ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-amber-50 text-amber-600 border border-amber-100'
+                  }`}>
+                    {allOnTrack ? 'On Track' : 'Over Target'}
+                  </div>
+                );
+              })()}
+            </div>
 
-            <div className="flex flex-col gap-7 mt-2">
+            <div className="flex flex-col gap-6">
               <MacroBar
                 label="Protein"
                 icon={Wheat}
                 current={Number(todayTotals.total_protein || 0)}
                 target={profile?.target_protein || 80}
                 unit="g"
-                colorClass="bg-[#2563EB]"
-                bgClass="bg-blue-50"
+                barColor="#3B82F6"
+                iconBg="bg-blue-50"
+                iconColor="text-blue-500"
               />
               <MacroBar
                 label="Carbs"
@@ -814,8 +856,9 @@ export default function Dashboard() {
                 current={Number(todayTotals.total_carbs || 0)}
                 target={profile?.target_carbs || 220}
                 unit="g"
-                colorClass="bg-[#D97706]"
-                bgClass="bg-amber-50"
+                barColor="#F59E0B"
+                iconBg="bg-amber-50"
+                iconColor="text-amber-500"
               />
               <MacroBar
                 label="Fats"
@@ -823,8 +866,9 @@ export default function Dashboard() {
                 current={Number(todayTotals.total_fats || 0)}
                 target={profile?.target_fats || 65}
                 unit="g"
-                colorClass="bg-[#057A55]"
-                bgClass="bg-emerald-50"
+                barColor="#10B981"
+                iconBg="bg-emerald-50"
+                iconColor="text-emerald-600"
               />
             </div>
           </motion.div>
@@ -973,9 +1017,6 @@ export default function Dashboard() {
 
                   <div className="rounded-3xl border border-white/10 bg-black/10 p-4 space-y-3">
                     <button
-                      onClick={() => scrollToLog()}
-                      className="w-full bg-white text-[#064E3B] hover:bg-gray-100 font-bold py-3.5 rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2"
-                    >
                       onClick={() => scrollToLog()}
                       className="w-full bg-white text-[#064E3B] hover:bg-gray-100 font-bold py-3.5 rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2"
                     >
@@ -1159,28 +1200,30 @@ export default function Dashboard() {
 
           <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)]">
             {/* Quick Add Search Bar */}
-            <motion.div variants={fadeInUp} className="relative mb-6">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="w-5 h-5 text-gray-400" />
+            <motion.div variants={fadeInUp} className={`flex ${isMobileView ? 'flex-col' : 'relative'} gap-3 mb-6`}>
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Search className="w-5 h-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-[#f8fafc] border border-gray-100 text-gray-900 text-[15px] rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-[#057A55]/20 focus:border-[#057A55] outline-none transition-all placeholder:text-gray-400"
+                  placeholder="e.g. 2 roti and dal, 100g paneer, 1 bowl rice..."
+                />
               </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#f8fafc] border border-gray-100 text-gray-900 text-[15px] rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-[#057A55]/20 focus:border-[#057A55] outline-none transition-all placeholder:text-gray-400"
-                placeholder="e.g. 2 roti and dal, 100g paneer, 1 bowl rice..."
-              />
               <button
                 onClick={handleAnalyze}
                 disabled={isAnalyzing || !searchQuery}
-                className="absolute inset-y-2 right-2 bg-[#057A55] disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-[#046C4E] text-white px-5 rounded-xl font-medium text-sm transition-colors shadow-sm"
+                className={`${isMobileView ? 'w-full py-4' : 'absolute inset-y-2 right-2 px-5'} bg-[#057A55] disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-[#046C4E] text-white rounded-xl font-medium text-sm transition-colors shadow-sm`}
               >
                 {isAnalyzing ? "Analyzing..." : "Analyze & Add"}
               </button>
             </motion.div>
 
             {/* Kitchen Converter Link */}
-            <motion.div variants={fadeInUp} className="flex justify-end -mt-3 mb-6 relative z-10 w-full pr-2">
+            <motion.div variants={fadeInUp} className={`flex ${isMobileView ? 'justify-center' : 'justify-end'} -mt-3 mb-6 relative z-10 w-full pr-2`}>
               <a href="/converter" className="text-[13px] font-medium text-[#057A55] hover:text-[#046C4E] hover:underline flex items-center gap-1 transition-colors">
                 <Scale className="w-4 h-4" />
                 Don't have a weighing scale? No worries, click here!
@@ -1303,10 +1346,15 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <button
-                      onClick={() => handleConfirmAndLog(meal)}
-                      className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors shrink-0"
+                      onClick={() => handleConfirmAndLog(meal, idx)}
+                      disabled={isConfirmingMeal && loggingMealIdx === idx}
+                      className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors shrink-0 disabled:bg-gray-50 disabled:text-gray-300"
                     >
-                      <Plus className="w-4 h-4" />
+                      {isConfirmingMeal && loggingMealIdx === idx ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Plus className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                 )) : (
