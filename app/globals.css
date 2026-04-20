@@ -1,1 +1,85 @@
 @import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+@theme {
+  --color-brand-primary: #34D399; /* Lighter Emerald 400 */
+  --color-brand-secondary: #6EE7B7; /* Lighter Emerald 300 */
+}
+
+:root {
+  --bg-image: url('/bg_img.png');
+}
+
+body {
+  background-color: #020617; /* Dark slate background */
+  color: #f8fafc;
+}
+
+.app-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+  opacity: 0.15; /* Subtle background */
+  filter: saturate(1.5) contrast(1.1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.glass-navbar {
+  background: rgba(2, 6, 23, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 50;
+}
+
+.text-glow-emerald {
+  text-shadow: 0 0 15px rgba(52, 211, 153, 0.6); /* Lighter glow */
+}
+
+.bg-glow-emerald {
+  box-shadow: 0 0 40px rgba(52, 211, 153, 0.25); /* Lighter glow */
+}
+
+/* Custom scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(52, 211, 153, 0.3); /* Lighter scrollbar */
+  border-radius: 10px;
+}

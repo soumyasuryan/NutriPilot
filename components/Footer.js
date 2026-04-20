@@ -25,91 +25,93 @@ const Linkedin = ({ className }) => (
 
 const Footer = () => {
   return (
-    <footer className="bg-[#232121] mt-auto">
-      <div className="max-w-[1200px] mx-auto px-6 pt-16 pb-8">
+    <footer className="bg-slate-950 border-t border-white/5 relative overflow-hidden pt-10 pb-10">
+      {/* Background glow decoration */}
+      <div className="absolute top-0 left-1/4 w-64 h-64 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+      
+      <div className="max-w-[1200px] mx-auto px-6 pt-20 pb-10 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
 
           {/* Brand & Description */}
-          <div className="col-span-1 md:col-span-4 lg:col-span-4">
-            <Link href="/" className="flex items-center group w-fit mb-6 mt-2">
-              <span className="text-[26px] font-bold tracking-tight text-white transition-opacity group-hover:opacity-90">Nutri</span>
-              <span className="text-[26px] font-bold tracking-tight text-[#057a55] transition-opacity group-hover:opacity-90">Pilot</span>
+          <div className="col-span-1 md:col-span-4">
+            <Link href="/" className="flex items-center group w-fit mb-6">
+              <span className="text-[28px] font-bold tracking-tighter text-white ">Nutri</span>
+              <span className="text-[28px] font-bold tracking-tighter text-emerald-400 ">Pilot</span>
             </Link>
-            <p className="text-[14px] text-stone-400 leading-relaxed max-w-[260px]">
-              AI-powered nutrition coach helping students eat better and save money
+            <p className="text-[15px] text-slate-400 leading-relaxed max-w-[280px] font-medium">
+              Metabolic optimization through neural retrospectives. Eat smart, save money, and hit your biological targets.
             </p>
           </div>
 
           {/* Product Links */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-2 lg:ml-8">
-            <h3 className="text-[15px] font-semibold text-white mb-6">Product</h3>
+          <div className="col-span-1 md:col-span-2 md:ml-auto">
+            <h3 className="text-[14px] font-bold text-white mb-6 uppercase tracking-widest">Protocol</h3>
             <ul className="flex flex-col gap-4">
               <li>
-                <Link href="/#features" className="text-[14px] text-stone-400 hover:text-white transition-colors duration-200">
+                <Link href="/#features" className="text-[14px] text-slate-400 hover:text-emerald-400 transition-all font-medium">
                   Features
                 </Link>
               </li>
               <li>
-                <Link href="/#how-it-works" className="text-[14px] text-stone-400 hover:text-white transition-colors duration-200">
+                <Link href="/#how-it-works" className="text-[14px] text-slate-400 hover:text-emerald-400 transition-all font-medium">
                   How it Works
                 </Link>
               </li>
               <li>
-                <Link href="/home" className="text-[14px] text-stone-400 hover:text-white transition-colors duration-200">
+                <Link href="/home" className="text-[14px] text-slate-400 hover:text-emerald-400 transition-all font-medium">
                   Dashboard
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Company Links */}
-          <div className="col-span-1 md:col-span-3 lg:col-span-3 lg:ml-8">
-            <h3 className="text-[15px] font-semibold text-white mb-6">Company</h3>
+          {/* System Links */}
+          <div className="col-span-1 md:col-span-2 md:ml-auto">
+            <h3 className="text-[14px] font-bold text-white mb-6 uppercase tracking-widest">System</h3>
             <ul className="flex flex-col gap-4">
               <li>
-                <a href="#" className="text-[14px] text-stone-400 hover:text-white transition-colors duration-200">
-                  About Us
+                <a href="#" className="text-[14px] text-slate-400 hover:text-emerald-400 transition-all font-medium">
+                  Privacy
                 </a>
               </li>
               <li>
-                <a href="#" className="text-[14px] text-stone-400 hover:text-white transition-colors duration-200">
-                  Contact
+                <a href="#" className="text-[14px] text-slate-400 hover:text-emerald-400 transition-all font-medium">
+                  Terms
                 </a>
               </li>
               <li>
-                <a href="#" className="text-[14px] text-stone-400 hover:text-white transition-colors duration-200">
-                  Privacy Policy
+                <a href="#" className="text-[14px] text-slate-400 hover:text-emerald-400 transition-all font-medium">
+                  API
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Connect */}
-          <div className="col-span-1 md:col-span-3 lg:col-span-3 lg:ml-auto">
-            <h3 className="text-[15px] font-semibold text-white mb-6">Connect</h3>
-            <div className="flex items-center gap-3">
-              <a href="#" className="w-10 h-10 rounded-[12px] bg-white/5 flex flex-col items-center justify-center text-stone-400 hover:bg-[#16a34a] hover:text-white transition-all duration-300">
-                <Twitter className="w-[18px] h-[18px]" />
+          {/* Social Connect */}
+          <div className="col-span-1 md:col-span-3 md:ml-auto">
+            <h3 className="text-[14px] font-bold text-white mb-6 uppercase tracking-widest">Connect</h3>
+            <div className="flex items-center gap-4">
+              <a href="#" className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 hover:bg-emerald-500 hover:text-white border border-white/5 transition-all duration-300 group">
+                <Twitter className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-[12px] bg-white/5 flex flex-col items-center justify-center text-stone-400 hover:bg-[#16a34a] hover:text-white transition-all duration-300">
-                <Github className="w-[18px] h-[18px]" />
+              <a href="#" className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 hover:bg-emerald-500 hover:text-white border border-white/5 transition-all duration-300 group">
+                <Github className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-[12px] bg-white/5 flex flex-col items-center justify-center text-stone-400 hover:bg-[#16a34a] hover:text-white transition-all duration-300">
-                <Linkedin className="w-[18px] h-[18px]" />
+              <a href="#" className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 hover:bg-emerald-500 hover:text-white border border-white/5 transition-all duration-300 group">
+                <Linkedin className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </a>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[13px] text-stone-400">
-            © 2026 NutriPilot. All rights reserved.
+        {/* Bottom bar */}
+        <div className="mt-20 py-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 ">
+          <p className="text-[13px] text-slate-500 font-medium">
+            © 2026 NutriPilot. Systems initialized. All rights reserved.
           </p>
-          <div className="flex items-center gap-6">
-            <a href="#" className="text-[13px] text-stone-400 hover:text-white transition-colors">Terms</a>
-            <a href="#" className="text-[13px] text-stone-400 hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="text-[13px] text-stone-400 hover:text-white transition-colors">Cookies</a>
+          <div className="flex items-center gap-8 text-[12px] font-bold text-slate-500 uppercase tracking-widest">
+            <a href="#" className="hover:text-emerald-400 transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-emerald-400 transition-colors">Terms of Service</a>
           </div>
         </div>
       </div>

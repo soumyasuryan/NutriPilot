@@ -114,11 +114,11 @@ export default function AccountPage() {
     setIsUpdating(false);
   };
 
-  if (!isAuthorized) return <div className="min-h-screen bg-[#FCFCFD] flex items-center justify-center text-gray-500">Loading...</div>;
+  if (!isAuthorized) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-500">Loading...</div>;
 
   return (
     <>
-      <div className="min-h-screen bg-[#FCFCFD] pt-28 pb-20 selection:bg-[#057A55]/10 selection:text-[#057A55]">
+      <div className="min-h-screen bg-slate-950 pt-28 pb-20 selection:bg-emerald-500/10 selection:text-emerald-400">
         <main className="max-w-[800px] mx-auto px-6">
 
           {/* Header */}
@@ -126,13 +126,13 @@ export default function AccountPage() {
             initial="hidden"
             animate="visible"
             variants={fadeInUp}
-            className="mb-10 text-center"
+            className="mb-12 text-center"
           >
-            <div className="w-24 h-24 rounded-full bg-linear-to-br from-[#16a34a] to-[#046C4E] flex items-center justify-center text-white text-[32px] font-bold mx-auto mb-4 shadow-lg shadow-green-600/20 ring-4 ring-green-50">
+            <div className="w-24 h-24 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[32px] font-bold mx-auto mb-6 shadow-[0_0_40px_rgba(16,185,129,0.3)] border-4 border-white/10">
               {(formData.name || user?.full_name || user?.name || 'U')[0].toUpperCase()}
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-2">My Profile</h1>
-            <p className="text-gray-500 font-medium">Review your personal information and current macro targets.</p>
+            <h1 className="text-3xl font-bold text-white tracking-tight mb-2">My Profile</h1>
+            <p className="text-slate-400 font-medium">System biometrics and nutritional parameters.</p>
           </motion.div>
 
           <motion.div
@@ -142,38 +142,38 @@ export default function AccountPage() {
             className="grid gap-8"
           >
             {/* Section 1: Security & Identity */}
-            <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-2xl opacity-60 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+            <motion.div variants={fadeInUp} className="glass-card rounded-[32px] p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl opacity-60 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
 
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-emerald-500" /> Identity Information
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-[14px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-emerald-400" /> Identity Information
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                 <div>
-                  <label className="text-[13px] font-semibold text-gray-500 ml-1 mb-1 block">Full Name</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1 mb-2 block">Full Name</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <User className="w-4 h-4 text-emerald-600" />
+                      <User className="w-4 h-4 text-emerald-400" />
                     </div>
                     <input 
                       type="text" 
                       value={formData.name} 
                       onChange={e => setFormData({ ...formData, name: e.target.value })} 
-                      className="w-full bg-white border border-emerald-100/60 text-gray-900 font-medium text-[16px] rounded-2xl pl-11 pr-4 py-3.5 shadow-sm focus:border-emerald-500 outline-none transition-all" 
+                      className="w-full bg-white/5 border border-white/10 text-white font-medium text-[16px] rounded-2xl pl-11 pr-4 py-4 shadow-lg focus:border-emerald-500 outline-none transition-all" 
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[13px] font-semibold text-gray-500 ml-1 mb-1 block">Email Address</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1 mb-2 block">Email Address</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Mail className="w-4 h-4 text-emerald-600" />
+                      <Mail className="w-4 h-4 text-emerald-400" />
                     </div>
-                    <div className="w-full bg-gray-50/50 border border-emerald-100/60 text-gray-400 font-medium text-[16px] rounded-2xl pl-11 pr-4 py-3.5 shadow-sm cursor-not-allowed">
+                    <div className="w-full bg-white/5 border border-white/5 text-slate-500 font-medium text-[16px] rounded-2xl pl-11 pr-4 py-4 cursor-not-allowed">
                       {user?.email || "-"}
                     </div>
                   </div>
@@ -182,110 +182,110 @@ export default function AccountPage() {
             </motion.div>
 
             {/* Section 2: Health Biometrics Form */}
-            <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)]">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <ActivitySquare className="w-5 h-5 text-blue-500" /> Health Biometrics & Goals
+            <motion.div variants={fadeInUp} className="glass-card rounded-[32px] p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-[14px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                  <ActivitySquare className="w-5 h-5 text-blue-400" /> Health Biometrics & Goals
                 </h2>
               </div>
 
               <form onSubmit={handleUpdateGoals} className="space-y-5">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
-                    <label className="text-[12px] font-bold text-blue-600 uppercase tracking-wide mb-1 block">Age</label>
-                    <input type="number" value={formData.age} onChange={e => setFormData({ ...formData, age: e.target.value })} className="w-full bg-blue-50/50 border border-blue-100/50 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[16px]" />
+                    <label className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-2 block ml-1">Age</label>
+                    <input type="number" value={formData.age} onChange={e => setFormData({ ...formData, age: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:border-blue-500 outline-none text-white font-bold text-[16px] transition-all" />
                   </div>
                   <div>
-                    <label className="text-[12px] font-bold text-indigo-600 uppercase tracking-wide mb-1 block">Gender</label>
-                    <select value={formData.gender} onChange={e => setFormData({ ...formData, gender: e.target.value })} className="w-full bg-indigo-50/50 border border-indigo-100/50 rounded-2xl p-3.5 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none text-gray-900 font-semibold text-[16px]">
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
+                    <label className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-2 block ml-1">Gender</label>
+                    <select value={formData.gender} onChange={e => setFormData({ ...formData, gender: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:border-indigo-500 outline-none text-white font-bold text-[16px] transition-all appearance-none">
+                      <option value="Male" className="bg-slate-900">Male</option>
+                      <option value="Female" className="bg-slate-900">Female</option>
+                      <option value="Other" className="bg-slate-900">Other</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-[12px] font-bold text-emerald-600 uppercase tracking-wide mb-1 block">Height (cm)</label>
-                    <input type="number" value={formData.height} onChange={e => setFormData({ ...formData, height: e.target.value })} className="w-full bg-emerald-50/50 border border-emerald-100/50 rounded-2xl p-3.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none text-gray-900 font-semibold text-[16px]" />
+                    <label className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-2 block ml-1">Height (cm)</label>
+                    <input type="number" value={formData.height} onChange={e => setFormData({ ...formData, height: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:border-emerald-500 outline-none text-white font-bold text-[16px] transition-all" />
                   </div>
                   <div>
-                    <label className="text-[12px] font-bold text-orange-600 uppercase tracking-wide mb-1 block">Weight (kg)</label>
-                    <input type="number" value={formData.weight} onChange={e => setFormData({ ...formData, weight: e.target.value })} className="w-full bg-orange-50/50 border border-orange-100/50 rounded-2xl p-3.5 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none text-gray-900 font-semibold text-[16px]" />
+                    <label className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-2 block ml-1">Weight (kg)</label>
+                    <input type="number" value={formData.weight} onChange={e => setFormData({ ...formData, weight: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:border-orange-500 outline-none text-white font-bold text-[16px] transition-all" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4">
                   <div>
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Waist (cm)</label>
-                    <input type="number" value={formData.waist_cm} onChange={e => setFormData({ ...formData, waist_cm: e.target.value })} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]" />
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block ml-1">Waist (cm)</label>
+                    <input type="number" value={formData.waist_cm} onChange={e => setFormData({ ...formData, waist_cm: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:border-emerald-500 outline-none text-white font-bold text-[15px] transition-all" />
                   </div>
                   <div>
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Direction</label>
-                    <select value={formData.fitness_goal} onChange={e => setFormData({ ...formData, fitness_goal: e.target.value })} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]">
-                      <option value="Cut">Cut (Lose Fat)</option>
-                      <option value="Bulk">Bulk (Gain Mass)</option>
-                      <option value="Maintain">Maintain</option>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block ml-1">Direction</label>
+                    <select value={formData.fitness_goal} onChange={e => setFormData({ ...formData, fitness_goal: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:border-emerald-500 outline-none text-white font-bold text-[15px] transition-all appearance-none">
+                      <option value="Cut" className="bg-slate-900">Cut (Lose Fat)</option>
+                      <option value="Bulk" className="bg-slate-900">Bulk (Gain Mass)</option>
+                      <option value="Maintain" className="bg-slate-900">Maintain</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Activity</label>
-                    <select value={formData.activity_level} onChange={e => setFormData({ ...formData, activity_level: e.target.value })} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]">
-                      <option value="Light">Light</option>
-                      <option value="Moderate">Moderate</option>
-                      <option value="Heavy">Heavy</option>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block ml-1">Activity</label>
+                    <select value={formData.activity_level} onChange={e => setFormData({ ...formData, activity_level: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:border-emerald-500 outline-none text-white font-bold text-[15px] transition-all appearance-none">
+                      <option value="Light" className="bg-slate-900">Light</option>
+                      <option value="Moderate" className="bg-slate-900">Moderate</option>
+                      <option value="Heavy" className="bg-slate-900">Heavy</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Diet</label>
-                    <select value={formData.diet_preference} onChange={e => setFormData({ ...formData, diet_preference: e.target.value })} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-900 font-semibold text-[15px]">
-                      <option value="veg">Veg</option>
-                      <option value="non_veg">Non-Veg</option>
-                      <option value="any">Any</option>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block ml-1">Diet</label>
+                    <select value={formData.diet_preference} onChange={e => setFormData({ ...formData, diet_preference: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 focus:border-emerald-500 outline-none text-white font-bold text-[15px] transition-all appearance-none">
+                      <option value="veg" className="bg-slate-900">Veg</option>
+                      <option value="non_veg" className="bg-slate-900">Non-Veg</option>
+                      <option value="any" className="bg-slate-900">Any</option>
                     </select>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center gap-4 mt-6">
-                  <button type="submit" disabled={isUpdating} className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-                    {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save & Recalibrate Macros"}
+                <div className="flex flex-col sm:flex-row items-center gap-4 mt-8">
+                  <button type="submit" disabled={isUpdating} className="w-full sm:w-auto px-10 py-4 bg-emerald-500 hover:bg-emerald-400 disabled:bg-white/5 disabled:text-slate-500 text-white font-bold rounded-2xl transition-all shadow-[0_0_30px_rgba(16,185,129,0.2)] flex items-center justify-center gap-2 uppercase tracking-widest text-[14px]">
+                    {isUpdating ? <Loader2 className="w-5 h-5 animate-spin" /> : "Recalibrate System"}
                   </button>
                 </div>
               </form>
             </motion.div>
 
             {/* Section 3: Nutritional Blueprint */}
-            <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)]">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-amber-500" /> Nutritional Blueprint
+            <motion.div variants={fadeInUp} className="glass-card rounded-[32px] p-8 mb-12">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-[14px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-amber-400" /> Nutritional Blueprint
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {/* Daily Target calories */}
-                <div className="md:col-span-4 bg-gray-50 border border-gray-100 rounded-2xl p-6 flex items-center justify-between">
+                <div className="md:col-span-4 bg-white/5 border border-white/5 rounded-[24px] p-8 flex items-center justify-between shadow-inner">
                   <div>
-                    <p className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-1">Daily Calorie Target</p>
-                    <div className="text-[32px] font-bold text-gray-900 tracking-tight">{profile?.target_calories || "-"} <span className="text-lg text-gray-400 font-medium tracking-normal">kcal</span></div>
+                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Daily Calorie Budget</p>
+                    <div className="text-[40px] font-bold text-white tracking-tighter leading-none">{profile?.target_calories || "-"} <span className="text-xl text-slate-500 font-bold tracking-normal uppercase ml-1">kcal</span></div>
                   </div>
                 </div>
 
                 {/* Macro breakdown */}
-                <div className="bg-blue-50/30 border border-blue-50 rounded-2xl p-5 text-center">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-3"><Wheat className="w-5 h-5" /></div>
-                  <p className="text-[12px] font-bold text-blue-600 uppercase tracking-wide mb-0.5">Protein</p>
-                  <p className="text-[20px] font-semibold text-gray-900">{profile?.target_protein || "-"}g</p>
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-[20px] p-6 text-center shadow-lg">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center mx-auto mb-4 border border-blue-500/20 shadow-lg"><Wheat className="w-6 h-6" /></div>
+                  <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Protein</p>
+                  <p className="text-[24px] font-bold text-white">{profile?.target_protein || "-"}g</p>
                 </div>
 
-                <div className="bg-amber-50/30 border border-amber-50 rounded-2xl p-5 text-center">
-                  <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-3"><TrendingUp className="w-5 h-5" /></div>
-                  <p className="text-[12px] font-bold text-amber-600 uppercase tracking-wide mb-0.5">Carbs</p>
-                  <p className="text-[20px] font-semibold text-gray-900">{profile?.target_carbs || "-"}g</p>
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-[20px] p-6 text-center shadow-lg">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-4 border border-amber-500/20 shadow-lg"><TrendingUp className="w-6 h-6" /></div>
+                  <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1">Carbs</p>
+                  <p className="text-[24px] font-bold text-white">{profile?.target_carbs || "-"}g</p>
                 </div>
 
-                <div className="bg-emerald-50/30 border border-emerald-50 rounded-2xl p-5 text-center md:col-span-2">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3"><Droplet className="w-5 h-5" /></div>
-                  <p className="text-[12px] font-bold text-emerald-600 uppercase tracking-wide mb-0.5">Fats</p>
-                  <p className="text-[20px] font-semibold text-gray-900">{profile?.target_fats || "-"}g</p>
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-[20px] p-6 text-center md:col-span-2 shadow-lg">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4 border border-emerald-500/20 shadow-lg"><Droplet className="w-6 h-6" /></div>
+                  <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">Fats</p>
+                  <p className="text-[24px] font-bold text-white">{profile?.target_fats || "-"}g</p>
                 </div>
               </div>
             </motion.div>

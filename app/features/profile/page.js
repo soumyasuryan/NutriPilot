@@ -112,11 +112,12 @@ export default function ProfileProgress() {
 
   return (
     <>
-      <div className="min-h-screen bg-[#FCFCFD] text-gray-900 pt-32 pb-20 selection:bg-blue-500/10 selection:text-blue-600 relative">
+      <div className="min-h-screen bg-slate-950 text-white pt-32 pb-20 selection:bg-emerald-500/10 selection:text-emerald-400 relative overflow-hidden">
+        <div className="app-bg" />
 
         {/* Background Decor */}
-        <div className="fixed top-0 right-0 w-[40vw] h-[40vw] bg-emerald-50/60 rounded-full blur-[120px] pointer-events-none -z-10 translate-x-1/3 -translate-y-1/3" />
-        <div className="fixed bottom-0 left-0 w-[30vw] h-[30vw] bg-purple-50/40 rounded-full blur-[100px] pointer-events-none -z-10 -translate-x-1/3 translate-y-1/3" />
+        <div className="fixed top-0 right-0 w-[40vw] h-[40vw] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none -z-10 translate-x-1/3 -translate-y-1/3" />
+        <div className="fixed bottom-0 left-0 w-[30vw] h-[30vw] bg-purple-500/5 rounded-full blur-[100px] pointer-events-none -z-10 -translate-x-1/3 translate-y-1/3" />
 
         <main className="max-w-[1100px] mx-auto px-6 lg:px-8">
 
@@ -125,26 +126,26 @@ export default function ProfileProgress() {
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
-            className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6"
+            className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8"
           >
             <div>
-              <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-emerald-100">
-                <User className="w-3.5 h-3.5" />
-                Profile & Progress
+              <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest mb-6 border border-emerald-500/20">
+                <User className="w-4 h-4" />
+                Performance Protocol
               </motion.div>
-              <motion.h1 variants={fadeInUp} className="text-4xl md:text-5xl font-semibold text-gray-900 tracking-tight leading-tight">
-                Your <span className="text-emerald-600">Journey</span>.
+              <motion.h1 variants={fadeInUp} className="text-4xl md:text-5xl font-bold text-white tracking-tighter leading-none uppercase">
+                Your <span className="text-emerald-500">Journey</span>
               </motion.h1>
-              <motion.p variants={fadeInUp} className="text-gray-500 font-medium mt-3 text-[16px] max-w-xl leading-relaxed">
-                Track your weekly caloric balance and manage your personal food library.
+              <motion.p variants={fadeInUp} className="text-slate-400 font-medium mt-4 text-[16px] max-w-xl leading-relaxed">
+                Biometric retrospective and neural intake synchronization.
               </motion.p>
             </div>
             <motion.div variants={fadeInUp} className="shrink-0">
               <button
                 onClick={() => router.push('/account')}
-                className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm cursor-pointer"
+                className="flex items-center gap-3 bg-white/5 border border-white/10 text-white px-6 py-3 rounded-2xl text-[13px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all shadow-lg active:scale-95"
               >
-                My Profile Settings
+                Calibration Settings
               </button>
             </motion.div>
           </motion.div>
@@ -155,31 +156,31 @@ export default function ProfileProgress() {
             {/* Chart 1 - Weekly Caloric Balance */}
             <motion.div
               initial="hidden" animate="visible" variants={fadeInUp}
-              className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] flex flex-col min-h-[460px] relative overflow-hidden"
+              className="glass-card rounded-[40px] p-8 md:p-10 flex flex-col min-h-[480px] relative overflow-hidden"
             >
-              <div className="flex items-center justify-between mb-8 z-10">
-                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 tracking-tight">
-                  <Activity className="w-5 h-5 text-emerald-500" />
-                  Weekly Caloric Balance
+              <div className="flex items-center justify-between mb-10 z-10">
+                <h2 className="text-lg font-bold text-white flex items-center gap-3 tracking-tighter uppercase">
+                  <Activity className="w-6 h-6 text-emerald-400" />
+                  Caloric Trajectory
                 </h2>
-                <div className="bg-gray-50 border border-gray-100 text-[12px] font-bold rounded-lg px-3 py-1.5 text-gray-500 tracking-wide uppercase">
-                  Last 7 Days
+                <div className="bg-white/5 border border-white/10 text-[10px] font-bold rounded-xl px-4 py-2 text-slate-500 tracking-[0.2em] uppercase">
+                  7-Day Window
                 </div>
               </div>
 
               {/* Dynamic Mathematical Visual Chart */}
-              <div className="flex-1 flex items-end gap-3 justify-between pb-4 border-b border-gray-200 relative mt-4 h-[320px]">
+              <div className="flex-1 flex items-end gap-4 justify-between pb-4 border-b border-white/5 relative mt-6 h-[320px]">
                 {/* Fixed Grid lines (Background) */}
-                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-                  {[1, 2, 3, 4].map(i => <div key={i} className="w-full border-t border-gray-50/80"></div>)}
+                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+                  {[1, 2, 3, 4].map(i => <div key={i} className="w-full border-t border-white/10"></div>)}
                 </div>
 
                 {/* Mathematical Target Baseline Line */}
                 <div
-                  className="absolute left-0 right-0 border-t-2 border-dashed border-gray-400 z-10 transition-all duration-700"
+                  className="absolute left-0 right-0 border-t border-dashed border-slate-500 z-10 transition-all duration-700 opacity-50"
                   style={{ bottom: `calc(${(targetCals / maxY) * 304}px + 16px)` }}
                 >
-                  <span className="absolute -top-7 left-0 text-[11px] font-bold text-gray-600 bg-white/90 backdrop-blur-sm border border-gray-200 px-1.5 py-0.5 rounded shadow-sm">Target: {targetCals} kcal</span>
+                  <span className="absolute -top-7 left-0 text-[10px] font-bold text-slate-400 bg-slate-900/80 backdrop-blur-sm border border-white/5 px-2 py-1 rounded-lg uppercase tracking-widest shadow-xl">Target: {targetCals} kcal</span>
                 </div>
 
                 {/* Vertical Days Bars */}
@@ -190,15 +191,15 @@ export default function ProfileProgress() {
                     <div key={idx} className="w-full relative flex justify-center group h-full items-end z-0">
                       {/* The Fill Bar */}
                       <div
-                        className={`w-full max-w-16 rounded-t-lg opacity-90 group-hover:opacity-100 transition-all duration-500 ease-out cursor-pointer relative ${isBadDeviation
-                            ? "bg-red-400 bg-linear-to-t from-red-100/40 to-red-400 group-hover:to-red-500"
-                            : "bg-emerald-400 bg-linear-to-t from-emerald-100/40 to-emerald-400 group-hover:to-emerald-500"
+                        className={`w-full max-w-16 rounded-t-xl opacity-90 group-hover:opacity-100 transition-all duration-700 ease-out cursor-pointer relative shadow-lg ${isBadDeviation
+                            ? "bg-rose-500 shadow-rose-500/20"
+                            : "bg-emerald-500 shadow-emerald-500/20"
                           }`}
-                        style={{ height: `${Math.max(4, Math.round((val / maxY) * 304))}px` }}
+                        style={{ height: `${Math.max(6, Math.round((val / maxY) * 304))}px` }}
                       >
                         {/* Hover Bubble Tracker */}
-                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-700 shadow-xl text-white text-[12px] font-bold py-1 px-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20">
-                          {val} kcal
+                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/10 shadow-2xl text-white text-[11px] font-bold py-2 px-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap z-20 uppercase tracking-widest">
+                          {val} KCAL
                         </div>
                       </div>
                     </div>
@@ -207,18 +208,18 @@ export default function ProfileProgress() {
               </div>
 
               {/* X-axis Labels */}
-              <div className="flex justify-between items-center mt-3 text-[11px] font-bold text-gray-400 px-3 uppercase tracking-wider">
+              <div className="flex justify-between items-center mt-4 text-[10px] font-bold text-slate-500 px-4 uppercase tracking-[0.2em]">
                 {dayLabels.map((lbl, idx) => <span key={idx}>{lbl}</span>)}
               </div>
 
               {/* Per-day deviation row */}
-              <div className="flex justify-between items-center mt-2 px-3">
+              <div className="flex justify-between items-center mt-3 px-4">
                 {weeklyData.map((val, idx) => {
                   const deviation = val - targetCals;
                   const isBad = Math.abs(deviation) > 300;
                   const label = val === 0 ? '–' : (deviation >= 0 ? `+${deviation}` : `${deviation}`);
                   return (
-                    <span key={idx} className={`text-[10px] font-bold tracking-tight ${val === 0 ? 'text-gray-300' : isBad ? 'text-red-500' : 'text-emerald-500'
+                    <span key={idx} className={`text-[11px] font-bold tracking-tighter ${val === 0 ? 'text-slate-800' : isBad ? 'text-rose-400' : 'text-emerald-400'
                       }`}>
                       {label}
                     </span>
@@ -227,27 +228,27 @@ export default function ProfileProgress() {
               </div>
 
               {/* Synthetic Insight Panel */}
-              <div className="mt-8 bg-gray-50 border border-gray-100 rounded-2xl p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[12px] font-bold text-gray-500 tracking-wide uppercase">7-Day Avg</span>
-                  <span className={`text-sm font-bold flex items-center gap-1 ${Math.abs(diff) > 300 ? 'text-red-500' : 'text-emerald-500'}`}>
+              <div className="mt-10 bg-white/5 border border-white/10 rounded-[32px] p-6 shadow-inner">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[11px] font-bold text-slate-500 tracking-widest uppercase ml-1">7-Day Synthesis</span>
+                  <span className={`text-[13px] font-bold uppercase tracking-widest flex items-center gap-2 ${Math.abs(diff) > 300 ? 'text-rose-400' : 'text-emerald-400'}`}>
                     {statusStr}
                   </span>
                 </div>
                 {/* Deviation colour key */}
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
-                    <span className="text-[11px] text-gray-500 font-medium">Within ±300 kcal of target</span>
+                <div className="flex items-center gap-6 mb-6 ml-1">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Baseline (±300)</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>
-                    <span className="text-[11px] text-gray-500 font-medium">&gt;300 kcal deviation</span>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-rose-500 inline-block shadow-[0_0_8px_rgba(244,63,94,0.5)]"></span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Critical Deviation</span>
                   </div>
                 </div>
-                <div className="text-sm text-gray-600 font-medium leading-relaxed flex items-start gap-2">
-                  {Math.abs(diff) > 300 ? <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" /> : <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />}
-                  {suggestion}
+                <div className="text-[15px] text-slate-300 font-medium leading-relaxed flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 italic">
+                  {Math.abs(diff) > 300 ? <AlertCircle className="w-6 h-6 text-amber-500 shrink-0" /> : <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />}
+                  "{suggestion}"
                 </div>
               </div>
             </motion.div>

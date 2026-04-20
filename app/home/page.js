@@ -26,7 +26,7 @@ const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, lab
           stroke="currentColor"
           strokeWidth={strokeWidth}
           fill="transparent"
-          className="text-gray-100"
+          className="text-white/5"
         />
         {/* Progress Value */}
         <motion.circle
@@ -45,11 +45,11 @@ const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, lab
       </svg>
       {/* Inner Label */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <span className="text-3xl font-bold text-gray-900 tracking-tight">
+        <span className="text-3xl font-bold text-white tracking-tight">
           {label === 'kcal remaining' ? Math.max(0, Math.round(max - value)) : Math.round(value)}
         </span>
-        <span className="text-sm font-medium text-gray-500 mt-1">{label}</span>
-        {subLabel && <span className="text-[11px] text-gray-400 font-medium">{subLabel}</span>}
+        <span className="text-sm font-medium text-slate-400 mt-1">{label}</span>
+        {subLabel && <span className="text-[11px] text-slate-500 font-medium">{subLabel}</span>}
       </div>
     </div>
   );
@@ -58,45 +58,45 @@ const CircularProgress = ({ value, max, color, size = 200, strokeWidth = 14, lab
 const getScoreAppearance = (score) => {
   if (score < 35) {
     return {
-      ringColor: '#DC2626',
-      badgeBg: 'bg-red-500',
-      badgeIcon: 'text-white',
-      panelTone: 'from-red-50 to-rose-50',
-      borderTone: 'border-red-100',
+      ringColor: '#EF4444',
+      badgeBg: 'bg-rose-500/20',
+      badgeIcon: 'text-rose-400',
+      panelTone: 'from-rose-500/5 to-transparent',
+      borderTone: 'border-rose-500/20',
       statusText: 'Needs Recovery',
-      statusColor: 'text-red-600',
+      statusColor: 'text-rose-400',
     };
   }
   if (score < 60) {
     return {
-      ringColor: '#D97706',
-      badgeBg: 'bg-amber-500',
-      badgeIcon: 'text-white',
-      panelTone: 'from-amber-50 to-orange-50',
-      borderTone: 'border-amber-100',
+      ringColor: '#F59E0B',
+      badgeBg: 'bg-amber-500/20',
+      badgeIcon: 'text-amber-400',
+      panelTone: 'from-amber-500/5 to-transparent',
+      borderTone: 'border-amber-500/20',
       statusText: 'At Risk',
-      statusColor: 'text-amber-600',
+      statusColor: 'text-amber-400',
     };
   }
   if (score < 80) {
     return {
-      ringColor: '#2563EB',
-      badgeBg: 'bg-blue-500',
-      badgeIcon: 'text-white',
-      panelTone: 'from-blue-50 to-cyan-50',
-      borderTone: 'border-blue-100',
+      ringColor: '#3B82F6',
+      badgeBg: 'bg-blue-500/20',
+      badgeIcon: 'text-blue-400',
+      panelTone: 'from-blue-500/5 to-transparent',
+      borderTone: 'border-blue-500/20',
       statusText: 'Stable',
-      statusColor: 'text-blue-600',
+      statusColor: 'text-blue-400',
     };
   }
   return {
-    ringColor: '#057A55',
-    badgeBg: 'bg-emerald-500',
-    badgeIcon: 'text-white',
-    panelTone: 'from-emerald-50 to-green-50',
-    borderTone: 'border-emerald-100',
+    ringColor: '#34D399',
+    badgeBg: 'bg-emerald-400/20',
+    badgeIcon: 'text-emerald-400',
+    panelTone: 'from-emerald-400/5 to-transparent',
+    borderTone: 'border-emerald-400/20',
     statusText: 'Strong',
-    statusColor: 'text-emerald-600',
+    statusColor: 'text-emerald-400',
   };
 };
 
@@ -110,17 +110,17 @@ const MacroBar = ({ label, icon: Icon, current, target, barColor, iconBg, iconCo
     <div className="flex flex-col gap-2.5">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2.5">
-          <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${iconBg}`}>
-            <Icon className={`w-3.5 h-3.5 ${iconColor}`} />
+          <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${iconBg.replace('bg-', 'bg-').replace('-50', '-500/10')}`}>
+            <Icon className={`w-3.5 h-3.5 ${iconColor.replace('text-', 'text-').replace('-600', '-400')}`} />
           </div>
-          <span className="text-sm font-medium text-gray-700">{label}</span>
+          <span className="text-sm font-medium text-slate-300">{label}</span>
         </div>
         <span className="text-sm">
-          <strong className="text-gray-900 font-semibold">{displayCurrent}</strong>
-          <span className="text-gray-400 font-normal text-xs ml-1">/ {target}{unit}</span>
+          <strong className="text-white font-semibold">{displayCurrent}</strong>
+          <span className="text-slate-500 font-normal text-xs ml-1">/ {target}{unit}</span>
         </span>
       </div>
-      <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
@@ -430,19 +430,20 @@ export default function Dashboard() {
 
   if (isInitialLoading) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+        <div className="app-bg opacity-20" />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col items-center gap-6"
+          className="flex flex-col items-center gap-6 z-10"
         >
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-emerald-50 border-t-emerald-600 rounded-full animate-spin" />
-            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-emerald-600" />
+            <div className="w-16 h-16 border-4 border-emerald-400/10 border-t-emerald-400 rounded-full animate-spin" />
+            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-emerald-400" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Syncing Your Progress...</h2>
-            <p className="text-gray-500 text-sm max-w-[280px]">We're fetching your latest meal data and AI coaching insights.</p>
+            <h2 className="text-xl font-bold text-white mb-2">Syncing Your Progress...</h2>
+            <p className="text-slate-400 text-sm max-w-[280px]">We're fetching your latest meal data and AI coaching insights.</p>
           </div>
         </motion.div>
       </div>
@@ -725,30 +726,31 @@ export default function Dashboard() {
       `}</style>
 
       {/* Background Decor */}
-      <div className="fixed top-0 left-0 w-[40vw] h-[40vw] bg-emerald-50/60 rounded-full blur-[120px] pointer-events-none -z-10 -translate-x-1/2 -translate-y-1/2" />
+      <div className="fixed top-0 left-0 w-[40vw] h-[40vw] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none -z-10 -translate-x-1/2 -translate-y-1/2" />
+      <div className="fixed bottom-0 right-0 w-[30vw] h-[30vw] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none -z-10 translate-x-1/2 translate-y-1/2" />
 
-      <main className="max-w-[1100px] mx-auto px-6 lg:px-8 pt-28 pb-12">
+      <main className="max-w-[1100px] mx-auto px-6 lg:px-8 pt-28 pb-12 relative z-10">
 
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+              <h1 className="text-3xl font-bold text-white tracking-tight">
                 Today's Overview
               </h1>
               {todayTotals.streak > 0 && (
-                <div className="flex items-center gap-1.5 bg-[#FFF5F0] border border-[#FFE4D6] px-3 py-1 rounded-full text-[#F97316] shadow-sm shadow-orange-500/5 mb-0.5">
+                <div className="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/20 px-3 py-1 rounded-full text-orange-400 shadow-lg mb-0.5">
                   <Flame className="w-3.5 h-3.5 fill-current" />
                   <span className="font-bold text-[12px] tracking-wide">{todayTotals.streak} Day Streak</span>
                 </div>
               )}
             </div>
-            <p className="text-gray-500 font-medium mt-1.5 text-[15px]">
-              Here is your daily fuel status and insights.
+            <p className="text-slate-400 font-medium mt-1.5 text-[15px]">
+              System active. Fuel and performance status within parameters.
             </p>
           </div>
           <div>
-            <button onClick={scrollToLog} className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
+            <button onClick={scrollToLog} className="flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)]">
               <Plus className="w-4 h-4" />
               Log a Meal
             </button>
@@ -765,11 +767,11 @@ export default function Dashboard() {
           {/* Card 1: Calories Fuel Gauge */}
           <motion.div
             variants={fadeInUp}
-            className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] flex flex-col items-center justify-center relative overflow-hidden group"
+            className="glass-card rounded-[32px] p-8 flex flex-col items-center justify-center relative overflow-hidden group"
           >
             <div className="absolute top-6 left-6 flex items-center justify-between w-[calc(100%-3rem)]">
-              <h2 className="text-[15px] font-semibold text-gray-800">Energy Status</h2>
-              <Flame className="w-5 h-5 text-orange-400 opacity-80 group-hover:opacity-100 transition-opacity" />
+              <h2 className="text-[14px] font-bold text-slate-300 uppercase tracking-widest">Energy Status</h2>
+              <Flame className="w-5 h-5 text-orange-400 opacity-60 group-hover:opacity-100 transition-opacity" />
             </div>
 
             <div className="mt-8 mb-2">
@@ -781,7 +783,7 @@ export default function Dashboard() {
                   <CircularProgress
                     value={consumed}
                     max={target}
-                    color={isOver ? "#EF4444" : "#057A55"}
+                    color={isOver ? "#EF4444" : "#34D399"}
                     size={220}
                     strokeWidth={16}
                     label={isOver ? "kcal over limit" : "kcal remaining"}
@@ -797,15 +799,15 @@ export default function Dashboard() {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className={`mt-7 w-full flex items-center justify-between px-5 py-4 rounded-2xl border ${calStatus.borderColor} ${calStatus.bgBase} transition-all hover:bg-white`}
+                className={`mt-7 w-full flex items-center justify-between px-5 py-4 rounded-2xl border ${calStatus.borderColor.replace('border-', 'border-').replace('-100', '-500/20')} bg-white/5 transition-all hover:bg-white/10`}
               >
                 <div className="flex items-center gap-3.5">
-                  <div className={`p-2.5 rounded-[12px] ${calStatus.iconClass}`}>
+                  <div className={`p-2.5 rounded-[12px] ${calStatus.iconClass.replace('bg-white', 'bg-white/10').replace('border-gray-100', 'border-white/10')}`}>
                     <TrendingUp className="w-4 h-4 stroke-[2.5]" />
                   </div>
                   <div className="flex flex-col text-left">
-                    <h3 className="text-[10px] font-bold text-gray-500 tracking-widest mb-1">{calStatus.type}</h3>
-                    <p className="text-[13px] text-gray-600 font-medium leading-none">
+                    <h3 className="text-[10px] font-bold text-slate-500 tracking-widest mb-1">{calStatus.type}</h3>
+                    <p className="text-[13px] text-slate-300 font-medium leading-none">
                       <span className={`font-bold ${calStatus.percentColor}`}>{calStatus.percent}%</span> of {calStatus.tdee} kcal
                     </p>
                   </div>
@@ -817,10 +819,10 @@ export default function Dashboard() {
           {/* Card 2: Macros Split */}
           <motion.div
             variants={fadeInUp}
-            className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] flex flex-col relative"
+            className="glass-card rounded-[32px] p-8 flex flex-col relative"
           >
             <div className="flex items-center gap-2.5 mb-8">
-              <h2 className="text-[15px] font-semibold text-gray-800">Macro Targets</h2>
+              <h2 className="text-[14px] font-bold text-slate-300 uppercase tracking-widest">Macro Targets</h2>
               {(() => {
                 const protein = Number(todayTotals.total_protein || 0);
                 const carbs = Number(todayTotals.total_carbs || 0);
@@ -830,8 +832,8 @@ export default function Dashboard() {
                 const tFats = profile?.target_fats || 65;
                 const allOnTrack = protein <= tProtein * 1.1 && carbs <= tCarbs * 1.1 && fats <= tFats * 1.1;
                 return (
-                  <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                    allOnTrack ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-amber-50 text-amber-600 border border-amber-100'
+                  <div className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    allOnTrack ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                   }`}>
                     {allOnTrack ? 'On Track' : 'Over Target'}
                   </div>
@@ -880,9 +882,9 @@ export default function Dashboard() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
-          className={`mt-6 rounded-3xl p-8 relative overflow-hidden transition-all duration-700 ${canRequestCoaching
-              ? "bg-linear-to-br from-[#064E3B] to-[#042F2E] shadow-[0_12px_40px_-10px_rgba(4,47,46,0.3)]"
-              : "bg-gray-50 border border-gray-100"
+          className={`mt-6 rounded-[40px] p-10 relative overflow-hidden transition-all duration-700 ${canRequestCoaching
+              ? "bg-emerald-950/40 backdrop-blur-2xl border border-emerald-500/20 shadow-2xl"
+              : "bg-white/5 border border-white/10 backdrop-blur-md"
             }`}
         >
           {/* Background Decor */}
@@ -902,32 +904,32 @@ export default function Dashboard() {
             </div>
 
             {!coaching ? (
-              <div className="space-y-5">
-                <h3 className="text-lg font-medium text-gray-500 leading-relaxed mt-2">
+              <div className="space-y-6">
+                <h3 className="text-xl md:text-2xl font-bold text-white leading-relaxed mt-2 max-w-2xl">
                   {!canRequestCoaching
-                    ? `Log ${Math.max(0, 3 - Number(todayTotals.meal_count || 0))} more meal${Math.max(0, 3 - Number(todayTotals.meal_count || 0)) === 1 ? '' : 's'} to unlock the coach.`
-                    : "Coach is unlocked. Click the button below to generate AI insights."}
+                    ? `Log ${Math.max(0, 3 - Number(todayTotals.meal_count || 0))} more meal${Math.max(0, 3 - Number(todayTotals.meal_count || 0)) === 1 ? '' : 's'} to unlock your AI Coach.`
+                    : "Coach is online and ready. Generate your neural analysis now."}
                 </h3>
 
-                <div className={`rounded-3xl p-4 space-y-3 ${canRequestCoaching ? "border border-white/10 bg-black/10" : "border border-gray-200 bg-white"}`}>
+                <div className={`rounded-3xl p-6 space-y-4 ${canRequestCoaching ? "border border-white/10 bg-black/20" : "border border-white/5 bg-white/5"}`}>
                   <button
                     onClick={() => scrollToLog()}
-                    className={`w-full font-bold py-3.5 rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2 ${canRequestCoaching ? "bg-white text-[#064E3B] hover:bg-gray-100" : "bg-[#057A55] text-white hover:bg-[#046C4E]"}`}
+                    className={`w-full font-bold py-4 rounded-2xl transition-all text-[15px] shadow-xl flex items-center justify-center gap-2 ${canRequestCoaching ? "bg-emerald-500 text-white hover:bg-emerald-400" : "bg-white/10 text-white hover:bg-white/20"}`}
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-5 h-5" />
                     Log Next Meal
                   </button>
 
                   <button
                     onClick={handleReAnalyze}
                     disabled={isGeneratingInsight || !canRequestCoaching}
-                    className={`w-full font-medium py-3 rounded-xl transition-colors text-sm shadow-sm flex items-center justify-center gap-2 ${
+                    className={`w-full font-bold py-4 rounded-2xl transition-all text-[15px] flex items-center justify-center gap-2 ${
                       canRequestCoaching
-                        ? "bg-white/10 hover:bg-white/20 disabled:bg-white/5 disabled:text-white/50 disabled:border-white/10 backdrop-blur-md border border-white/20 text-white"
-                        : "bg-gray-100 text-gray-500 border border-gray-200 disabled:opacity-100"
+                        ? "bg-white/5 hover:bg-white/10 border border-white/10 text-white"
+                        : "bg-transparent text-slate-500 border border-white/5 cursor-not-allowed"
                     }`}>
-                    <Activity className={`w-4 h-4 ${isGeneratingInsight ? 'animate-spin' : ''}`} />
-                    {isGeneratingInsight ? "Analyzing..." : "Generate AI Insights"}
+                    <Activity className={`w-5 h-5 ${isGeneratingInsight ? 'animate-spin' : ''}`} />
+                    {isGeneratingInsight ? "Initializing Neural Audit..." : "Generate AI Insights"}
                   </button>
                 </div>
               </div>
@@ -1018,7 +1020,7 @@ export default function Dashboard() {
                   <div className="rounded-3xl border border-white/10 bg-black/10 p-4 space-y-3">
                     <button
                       onClick={() => scrollToLog()}
-                      className="w-full bg-white text-[#064E3B] hover:bg-gray-100 font-bold py-3.5 rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2"
+                      className="w-full bg-emerald-500 text-white hover:bg-emerald-400 font-bold py-3.5 rounded-xl transition-all text-sm shadow-lg flex items-center justify-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
                       Log Next Meal
@@ -1063,7 +1065,7 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Daily Score Component */}
-              <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] flex flex-col md:flex-row items-center gap-8">
+              <motion.div variants={fadeInUp} className="glass-card rounded-[32px] p-8 flex flex-col md:flex-row items-center gap-8">
                 <div className="relative">
                   <CircularProgress 
                     value={dailyScore?.score || 0} 
@@ -1080,34 +1082,34 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-bold text-gray-900">Daily Performance</h3>
+                    <h3 className="text-[14px] font-bold text-slate-300 uppercase tracking-widest">Daily Performance</h3>
                   </div>
-                  <p className="text-sm text-gray-500 font-medium">Your score is based on macro precision and protein density.</p>
+                  <p className="text-sm text-slate-400 font-medium">Precision audit of macro-density and metabolic alignment.</p>
                   <div className="grid grid-cols-3 gap-2">
-                    <div className="text-center p-2 bg-gray-50 rounded-xl">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase">Protein</p>
-                        <p className="text-sm font-bold text-[#2563EB]">{dailyScore?.protein_score || 0}%</p>
+                    <div className="text-center p-3 bg-white/5 rounded-2xl border border-white/5">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase">Protein</p>
+                        <p className="text-sm font-bold text-blue-400">{dailyScore?.protein_score || 0}%</p>
                     </div>
-                    <div className="text-center p-2 bg-gray-50 rounded-xl">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase">Calories</p>
-                        <p className="text-sm font-bold text-[#D97706]">{dailyScore?.calorie_score || 0}%</p>
+                    <div className="text-center p-3 bg-white/5 rounded-2xl border border-white/5">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase">Calories</p>
+                        <p className="text-sm font-bold text-amber-400">{dailyScore?.calorie_score || 0}%</p>
                     </div>
-                    <div className="text-center p-2 bg-gray-50 rounded-xl">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase">Quality</p>
-                        <p className="text-sm font-bold text-[#057A55]">{dailyScore?.quality_score || 0}%</p>
+                    <div className="text-center p-3 bg-white/5 rounded-2xl border border-white/5">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase">Quality</p>
+                        <p className="text-sm font-bold text-emerald-400">{dailyScore?.quality_score || 0}%</p>
                     </div>
                   </div>
                 </div>
               </motion.div>
 
               {/* 3-Day Rolling Audit Component */}
-              <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)]">
+              <motion.div variants={fadeInUp} className="glass-card rounded-[32px] p-8">
                 <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">3-Day Rolling Audit</h3>
-                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Historical Drift Analysis</p>
+                    <h3 className="text-[14px] font-bold text-slate-300 uppercase tracking-widest">3-Day Rolling Audit</h3>
+                    <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest mt-1">Historical Drift</p>
                   </div>
-                  <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-100">
+                  <div className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-500/20">
                     Live Feedback
                   </div>
                 </div>
@@ -1115,17 +1117,17 @@ export default function Dashboard() {
                 {rollingAudit?.fast_feedback ? (
                   <div className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Avg Calories</p>
-                        <p className="text-xl font-bold text-gray-900">{rollingAudit.fast_feedback.avg_calories}</p>
-                        <p className={`text-[11px] font-bold mt-1 ${rollingAudit.fast_feedback.calorie_gap > 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+                      <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Avg Calories</p>
+                        <p className="text-xl font-bold text-white">{rollingAudit.fast_feedback.avg_calories}</p>
+                        <p className={`text-[11px] font-bold mt-1 ${rollingAudit.fast_feedback.calorie_gap > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                           {rollingAudit.fast_feedback.calorie_gap > 0 ? '+' : ''}{rollingAudit.fast_feedback.calorie_gap} from goal
                         </p>
                       </div>
-                      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Avg Protein</p>
-                        <p className="text-xl font-bold text-gray-900">{rollingAudit.fast_feedback.avg_protein}g</p>
-                        <p className={`text-[11px] font-bold mt-1 ${rollingAudit.fast_feedback.protein_gap < 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+                      <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Avg Protein</p>
+                        <p className="text-xl font-bold text-white">{rollingAudit.fast_feedback.avg_protein}g</p>
+                        <p className={`text-[11px] font-bold mt-1 ${rollingAudit.fast_feedback.protein_gap < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                           {rollingAudit.fast_feedback.protein_gap > 0 ? '+' : ''}{rollingAudit.fast_feedback.protein_gap}g from goal
                         </p>
                       </div>
@@ -1133,8 +1135,8 @@ export default function Dashboard() {
                     
                     <div className={`p-4 rounded-2xl border flex items-center gap-3 ${
                       rollingAudit.fast_feedback.trend === 'over_target' 
-                        ? 'bg-red-50 border-red-100 text-red-800' 
-                        : 'bg-emerald-50 border-emerald-100 text-emerald-800'
+                        ? 'bg-rose-500/10 border-rose-500/20 text-rose-200' 
+                        : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-200'
                     }`}>
                       <Info className="w-5 h-5 opacity-70" />
                       <p className="text-sm font-semibold">
@@ -1150,9 +1152,9 @@ export default function Dashboard() {
               </motion.div>
 
               {/* Failure Insights Component */}
-              <motion.div variants={fadeInUp} className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)] flex flex-col lg:col-span-2">
-                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <ShieldAlert className="w-5 h-5 text-red-500" /> Behavioral Failure Insights
+              <motion.div variants={fadeInUp} className="glass-card rounded-[32px] p-8 flex flex-col lg:col-span-2">
+                <h3 className="text-[14px] font-bold text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <ShieldAlert className="w-5 h-5 text-rose-500" /> Behavioral Failure Audit
                 </h3>
                 <div className="space-y-4">
                   {failureInsights && failureInsights.length > 0 ? (
@@ -1160,10 +1162,10 @@ export default function Dashboard() {
                       {failureInsights.map((insight, idx) => (
                         <div key={idx} className="space-y-1.5">
                           <div className="flex justify-between items-center text-[13px]">
-                            <span className="font-semibold text-gray-700">{insight.issue}</span>
-                            <span className="font-bold text-gray-400">{insight.percentage_contribution}% Contribution</span>
+                            <span className="font-semibold text-slate-300">{insight.issue}</span>
+                            <span className="font-bold text-slate-500">{insight.percentage_contribution}% Impact</span>
                           </div>
-                          <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                              <motion.div 
                                 initial={{ width: 0 }}
                                 animate={{ width: `${insight.percentage_contribution}%` }}
@@ -1195,10 +1197,10 @@ export default function Dashboard() {
           className="mt-16 scroll-mt-24"
         >
           <div className="flex items-center gap-2 mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900 tracking-tight">Food Log & Library</h2>
+            <h2 className="text-[14px] font-bold text-slate-300 uppercase tracking-widest">Food Log & Library</h2>
           </div>
 
-          <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-[0_4px_24px_rgb(0,0,0,0.02)]">
+          <div className="glass-card rounded-[40px] p-10">
             {/* Quick Add Search Bar */}
             <motion.div variants={fadeInUp} className={`flex ${isMobileView ? 'flex-col' : 'relative'} gap-3 mb-6`}>
               <div className="relative flex-1">
@@ -1209,24 +1211,24 @@ export default function Dashboard() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#f8fafc] border border-gray-100 text-gray-900 text-[15px] rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-[#057A55]/20 focus:border-[#057A55] outline-none transition-all placeholder:text-gray-400"
+                  className="w-full bg-white/5 border border-white/10 text-white text-[15px] rounded-2xl pl-12 pr-4 py-4 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-500"
                   placeholder="e.g. 2 roti and dal, 100g paneer, 1 bowl rice..."
                 />
               </div>
               <button
                 onClick={handleAnalyze}
                 disabled={isAnalyzing || !searchQuery}
-                className={`${isMobileView ? 'w-full py-4' : 'absolute inset-y-2 right-2 px-5'} bg-[#057A55] disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-[#046C4E] text-white rounded-xl font-medium text-sm transition-colors shadow-sm`}
+                className={`${isMobileView ? 'w-full py-4' : 'absolute inset-y-2 right-2 px-6'} bg-emerald-500 disabled:bg-white/5 disabled:text-slate-500 disabled:cursor-not-allowed hover:bg-emerald-400 text-white rounded-xl font-bold text-[14px] transition-all shadow-lg`}
               >
-                {isAnalyzing ? "Analyzing..." : "Analyze & Add"}
+                {isAnalyzing ? "Analyzing..." : "Process Meal"}
               </button>
             </motion.div>
 
             {/* Kitchen Converter Link */}
             <motion.div variants={fadeInUp} className={`flex ${isMobileView ? 'justify-center' : 'justify-end'} -mt-3 mb-6 relative z-10 w-full pr-2`}>
-              <a href="/converter" className="text-[13px] font-medium text-[#057A55] hover:text-[#046C4E] hover:underline flex items-center gap-1 transition-colors">
+              <a href="/converter" className="text-[13px] font-bold text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 transition-colors">
                 <Scale className="w-4 h-4" />
-                Don't have a weighing scale? No worries, click here!
+                No weighing scale? Use AI Estimator
               </a>
             </motion.div>
 
@@ -1247,40 +1249,38 @@ export default function Dashboard() {
               <motion.div
                 initial={{ opacity: 0, height: 0, y: -10 }}
                 animate={{ opacity: 1, height: 'auto', y: 0 }}
-                className="mb-10 p-5 rounded-2xl bg-emerald-50/50 border border-emerald-100"
+                className="mb-10 p-6 rounded-3xl bg-emerald-500/5 border border-emerald-500/20 backdrop-blur-md"
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">{analyzedMeal.food_name}</h3>
-                    <div className="flex gap-4 mt-2 text-sm text-gray-600 font-medium">
-                      <span><strong className="text-gray-900">{analyzedMeal.calories}</strong> kcal</span>
-                      <span><strong className="text-gray-900">{analyzedMeal.protein}g</strong> Protein</span>
-                      <span><strong className="text-gray-900">{analyzedMeal.carbs}g</strong> Carbs</span>
-                      <span><strong className="text-gray-900">{analyzedMeal.fats}g</strong> Fats</span>
+                    <h3 className="text-xl font-bold text-white">{analyzedMeal.food_name}</h3>
+                    <div className="flex gap-4 mt-2 text-sm text-slate-300 font-medium">
+                      <span><strong className="text-white">{analyzedMeal.calories}</strong> kcal</span>
+                      <span><strong className="text-white">{analyzedMeal.protein}g</strong> Protein</span>
                     </div>
                   </div>
                   <button
                     disabled={isConfirmingMeal}
                     onClick={() => handleConfirmAndLog()}
-                    className="bg-emerald-600 disabled:bg-gray-400 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-emerald-700 shadow-sm flex items-center gap-2 transition-all"
+                    className="bg-emerald-500 disabled:bg-white/5 text-white px-8 py-3.5 rounded-2xl text-[15px] font-bold hover:bg-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)] flex items-center gap-2 transition-all uppercase tracking-widest"
                   >
-                    {isConfirmingMeal ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                    {isConfirmingMeal ? "Logging..." : "Confirm This Meal"}
+                    {isConfirmingMeal ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
+                    {isConfirmingMeal ? "LOGGING..." : "CONFIRM MEAL"}
                   </button>
                 </div>
 
-                <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="bg-white p-4 rounded-xl border border-emerald-100/50 shadow-sm">
-                    <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Scale className="w-3.5 h-3.5" /> Indian Measurements</p>
-                    <p className="text-sm text-gray-700 font-medium">{analyzedMeal.household_measurement || "Standard portion"}</p>
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-2 flex items-center gap-1"><Scale className="w-3.5 h-3.5" /> Indian Portion</p>
+                    <p className="text-[14px] text-white font-medium">{analyzedMeal.household_measurement || "Standard portion"}</p>
                   </div>
-                  <div className="bg-white p-4 rounded-xl border border-emerald-100/50 shadow-sm">
-                    <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Droplet className="w-3.5 h-3.5" /> Bioavailability</p>
-                    <p className="text-sm text-gray-700">{analyzedMeal.bioavailability || "Standard metric."}</p>
+                  <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-2 flex items-center gap-1"><Droplet className="w-3.5 h-3.5" /> Bioavailability</p>
+                    <p className="text-[14px] text-slate-300">{analyzedMeal.bioavailability || "Standard metric."}</p>
                   </div>
-                  <div className="bg-white p-4 rounded-xl border border-emerald-100/50 shadow-sm">
-                    <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-1 flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> AI Tip</p>
-                    <p className="text-sm text-gray-700">{analyzedMeal.suggestion || "Looks good!"}</p>
+                  <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-2 flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> Neural Insight</p>
+                    <p className="text-[14px] text-slate-300">{analyzedMeal.suggestion || "Looks good!"}</p>
                   </div>
                 </div>
               </motion.div>
@@ -1289,28 +1289,28 @@ export default function Dashboard() {
             {/* Today's Meals Section */}
             <motion.div variants={fadeInUp} className={`mb-8 ${analyzedMeal ? "opacity-50 pointer-events-none" : ""}`}>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[15px] font-semibold text-gray-800 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-gray-400" /> Today's Meals
+                <h3 className="text-[13px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4" /> Today's Log
                 </h3>
                 <button
                   onClick={() => setShowTodayMeals(!showTodayMeals)}
-                  className="bg-[#057A55] hover:bg-[#046C4E] text-white px-4 py-2 rounded-xl font-medium text-sm transition-colors shadow-sm"
+                  className="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest border border-white/5 transition-all"
                 >
-                  {showTodayMeals ? "Hide Today's Meals" : "View Today's Meals"}
+                  {showTodayMeals ? "Collapse Log" : "Expand Log"}
                 </button>
               </div>
               {showTodayMeals && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {todayMeals.length > 0 ? todayMeals.map((meal, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-[#FCFCFD] transition-all">
+                    <div key={idx} className="flex items-center justify-between p-5 rounded-2xl border border-white/5 bg-white/5 transition-all">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500">
+                        <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
                           <Flame className="w-5 h-5" />
                         </div>
                         <div>
-                          <h4 className="text-[15px] font-semibold text-gray-900">{meal.food_name}</h4>
-                          <p className="text-[13px] text-gray-500 mt-0.5">
-                            {meal.calories} kcal • {meal.protein}g Protein • {meal.carbs}g Carbs • {meal.fats}g Fats
+                          <h4 className="text-[16px] font-bold text-white">{meal.food_name}</h4>
+                          <p className="text-[13px] text-slate-400 mt-0.5 font-medium">
+                            {meal.calories} kcal • {meal.protein}g P • {meal.carbs}g C • {meal.fats}g F
                           </p>
                         </div>
                       </div>
@@ -1327,33 +1327,33 @@ export default function Dashboard() {
             {/* Favorites / Recent Section */}
             <motion.div variants={fadeInUp} className={analyzedMeal ? "opacity-50 pointer-events-none" : ""}>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[15px] font-semibold text-gray-800 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-gray-400" /> Recently Logged
+                <h3 className="text-[13px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                  <Clock className="w-4 h-4" /> Recently Logged
                 </h3>
               </div>
 
               {/* List of Previous Meals */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {recentMeals.length > 0 ? recentMeals.map((meal, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-[#FCFCFD] hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all group cursor-pointer">
+                  <div key={idx} className="flex items-center justify-between p-5 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 transition-all group cursor-pointer shadow-lg">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500">
+                      <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-400">
                         <Wheat className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="text-[15px] font-semibold text-gray-900">{meal.food_name}</h4>
-                        <p className="text-[13px] text-gray-500 mt-0.5">{meal.calories} kcal • {meal.protein}g Protein</p>
+                        <h4 className="text-[16px] font-bold text-white">{meal.food_name}</h4>
+                        <p className="text-[13px] text-slate-400 mt-0.5 font-medium">{meal.calories} kcal • {meal.protein}g P</p>
                       </div>
                     </div>
                     <button
                       onClick={() => handleConfirmAndLog(meal, idx)}
                       disabled={isConfirmingMeal && loggingMealIdx === idx}
-                      className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:bg-[#057A55] group-hover:text-white group-hover:border-[#057A55] transition-colors shrink-0 disabled:bg-gray-50 disabled:text-gray-300"
+                      className={`w-10 h-10 rounded-full border border-white/10 flex items-center justify-center transition-all shrink-0 ${isConfirmingMeal && loggingMealIdx === idx ? 'bg-emerald-500 text-white border-emerald-500' : 'text-slate-400 group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500'} disabled:opacity-50`}
                     >
                       {isConfirmingMeal && loggingMealIdx === idx ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-5 h-5" />
                       )}
                     </button>
                   </div>

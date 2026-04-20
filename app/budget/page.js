@@ -42,13 +42,13 @@ const MacroCompare = ({ label, original, alternative, unit = 'g' }) => {
   const absDiff = Math.abs(diff);
   const isClose = absDiff <= Math.max(original * 0.25, 5);
   return (
-    <div className="flex items-center justify-between text-[12px]">
-      <span className="text-gray-400 font-semibold w-16">{label}</span>
-      <span className="font-semibold text-gray-600">{original}{unit}</span>
-      <ArrowRight className="w-3 h-3 text-gray-300 mx-1 shrink-0" />
-      <span className={`font-bold ${isClose ? 'text-emerald-600' : 'text-amber-600'}`}>{alternative}{unit}</span>
-      <span className={`ml-auto pl-2 text-[11px] font-bold ${diff > 0 ? 'text-amber-500' : diff < 0 ? 'text-blue-500' : 'text-emerald-500'}`}>
-        {diff > 0 ? `+${diff}` : diff === 0 ? '=' : diff}{unit === ' kcal' ? ' kcal' : unit}
+    <div className="flex items-center justify-between text-[13px]">
+      <span className="text-slate-500 font-bold w-16">{label}</span>
+      <span className="font-bold text-slate-300">{original}{unit}</span>
+      <ArrowRight className="w-3.5 h-3.5 text-slate-700 mx-1 shrink-0" />
+      <span className={`font-bold ${isClose ? 'text-emerald-400' : 'text-amber-400'}`}>{alternative}{unit}</span>
+      <span className={`ml-auto pl-2 text-[11px] font-bold ${diff > 0 ? 'text-amber-500' : diff < 0 ? 'text-blue-400' : 'text-emerald-400'}`}>
+        {diff > 0 ? `+${diff}` : diff === 0 ? '=' : diff}{unit === ' kcal' ? '' : unit}
       </span>
     </div>
   );
@@ -123,23 +123,23 @@ export default function BudgetOptimizer() {
   if (!isAuthorized) return null;
 
   return (
-    <div className="min-h-screen bg-[#FCFCFD] text-gray-900 pt-32 pb-24 relative selection:bg-emerald-500/10 selection:text-emerald-700">
+    <div className="min-h-screen bg-slate-950 text-white pt-32 pb-24 relative selection:bg-emerald-500/10 selection:text-emerald-400">
       {/* Background glows — matches home page */}
-      <div className="fixed top-0 right-0 w-[40vw] h-[40vw] bg-emerald-50/60 rounded-full blur-[130px] pointer-events-none -z-10 translate-x-1/3 -translate-y-1/3" />
-      <div className="fixed bottom-0 left-0 w-[30vw] h-[30vw] bg-blue-50/30 rounded-full blur-[100px] pointer-events-none -z-10 -translate-x-1/3 translate-y-1/3" />
+      <div className="fixed top-0 right-0 w-[40vw] h-[40vw] bg-emerald-500/5 rounded-full blur-[130px] pointer-events-none -z-10 translate-x-1/3 -translate-y-1/3" />
+      <div className="fixed bottom-0 left-0 w-[30vw] h-[30vw] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none -z-10 -translate-x-1/3 translate-y-1/3" />
 
       <main className="max-w-[1100px] mx-auto px-6 lg:px-8">
 
         {/* Header */}
         <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="mb-12">
-          <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+          <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest mb-6">
             <PiggyBank className="w-3.5 h-3.5" /> Budget Optimizer
           </motion.div>
-          <motion.h1 variants={fadeInUp} className="text-4xl md:text-5xl font-semibold text-gray-900 tracking-tight leading-tight">
-            Eat Smart. <span className="text-emerald-600">Spend Less.</span>
+          <motion.h1 variants={fadeInUp} className="text-4xl md:text-5xl font-bold text-white tracking-tighter leading-none mb-4">
+            Eat Smart. <span className="text-emerald-500">Spend Less.</span>
           </motion.h1>
-          <motion.p variants={fadeInUp} className="text-gray-500 font-medium mt-3 text-[16px] max-w-xl leading-relaxed">
-            Select a premium food you consume regularly, and our AI will suggest cheaper alternatives with the same macro profile — so you never sacrifice your gains.
+          <motion.p variants={fadeInUp} className="text-slate-400 font-medium text-[16px] max-w-xl leading-relaxed">
+            Personalized AI audit of premium food expenditures. Discover cost-optimized alternatives without compromising on metabolic profile.
           </motion.p>
         </motion.div>
 
@@ -151,12 +151,12 @@ export default function BudgetOptimizer() {
               <motion.div key="selector" initial="hidden" animate="visible" exit={{ opacity: 0, x: -20 }} variants={staggerContainer}>
 
                 {/* Mode Toggle */}
-                <motion.div variants={fadeInUp} className="flex bg-gray-100 p-1 rounded-2xl mb-6 gap-1">
+                <motion.div variants={fadeInUp} className="flex bg-white/5 p-1 rounded-2xl mb-6 gap-1 border border-white/5">
                   {['select', 'custom'].map(m => (
                     <button
                       key={m}
                       onClick={() => setMode(m)}
-                      className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 cursor-pointer ${mode === m ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                      className={`flex-1 py-3 rounded-xl text-[13px] font-bold uppercase tracking-widest transition-all duration-300 cursor-pointer ${mode === m ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-slate-500 hover:text-slate-300'}`}
                     >
                       {m === 'select' ? 'Choose from List' : 'Type Your Own'}
                     </button>
@@ -167,13 +167,13 @@ export default function BudgetOptimizer() {
                   <>
                     {/* Search */}
                     <motion.div variants={fadeInUp} className="relative mb-4">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                       <input
                         type="text"
-                        placeholder="Search premium foods..."
+                        placeholder="Search premium database..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-400/40 focus:border-emerald-400 transition-all placeholder:text-gray-400"
+                        className="w-full pl-11 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-[14px] font-medium text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-600"
                       />
                     </motion.div>
 
@@ -210,18 +210,18 @@ export default function BudgetOptimizer() {
                     </motion.div>
                   </>
                 ) : (
-                  <motion.div variants={fadeInUp} className="bg-white border border-gray-100 rounded-3xl p-6">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Enter any food item</label>
+                  <motion.div variants={fadeInUp} className="glass-card rounded-[32px] p-8">
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3 ml-1">Identify Food Item</label>
                     <input
                       type="text"
                       placeholder="e.g. Protein Bar, Açaí Bowl, Chia Pudding..."
                       value={customFood}
                       onChange={e => setCustomFood(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleOptimize()}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-400/40 focus:border-emerald-400 transition-all placeholder:text-gray-400 mb-2"
+                      className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-600 mb-4"
                     />
-                    <p className="text-[12px] text-gray-400 font-medium">
-                      Our AI will auto-detect its macros and suggest cheaper swaps.
+                    <p className="text-[12px] text-slate-500 font-bold tracking-tight">
+                      Neural engine will auto-detect metabolic density and compute cheaper alternatives.
                     </p>
                   </motion.div>
                 )}
@@ -232,63 +232,58 @@ export default function BudgetOptimizer() {
                   </motion.p>
                 )}
 
-                {/* CTA */}
                 <motion.button
                   variants={fadeInUp}
                   onClick={handleOptimize}
                   disabled={isLoading}
-                  className="mt-6 w-full flex items-center justify-center gap-2.5 py-4 bg-linear-to-r from-[#16a34a] to-[#22c55e] text-white rounded-2xl font-semibold text-[15px] shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-[#15803d] hover:to-[#16a34a] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                  className="mt-6 w-full flex items-center justify-center gap-3 py-5 bg-emerald-500 text-white rounded-[20px] font-bold text-[15px] shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:bg-emerald-400 transition-all duration-500 disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer uppercase tracking-widest"
                 >
                   {isLoading ? (
                     <>
-                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                      Finding Budget Alternatives...
+                      <Loader2 className="animate-spin w-6 h-6" />
+                      Initializing Neural Audit...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4" />
+                      <Sparkles className="w-5 h-5" />
                       Find Budget Alternatives
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-5 h-5" />
                     </>
                   )}
                 </motion.button>
               </motion.div>
             ) : (
-              /* After result — show original food summary on left */
-              <motion.div key="reset-panel" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_4px_24px_rgb(0,0,0,0.03)]">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0">
-                    <TrendingDown className="w-5 h-5 text-emerald-600" />
+              <motion.div key="reset-panel" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="glass-card rounded-[32px] p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                    <TrendingDown className="w-6 h-6 text-emerald-400" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-[13px] font-bold text-gray-500 uppercase tracking-wide">Original Food</h3>
-                    <p className="text-[15px] font-bold text-gray-900 truncate">{result.original_food}</p>
+                    <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Original Profile</h3>
+                    <p className="text-[18px] font-bold text-white truncate leading-tight">{result.original_food}</p>
                   </div>
                 </div>
 
                 {result.original_price_estimate && (
-                  <div className="bg-red-50 border border-red-100 rounded-2xl px-4 py-3 mb-4 flex items-center justify-between">
-                    <span className="text-[12px] font-semibold text-red-400 uppercase tracking-wider">Current Cost</span>
-                    <span className="text-[14px] font-bold text-red-600">{result.original_price_estimate}</span>
+                  <div className="bg-rose-500/10 border border-rose-500/20 rounded-[20px] px-5 py-4 mb-6 flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-rose-400 uppercase tracking-widest">Current Cost</span>
+                    <span className="text-[16px] font-bold text-rose-400">{result.original_price_estimate}</span>
                   </div>
                 )}
 
-                <div className="flex flex-col gap-2 bg-gray-50 rounded-2xl p-4 mb-5">
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Original Macros</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    <MacroPill icon={Zap} label="kcal" value={result.original_macros?.calories} colorClass="bg-orange-50 text-orange-600" />
-                    <MacroPill icon={Beef} label="Protein" value={result.original_macros?.protein} colorClass="bg-blue-50 text-blue-600" />
-                    <MacroPill icon={Wheat} label="Carbs" value={result.original_macros?.carbs} colorClass="bg-amber-50 text-amber-600" />
-                    <MacroPill icon={Droplets} label="Fats" value={result.original_macros?.fats} colorClass="bg-emerald-50 text-emerald-600" />
+                <div className="flex flex-col gap-3 bg-white/5 rounded-[24px] p-6 mb-8 border border-white/5">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Baseline Macros</p>
+                  <div className="flex flex-wrap gap-2">
+                    <MacroPill icon={Zap} label="kcal" value={result.original_macros?.calories} colorClass="bg-orange-500/10 text-orange-400" />
+                    <MacroPill icon={Beef} label="P" value={result.original_macros?.protein} colorClass="bg-blue-500/10 text-blue-400" />
+                    <MacroPill icon={Wheat} label="C" value={result.original_macros?.carbs} colorClass="bg-amber-500/10 text-amber-400" />
+                    <MacroPill icon={Droplets} label="F" value={result.original_macros?.fats} colorClass="bg-emerald-500/10 text-emerald-400" />
                   </div>
                 </div>
 
                 <button
                   onClick={handleReset}
-                  className="w-full flex items-center justify-center gap-2 py-3 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-2xl text-sm font-semibold transition-all cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-4 bg-white/5 border border-white/10 text-white hover:bg-white/10 rounded-2xl text-[14px] font-bold transition-all cursor-pointer uppercase tracking-widest"
                 >
                   <RotateCcw className="w-4 h-4" /> Try Another Food
                 </button>
@@ -296,99 +291,91 @@ export default function BudgetOptimizer() {
             )}
           </AnimatePresence>
 
-          {/* ── Right Panel — Results ── */}
           <div className="flex flex-col gap-5">
             <AnimatePresence mode="wait">
-              {!result && !isLoading && (
+               {!result && !isLoading && (
                 <motion.div
                   key="placeholder"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="bg-white border border-dashed border-gray-200 rounded-3xl p-10 flex flex-col items-center justify-center text-center min-h-[340px]"
+                  className="bg-white/5 border border-dashed border-white/10 rounded-[40px] p-10 flex flex-col items-center justify-center text-center min-h-[400px]"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-4">
-                    <PiggyBank className="w-7 h-7 text-emerald-500" />
+                  <div className="w-20 h-20 rounded-[32px] bg-emerald-500/10 flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(16,185,129,0.1)]">
+                    <PiggyBank className="w-10 h-10 text-emerald-500" />
                   </div>
-                  <h3 className="text-[16px] font-bold text-gray-800 mb-2">Alternatives Will Appear Here</h3>
-                  <p className="text-sm text-gray-400 font-medium max-w-64">
-                    Select a premium food and hit "Find Budget Alternatives" to get started.
+                  <h3 className="text-[18px] font-bold text-white mb-2 uppercase tracking-widest">Awaiting Input</h3>
+                  <p className="text-sm text-slate-500 font-bold max-w-64">
+                    Analyze premium metabolic expenditures to compute cost-optimized swaps.
                   </p>
                 </motion.div>
               )}
 
-              {isLoading && (
+               {isLoading && (
                 <motion.div
                   key="loading"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="bg-white border border-gray-100 rounded-3xl p-10 flex flex-col items-center justify-center min-h-[340px]"
+                  className="glass-card rounded-[40px] p-10 flex flex-col items-center justify-center min-h-[400px]"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mb-4 animate-pulse">
-                    <Sparkles className="w-7 h-7 text-emerald-500" />
+                  <div className="w-20 h-20 rounded-[32px] bg-emerald-500/10 flex items-center justify-center mb-6 animate-pulse">
+                    <Sparkles className="w-10 h-10 text-emerald-500" />
                   </div>
-                  <h3 className="text-[16px] font-bold text-gray-800 mb-2">AI is Crunching Numbers...</h3>
-                  <p className="text-sm text-gray-400 font-medium">Analyzing macro profiles and market pricing</p>
+                  <h3 className="text-[18px] font-bold text-white mb-2 uppercase tracking-widest">Neural Computation...</h3>
+                  <p className="text-sm text-slate-500 font-bold">Synchronizing metabolic profiles and market indexing</p>
                 </motion.div>
               )}
 
-              {result && (
+               {result && (
                 <motion.div key="results" initial="hidden" animate="visible" variants={staggerContainer} className="w-full">
-                  <motion.div variants={fadeInUp} className="flex items-center gap-2 mb-5">
-                    <div className="w-7 h-7 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                      <Sparkles className="w-4 h-4 text-emerald-600" />
+                  <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-5 h-5 text-emerald-400" />
                     </div>
-                    <h2 className="text-[16px] font-bold text-gray-900">3 Budget-Friendly Swaps</h2>
-                    <span className="ml-auto text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">AI Generated</span>
+                    <h2 className="text-[15px] font-bold text-white uppercase tracking-widest">3 Budget-Friendly Neural Swaps</h2>
+                    <span className="ml-auto text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full uppercase tracking-widest">Neural Analysis</span>
                   </motion.div>
 
-                  {/* Horizontal 3-column grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     {result.alternatives?.map((alt, idx) => (
                       <motion.div
                         key={idx}
                         variants={fadeInUp}
-                        className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_2px_16px_rgb(0,0,0,0.03)] hover:shadow-[0_4px_24px_rgb(0,0,0,0.06)] transition-shadow flex flex-col"
+                        className="glass-card rounded-[32px] p-7 flex flex-col hover:shadow-[0_0_30px_rgba(16,185,129,0.1)] transition-all duration-500 border border-white/5"
                       >
-                        {/* Header */}
-                        <div className="flex items-start justify-between gap-3 mb-4">
-                          <div className="min-w-0">
-                            <span className="inline-block text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full mb-1.5">
-                              Option {idx + 1}
+                        <div className="flex flex-col gap-4 mb-6">
+                          <div className="flex items-center justify-between">
+                            <span className="inline-block text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full uppercase tracking-widest">
+                              Swap {idx + 1}
                             </span>
-                            <h3 className="text-[15px] font-bold text-gray-900 leading-snug">{alt.food_name}</h3>
-                          </div>
-                          {alt.savings_percent != null && (
-                            <div className="shrink-0">
-                              <div className="flex items-center gap-1.5 bg-emerald-500 text-white text-[12px] font-extrabold px-2.5 py-1.5 rounded-xl shadow-sm shadow-emerald-500/30">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg>
-                                {alt.savings_percent}% cheaper
+                            {alt.savings_percent != null && (
+                              <div className="flex items-center gap-1 bg-emerald-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-tighter">
+                                <TrendingDown className="w-3.5 h-3.5" />
+                                {alt.savings_percent}%
                               </div>
-                            </div>
-                          )}
+                            )}
+                          </div>
+                          <h3 className="text-[18px] font-bold text-white leading-tight">{alt.food_name}</h3>
                         </div>
 
-                        {/* Monthly Savings */}
                         {alt.monthly_savings && (
-                          <div className="flex items-start gap-2.5 bg-emerald-50 border border-emerald-100 rounded-2xl px-3.5 py-3 mb-4">
-                            <PiggyBank className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                          <div className="flex items-start gap-3 bg-white/5 border border-white/5 rounded-2xl px-4 py-4 mb-6 shadow-inner">
+                            <PiggyBank className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                             <div>
-                              <div className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Monthly Savings</div>
-                              <div className="text-[13px] font-bold text-emerald-800 leading-snug">{alt.monthly_savings}</div>
+                              <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Monthly Yield</div>
+                              <div className="text-[14px] font-bold text-emerald-400 leading-snug">{alt.monthly_savings}</div>
                             </div>
                           </div>
                         )}
 
-                        {/* Macro Comparison */}
-                        <div className="bg-gray-50 rounded-2xl p-3.5 mb-4 flex flex-col gap-2">
-                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Macro Comparison</p>
-                          <MacroCompare label="Calories" original={result.original_macros?.calories} alternative={alt.calories} unit=" kcal" />
+                        <div className="bg-white/5 rounded-2xl p-4 mb-6 flex flex-col gap-3 border border-white/5">
+                          <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Metabolic Delta</p>
+                          <MacroCompare label="Energy" original={result.original_macros?.calories} alternative={alt.calories} unit=" kcal" />
                           <MacroCompare label="Protein" original={result.original_macros?.protein} alternative={alt.protein} />
                           <MacroCompare label="Carbs" original={result.original_macros?.carbs} alternative={alt.carbs} />
                           <MacroCompare label="Fats" original={result.original_macros?.fats} alternative={alt.fats} />
                         </div>
 
-                        {/* Why */}
-                        <div className="mt-auto flex items-start gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2.5">
-                          <span className="text-emerald-500 mt-0.5 shrink-0 font-bold text-sm">✓</span>
-                          <p className="text-[11px] font-medium text-gray-600 leading-relaxed">{alt.why}</p>
+                        <div className="mt-auto flex items-start gap-3 bg-white/5 rounded-2xl px-4 py-4 border border-white/5">
+                          <span className="text-emerald-500 mt-0.5 shrink-0 font-bold text-[16px]">✓</span>
+                          <p className="text-[12px] font-medium text-slate-400 leading-relaxed italic">"{alt.why}"</p>
                         </div>
                       </motion.div>
                     ))}
