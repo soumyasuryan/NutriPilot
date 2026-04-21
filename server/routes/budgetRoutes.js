@@ -3,10 +3,12 @@ const router = express.Router();
 const { getBudgetAlternativeFromAI } = require('../services/budgetService');
 const { getNutritionFromAI } = require('../services/groqService');
 const db = require('../config/db');
+const { protect } = require('../middleware/authMiddleware');
+
 
 // POST /api/budget/optimize
 // Body: { foodName: string } OR { foodName: string, macros: { calories, protein, carbs, fats } }
-router.post('/optimize', async (req, res) => {
+router.post('/optimize', protect, async (req, res) => {
   const { foodName, macros } = req.body;
   if (!foodName) return res.status(400).json({ error: "foodName is required." });
 

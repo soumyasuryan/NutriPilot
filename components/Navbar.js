@@ -128,7 +128,7 @@ const Navbar = () => {
                 </div>
               </div>
 
-              <Link href="/#how-it-works" className="relative group/link text-lg font-medium text-slate-400 hover:text-white transition-colors duration-200 py-2">
+              <Link href="/howitworks" className="relative group/link text-lg font-medium text-slate-400 hover:text-white transition-colors duration-200 py-2">
                 How it Works
                 <span className="absolute left-0 bottom-1 w-0 h-[2px] bg-emerald-400 transition-all duration-300 group-hover/link:w-full rounded-full"></span>
               </Link>

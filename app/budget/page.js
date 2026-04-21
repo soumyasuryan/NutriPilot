@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PiggyBank, Search, Sparkles, ChevronRight, Zap, Beef, Wheat, Droplets, ArrowRight, RotateCcw, TrendingDown } from 'lucide-react';
+import { PiggyBank, Search, Sparkles, ChevronRight, Zap, Beef, Wheat, Droplets, ArrowRight, RotateCcw, TrendingDown, Loader2 } from 'lucide-react';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 24 },
